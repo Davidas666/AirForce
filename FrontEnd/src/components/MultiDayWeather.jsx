@@ -47,7 +47,6 @@ export default function MultiDayWeather() {
     setShowSuggestions(false);
   };
 
-  // Grupavimas pagal dieną
   const groupByDay = (list) => {
     const days = {};
     list.forEach(item => {

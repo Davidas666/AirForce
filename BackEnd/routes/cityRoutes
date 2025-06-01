@@ -1,0 +1,25 @@
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+
+const cityList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../data/CityList.json'), 'utf8')
+);
+
+router.get('/', (req, res) => {
+  const query = (req.query.query || '').toLowerCase();
+  if (!query || query.length < 2) return res.json([]);
+  const suggestions = cityList
+    .filter(city =>
+      city.name.toLowerCase().includes(query)
+    )
+    .slice(0, 10)
+    .map(city => ({
+      name: city.name,
+      country: city.country
+    }));
+  res.json(suggestions);
+});
+
+module.exports = router;
