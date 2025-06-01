@@ -64,3 +64,5 @@ export default function HourlyWeatherSlider({ hourly, startIdx, setStartIdx }) {
     </div>
   );
 }
+
+//tesing .gitignore
