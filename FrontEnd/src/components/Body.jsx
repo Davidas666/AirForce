@@ -11,7 +11,6 @@ export default function Body({ selectedCity }) {
   const [error, setError] = useState("");
   const [startIdx, setStartIdx] = useState(0);
 
-  // Use selectedCity if provided, else fallback to userCity
   const cityToShow = selectedCity || userCity;
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export default function Body({ selectedCity }) {
       })
       .then((data) => {
         const now = new Date();
-        // Find the latest forecast hour <= now
         let firstIdx = 0;
         for (let i = data.list.length - 1; i >= 0; i--) {
           const itemDate = new Date(data.list[i].dt_txt.replace(' ', 'T'));
