@@ -1,14 +1,12 @@
 import { useState, useRef } from "react";
 import { useUserCity } from "../hooks/useUserCity";
-import { useRecentCities } from "../hooks/useRecentCities";
 import UserCityDisplay from "./UserCityDisplay";
 
-export default function Header({ onCitySelect }) {
+export default function Header({ onCitySelect, recent, handleSearch }) {
   const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const userCity = useUserCity();
-  const [recent, setRecent] = useRecentCities(userCity);
   const inputRef = useRef();
 
   const fetchSuggestions = async (value) => {
@@ -49,45 +47,35 @@ export default function Header({ onCitySelect }) {
     handleSearch(c.name);
   };
 
-  const handleSearch = (searchCity) => {
+  const handleSearchCity = (searchCity) => {
     const cityToSearch = searchCity || city.trim();
     if (!cityToSearch) return;
     setCity(cityToSearch);
     setShowSuggestions(false);
     if (onCitySelect) onCitySelect(cityToSearch);
-
-    setRecent((prev) => {
-      const filtered = prev.filter(
-        (c) => c.toLowerCase() !== cityToSearch.toLowerCase()
-      );
-      return [cityToSearch, ...filtered].slice(0, 3);
-    });
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handleSearch();
+      handleSearchCity();
     }
   };
 
   return (
     <header className="w-full px-6 py-3 bg-white shadow z-50">
       <div className="flex flex-wrap items-center justify-between gap-4 w-full max-w-6xl mx-auto">
-        {/* logo */}
         <div className="flex items-center flex-shrink-0">
           <img src="/img/logo.jpg" alt="Logo" className="h-10 w-10 rounded" />
         </div>
-        {/* app Name */}
         <div className="flex items-center flex-shrink-0">
           <span className="text-xl font-bold text-blue-700 whitespace-nowrap">
             AirForce Weather
           </span>
         </div>
-        {/* found City */}
         <div className="flex items-center flex-shrink-0 min-w-0 max-w-[220px]">
           <span className="whitespace-nowrap truncate text-gray-700">
-            <UserCityDisplay city={userCity} />
+            <UserCityDisplay city={userCity} onClick={() => onCitySelect(userCity)} />
           </span>
           {!userCity && (
             <span className="ml-2 text-gray-400 text-sm truncate max-w-[120px] overflow-hidden">
@@ -95,7 +83,6 @@ export default function Header({ onCitySelect }) {
             </span>
           )}
         </div>
-        {/* search Bar */}
         <div className="relative flex items-center flex-grow max-w-lg min-w-[220px]">
           <input
             ref={inputRef}
@@ -111,7 +98,7 @@ export default function Header({ onCitySelect }) {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 flex-shrink-0"
-            onClick={() => handleSearch()}
+            onClick={() => handleSearchCity()}
           >
             Search
           </button>
@@ -129,7 +116,6 @@ export default function Header({ onCitySelect }) {
             </ul>
           )}
         </div>
-        {/* city history */}
         <div className="flex gap-2 items-center flex-shrink-0 flex-nowrap max-w-[320px] overflow-x-auto">
           {recent.map((c, idx) => (
             <button

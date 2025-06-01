@@ -1,8 +1,14 @@
-export default function UserCityDisplay({ city }) {
+export default function UserCityDisplay({ city, onClick }) {
   if (!city) return null;
   return (
-    <span className="text-gray-500 text-sm whitespace-nowrap truncate max-w-[120px] overflow-hidden">
+    <button
+      className="text-gray-500 text-sm whitespace-nowrap truncate max-w-[120px] overflow-hidden flex items-center hover:underline"
+      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+      onClick={onClick}
+      title="Weather in your city"
+      type="button"
+    >
       📍 {city}
-    </span>
+    </button>
   );
 }

@@ -21,10 +21,10 @@ export default function HourlyWeatherCard({ item }) {
         {item.weather[0].description}
       </div>
       <div className="text-xs text-blue-500 mb-1 w-full text-center truncate">
-        Vėjas: {item.wind.speed} m/s
+        Wind: {item.wind.speed} m/s
       </div>
       <div className="text-xs text-gray-400 w-full text-center truncate">
-        Drėgmė: {item.main.humidity}%
+        Humidity: {item.main.humidity}%
       </div>
     </div>
   );
