@@ -1,28 +1,37 @@
 import { useEffect, useState } from "react";
 import { useUserCity } from "../hooks/useUserCity";
-import HourlyWeatherCard from "./HourlyWeatherCard";
+import HourlyWeatherSlider from "./HourlyWeatherSlider";
+import DailyWeatherCard from "./DailyWeatherCard";
+import TodayHourlyWeather from "./TodayHourlyWeather";
 
-export default function Body({ selectedCity }) {
+export default function Body({ selectedCity, recent, setRecent }) {
   const userCity = useUserCity();
   const [hourly, setHourly] = useState([]);
+  const [daily, setDaily] = useState([]);
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [startIdx, setStartIdx] = useState(0);
-
+  const [todayStartIdx, setTodayStartIdx] = useState(0);
+  const [view, setView] = useState("hourly");
   const cityToShow = selectedCity || userCity;
 
   useEffect(() => {
-    if (!cityToShow) return;
+    if (view === "today") setTodayStartIdx(0);
+  }, [view]);
+
+  useEffect(() => {
+    if (!cityToShow || (view !== "hourly" && view !== "today")) return;
     setLoading(true);
     setError("");
     setHourly([]);
     setCityName("");
     setCountry("");
+
     fetch(`/api/forecast/hourly/${encodeURIComponent(cityToShow)}`)
       .then((res) => {
-        if (!res.ok) throw new Error("Nepavyko gauti duomenų");
+        if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();
       })
       .then((data) => {
@@ -39,29 +48,72 @@ export default function Body({ selectedCity }) {
         setHourly(data.list);
         setCityName(data.city.name);
         setCountry(data.city.country);
+        setRecent((prev) => {
+          const filtered = prev.filter(
+            (c) => c.toLowerCase() !== data.city.name.toLowerCase()
+          );
+          return [data.city.name, ...filtered].slice(0, 3);
+        });
       })
-      .catch((err) => setError("Klaida: " + err.message))
+      .catch((err) => setError("Error: " + err.message))
       .finally(() => setLoading(false));
-  }, [cityToShow]);
+  }, [cityToShow, view, setRecent]);
 
-  const handlePrev = () => setStartIdx((idx) => Math.max(0, idx - 1));
-  const handleNext = () =>
-    setStartIdx((idx) => Math.min(hourly.length - 6, idx + 1));
+  useEffect(() => {
+    if (view !== "7days" || !cityToShow) return;
+    setLoading(true);
+    setError("");
+    setDaily([]);
 
-  const visibleHours = hourly.slice(startIdx, startIdx + 6);
+    fetch(`/api/forecast/daily/${encodeURIComponent(cityToShow)}?cnt=7`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch data");
+        return res.json();
+      })
+      .then((data) => {
+        setDaily(data.list);
+        setCityName(data.city.name);
+        setCountry(data.city.country);
+        setRecent((prev) => {
+          const filtered = prev.filter(
+            (c) => c.toLowerCase() !== data.city.name.toLowerCase()
+          );
+          return [data.city.name, ...filtered].slice(0, 3);
+        });
+      })
+      .catch((err) => setError("Error: " + err.message))
+      .finally(() => setLoading(false));
+  }, [view, cityToShow, setRecent]);
 
   return (
-    <div
-      className="mx-auto mt-10 p-6 bg-white rounded shadow"
-      style={{ maxWidth: "1020px" }}
-    >
-      <h2 className="text-2xl font-bold mb-4">
-        Artimiausio miesto valandinė orų prognozė
-      </h2>
+    <div className="mx-auto mt-10 p-6 bg-white rounded shadow" style={{ maxWidth: "1020px" }}>
+      <h2 className="text-2xl font-bold mb-4">Nearest city weather forecast</h2>
+      <div className="flex gap-4 mb-6">
+        <button
+          className={`px-4 py-2 rounded font-semibold border ${view === "today" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
+          onClick={() => setView("today")}
+        >
+          Today
+        </button>
+        <button
+          className={`px-4 py-2 rounded font-semibold border ${view === "hourly" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
+          onClick={() => setView("hourly")}
+        >
+          Hourly
+        </button>
+        <button
+          className={`px-4 py-2 rounded font-semibold border ${view === "7days" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
+          onClick={() => setView("7days")}
+        >
+          7 days
+        </button>
+      </div>
+
       {!cityToShow && <div>Loading nearest city...</div>}
+
       {cityToShow && (
         <>
-          {error && error.includes("Nepavyko gauti duomenų") ? (
+          {error && error.includes("Failed to fetch data") ? (
             <div className="flex flex-col items-center justify-center mb-4">
               <div className="flex items-center gap-2 text-red-600 text-lg font-semibold">
                 <svg
@@ -78,84 +130,46 @@ export default function Body({ selectedCity }) {
                     d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
                   />
                 </svg>
-                <span>Tokio miesto nerasta</span>
+                <span>City not found</span>
               </div>
               <div className="text-gray-500 text-sm mt-1">
-                Patikrinkite miesto pavadinimą ir bandykite dar kartą.
+                Please check the city name and try again.
               </div>
             </div>
           ) : (
             <>
               <div className="mb-2 text-gray-600">
-                Miestas:{" "}
+                City:{" "}
                 <span className="font-semibold">
-                  {cityName || cityToShow || "..."}{" "}
+                  {cityName || cityToShow || "..."}
                   {country ? `, ${country}` : ""}
                 </span>
               </div>
-              {loading && <div>Kraunasi...</div>}
+              {loading && <div>Loading...</div>}
               {error && <div className="text-red-500">{error}</div>}
-              {!loading && !error && visibleHours.length > 0 && (
+
+              {!loading && !error && view === "hourly" && hourly.length > 0 && (
+                <HourlyWeatherSlider
+                  hourly={hourly}
+                  startIdx={startIdx}
+                  setStartIdx={setStartIdx}
+                />
+              )}
+
+              {!loading && !error && view === "today" && cityToShow && (
+                <TodayHourlyWeather
+                  city={cityToShow}
+                  startIdx={todayStartIdx}
+                  setStartIdx={setTodayStartIdx}
+                />
+              )}
+
+              {!loading && !error && view === "7days" && daily.length > 0 && (
                 <div className="flex justify-center w-full">
-                  <div
-                    className="relative flex items-center"
-                    style={{ width: "820px" }}
-                  >
-                    {/* left arrow */}
-                    <button
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-30 text-6xl font-bold text-gray-700 hover:text-blue-500 transition-all duration-150 p-0 m-0 drop-shadow-lg hover:scale-110 active:scale-90"
-                      onClick={handlePrev}
-                      disabled={startIdx === 0}
-                      aria-label="Ankstesnės valandos"
-                      style={{
-                        pointerEvents: startIdx === 0 ? "none" : "auto",
-                        background: "none",
-                        border: "none",
-                      }}
-                    >
-                      <span className="inline-flex items-center justify-center w-14 h-14 rounded-full">
-                        &#8592;
-                      </span>
-                    </button>
-                    {/* blur left edge */}
-                    <div
-                      className="pointer-events-none absolute left-0 top-0 h-full w-16 z-20"
-                      style={{
-                        background:
-                          "linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.2), rgba(255,255,255,0))",
-                      }}
-                    />
-                    {/* cards */}
-                    <div className="flex gap-2 w-full overflow-hidden justify-center">
-                      {visibleHours.map((item) => (
-                        <HourlyWeatherCard key={item.dt} item={item} />
-                      ))}
-                    </div>
-                    {/* blur right edge */}
-                    <div
-                      className="pointer-events-none absolute right-0 top-0 h-full w-16 z-20"
-                      style={{
-                        background:
-                          "linear-gradient(to left, rgba(255,255,255,0.85), rgba(255,255,255,0.2), rgba(255,255,255,0))",
-                      }}
-                    />
-                    {/* right arrow */}
-                    <button
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-30 text-6xl font-bold text-gray-700 hover:text-blue-500 transition-all duration-150 p-0 m-0 drop-shadow-lg hover:scale-110 active:scale-90"
-                      onClick={handleNext}
-                      disabled={startIdx + 6 >= hourly.length}
-                      aria-label="Kitos valandos"
-                      style={{
-                        pointerEvents:
-                          startIdx + 6 >= hourly.length ? "none" : "auto",
-                        background: "none",
-                        border: "none",
-                      }}
-                    >
-                      <span className="inline-flex items-center justify-center w-14 h-14 rounded-full">
-                        &#8594;
-                      </span>
-                    </button>
+                  <div className="flex gap-2 w-full overflow-x-auto justify-center">
+                    {daily.map((item) => (
+                      <DailyWeatherCard key={item.dt} item={item} />
+                    ))}
                   </div>
                 </div>
               )}
