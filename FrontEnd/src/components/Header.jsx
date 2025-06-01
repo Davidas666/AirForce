@@ -57,7 +57,7 @@ export default function Header({ onCitySelect }) {
     if (onCitySelect) onCitySelect(city.trim());
   };
 
-  return (
+   return (
     <header className="flex items-center justify-between px-6 py-3 bg-white shadow relative">
       <div className="flex items-center gap-3 z-10">
         <img src="/img/logo.jpg" alt="Logo" className="h-10 w-10 rounded" />
@@ -66,7 +66,7 @@ export default function Header({ onCitySelect }) {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex w-72 z-20 relative"
+        className="flex w-72 z-20 absolute left-1/2 -translate-x-1/2"
         autoComplete="off"
       >
         <input
