@@ -24,4 +24,16 @@ async function fetchMultiDayForecastByCity(city, apiKey) {
   return response.data;
 }
 
-module.exports = { fetchForecastByCity, fetchMultiDayForecastByCity };
+async function fetchHourlyForecastByCity(city, apiKey) {
+  const response = await axios.get('https://pro.openweathermap.org/data/2.5/forecast/hourly', {
+    params: {
+      q: city,
+      appid: apiKey,
+      units: 'metric',
+      lang: 'lt'
+    }
+  });
+  return response.data;
+}
+
+module.exports = { fetchForecastByCity, fetchMultiDayForecastByCity, fetchHourlyForecastByCity };
