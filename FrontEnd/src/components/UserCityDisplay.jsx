@@ -1,8 +1,8 @@
 export default function UserCityDisplay({ city }) {
   if (!city) return null;
   return (
-    <span className="ml-4 text-gray-500 text-sm">
-      📍 Nearest city: <span className="font-semibold">{city}</span>
+    <span className="text-gray-500 text-sm whitespace-nowrap truncate max-w-[120px] overflow-hidden">
+      📍 {city}
     </span>
   );
 }

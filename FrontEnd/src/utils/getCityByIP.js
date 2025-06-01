@@ -1,10 +1,22 @@
 export async function getCityByIP() {
+  // try ipapi.co first
   try {
-    const res = await fetch('https://ip-api.io/json?nocache=' + Date.now());
-    if (!res.ok) throw new Error('Failed to fetch IP location');
-    const data = await res.json();
-    return data.city || '';
-  } catch {
-    return '';
-  }
+    let res = await fetch('https://ipapi.co/json/');
+    if (res.ok) {
+      let data = await res.json();
+      if (data.city) return data.city;
+    }
+  } catch {}
+
+  // fallback to ipwho.is if ipapi.co fails
+  try {
+    let res = await fetch('https://ipwho.is/');
+    if (res.ok) {
+      let data = await res.json();
+      if (data.city) return data.city;
+    }
+  } catch {}
+
+  // if both fail, return empty string
+  return '';
 }
