@@ -30,6 +30,7 @@ module.exports = app;
 module.exports.handler = serverless(app);
 console.log('Express app exported for serverless.');
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Remove app.listen for Vercel serverless compatibility
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
