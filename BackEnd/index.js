@@ -1,3 +1,4 @@
+const serverless = require('serverless-http');
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
@@ -19,3 +20,4 @@ app.get('/', (req, res) => {
 });
 
 module.exports = app;
+module.exports.handler = serverless(app);
