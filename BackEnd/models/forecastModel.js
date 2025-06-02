@@ -23,7 +23,7 @@ async function fetchMultiDayForecastByCity(city, apiKey) {
   });
   return response.data;
 }
-
+//test
 async function fetchHourlyForecastByCity(city, apiKey) {
   const response = await axios.get('https://pro.openweathermap.org/data/2.5/forecast/hourly', {
     params: {
