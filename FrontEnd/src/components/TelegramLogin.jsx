@@ -5,7 +5,7 @@ export default function TelegramLogin({ onAuth }) {
   const fallbackRef = useRef(null);
 
   useEffect(() => {
-    const container = document.getElementById('telegram-login-container');
+    const container = containerRef.current;
     if (!container) return;
     // Išvalome tik widgeto scriptus, bet paliekame fallback mygtuką
     Array.from(container.childNodes).forEach(node => {
