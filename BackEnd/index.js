@@ -3,6 +3,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const forecastRoutes = require('./routes/forecastRoutes');
 const cityRoutes = require('./routes/cityRoutes');
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -11,6 +12,15 @@ const pool = new Pool({
 });
 
 app.use(express.json());
+app.use(cors({
+  origin: [
+    'http://airforce.pics',
+    'https://airforce.pics',
+    'http://www.airforce.pics',
+    'https://www.airforce.pics'
+  ],
+  credentials: true
+}));
 app.use('/api/forecast', forecastRoutes);
 app.use('/api/cities', cityRoutes);
 
