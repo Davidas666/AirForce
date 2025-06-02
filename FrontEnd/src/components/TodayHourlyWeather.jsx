@@ -14,7 +14,7 @@ export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
     const now = new Date();
     const currentHour = now.getHours();
 
-    fetch(`https://air-force-git-backend-airforce-c861ebc0.vercel.app/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${29 -currentHour}`)
+    fetch(`https://air-force-owgn-git-backend-airforce-c861ebc0.vercel.app/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${29 -currentHour}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();
