@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useUserCity } from "../hooks/useUserCity";
 import UserCityDisplay from "./UserCityDisplay";
 
-export default function Header({ onCitySelect, recent, handleSearch }) {
+export default function Header({ onCitySelect, recent, handleSearch, children }) {
   const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -127,6 +127,10 @@ export default function Header({ onCitySelect, recent, handleSearch }) {
               {c}
             </button>
           ))}
+        </div>
+        {/* Telegram prisijungimo mygtukas dešinėje */}
+        <div className="flex items-center flex-shrink-0 ml-2 lg:ml-auto">
+          {children}
         </div>
       </div>
     </header>
