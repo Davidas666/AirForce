@@ -29,7 +29,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
     setCityName("");
     setCountry("");
 
-    fetch(`/api/forecast/hourly/${encodeURIComponent(cityToShow)}`)
+    fetch(`https://air-force-owgn-git-backend-airforce-c861ebc0.vercel.app/api/forecast/hourly/${encodeURIComponent(cityToShow)}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();
@@ -65,7 +65,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
     setError("");
     setDaily([]);
 
-    fetch(`/api/forecast/daily/${encodeURIComponent(cityToShow)}?cnt=7`)
+    fetch(`https://air-force-owgn-git-backend-airforce-c861ebc0.vercel.app/api/forecast/daily/${encodeURIComponent(cityToShow)}?cnt=7`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();

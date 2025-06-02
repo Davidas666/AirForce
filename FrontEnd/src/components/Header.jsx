@@ -14,7 +14,7 @@ export default function Header({ onCitySelect, recent, handleSearch }) {
       setSuggestions([]);
       return;
     }
-    const res = await fetch(`/api/cities?query=${encodeURIComponent(value)}`);
+    const res = await fetch(`https://air-force-owgn-git-backend-airforce-c861ebc0.vercel.app/api/cities?query=${encodeURIComponent(value)}`);
     const data = await res.json();
     setSuggestions(data);
   };
