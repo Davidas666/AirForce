@@ -28,7 +28,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
     setHourly([]);
     setCityName("");
     setCountry("");
-
+//test
     fetch(`https://air-force-git-backend-airforce-c861ebc0.vercel.app/api/forecast/hourly/${encodeURIComponent(cityToShow)}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
