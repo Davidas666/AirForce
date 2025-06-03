@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const forecastRoutes = require('./routes/forecastRoutes');
-const cityRoutes = require('./routes/cityRoutes.js');
+const cityRoutes = require('./routes/cityRoutes');
 const cors = require('cors');
 const winston = require('winston');
 const app = express();
