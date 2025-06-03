@@ -1,0 +1,77 @@
+{"level":"info","message":"Hourly forecast (limited) requested for city: Milan, count: 9","timestamp":"2025-06-03T17:47:45.136Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Milan","timestamp":"2025-06-03T17:47:45.243Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:45 +0000] \"GET /api/forecast/hourly/Milan/limited?cnt=9 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:45.244Z"}
+{"level":"info","message":"Hourly forecast requested for city: Milan","timestamp":"2025-06-03T17:47:48.163Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Milan","timestamp":"2025-06-03T17:47:48.231Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:48 +0000] \"GET /api/forecast/hourly/Milan HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:48.232Z"}
+{"level":"info","message":"Hourly forecast (limited) requested for city: Milan, count: 9","timestamp":"2025-06-03T17:47:49.311Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Milan","timestamp":"2025-06-03T17:47:49.347Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:49 +0000] \"GET /api/forecast/hourly/Milan/limited?cnt=9 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:49.348Z"}
+{"level":"info","message":"Daily forecast requested for city: Milan, count: 7","timestamp":"2025-06-03T17:47:50.842Z"}
+{"level":"info","message":"Daily forecast response sent for city: Milan","timestamp":"2025-06-03T17:47:50.951Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:50 +0000] \"GET /api/forecast/daily/Milan?cnt=7 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:50.952Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:55 +0000] \"GET /api/cities?query=Vi HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:55.878Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:55 +0000] \"GET /api/cities?query=Vil HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:55.935Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:56 +0000] \"GET /api/cities?query=Viln HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:56.023Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:56 +0000] \"GET /api/cities?query=Vilni HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:56.148Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:56 +0000] \"GET /api/cities?query=Vilniu HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:56.218Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:56 +0000] \"GET /api/cities?query=Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:56.371Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:56 +0000] \"GET /api/cities?query=Vilniusd HTTP/1.1\" 200 2 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:56.385Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:57 +0000] \"GET /api/cities?query=Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:57.085Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:47:57.740Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:47:57.850Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:47:57 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 200 2867 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:47:57.851Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:48:28.245Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:48:28.386Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:48:28 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 200 38112 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:48:28.387Z"}
+{"level":"info","message":"Hourly forecast (limited) requested for city: Vilnius, count: 9","timestamp":"2025-06-03T17:48:30.459Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Vilnius","timestamp":"2025-06-03T17:48:30.495Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:48:30 +0000] \"GET /api/forecast/hourly/Vilnius/limited?cnt=9 HTTP/1.1\" 200 3800 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:48:30.496Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:50:28.749Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:28.893Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:28 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 200 38112 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:28.894Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:50:30.486Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:30.595Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:30 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 200 2868 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:30.596Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:50:33.425Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:33.494Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:33 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:33.495Z"}
+{"level":"info","message":"Hourly forecast (limited) requested for city: Vilnius, count: 9","timestamp":"2025-06-03T17:50:36.387Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Vilnius","timestamp":"2025-06-03T17:50:36.421Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:36 +0000] \"GET /api/forecast/hourly/Vilnius/limited?cnt=9 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:36.422Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:50:41.016Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:41.124Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:41 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:41.125Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:50:42.826Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:42.967Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:42 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:42.971Z"}
+{"level":"info","message":"Hourly forecast (limited) requested for city: Vilnius, count: 9","timestamp":"2025-06-03T17:50:50.897Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Vilnius","timestamp":"2025-06-03T17:50:51.004Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:51 +0000] \"GET /api/forecast/hourly/Vilnius/limited?cnt=9 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:51.004Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:50:52.958Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:53.086Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:53 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:53.087Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:50:54.198Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:54.267Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:54 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:54.268Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:50:55.879Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:55.914Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:55 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:55.915Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:50:56.534Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:50:56.603Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:50:56 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:50:56.604Z"}
+{"level":"info","message":"Hourly forecast requested for city: Milan","timestamp":"2025-06-03T17:51:00.327Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Milan","timestamp":"2025-06-03T17:51:00.399Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:51:00 +0000] \"GET /api/forecast/hourly/Milan HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:51:00.400Z"}
+{"level":"info","message":"Hourly forecast (limited) requested for city: Milan, count: 9","timestamp":"2025-06-03T17:51:02.019Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Milan","timestamp":"2025-06-03T17:51:02.054Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:51:02 +0000] \"GET /api/forecast/hourly/Milan/limited?cnt=9 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:51:02.055Z"}
+{"level":"info","message":"Daily forecast requested for city: Milan, count: 7","timestamp":"2025-06-03T17:51:10.650Z"}
+{"level":"info","message":"Daily forecast response sent for city: Milan","timestamp":"2025-06-03T17:51:10.759Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:51:10 +0000] \"GET /api/forecast/daily/Milan?cnt=7 HTTP/1.1\" 200 2870 \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:51:10.760Z"}
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-03T17:51:14.580Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:51:14.617Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:51:14 +0000] \"GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:51:14.618Z"}
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-03T17:51:16.893Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-03T17:51:17.024Z"}
+{"level":"info","message":"::1 - - [03/Jun/2025:17:51:17 +0000] \"GET /api/forecast/hourly/Vilnius HTTP/1.1\" 304 - \"http://localhost:5173/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0\"","timestamp":"2025-06-03T17:51:17.025Z"}
