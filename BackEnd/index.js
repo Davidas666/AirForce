@@ -28,6 +28,28 @@ app.get('/', (req, res) => {
   res.send('Program running!');
 });
 
+// Telegram user save endpoint
+app.post('/api/telegram-user', async (req, res) => {
+  const { telegram_id, username, first_name, last_name, photo_url } = req.body;
+  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
+  try {
+    const result = await pool.query(
+      `INSERT INTO telegram_users (telegram_id, username, first_name, last_name, photo_url, last_login)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (telegram_id) DO UPDATE SET
+         username=EXCLUDED.username,
+         first_name=EXCLUDED.first_name,
+         last_name=EXCLUDED.last_name,
+         photo_url=EXCLUDED.photo_url,
+         last_login=NOW()
+       RETURNING *`,
+      [telegram_id, username, first_name, last_name, photo_url]
+    );
+    res.json({ user: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

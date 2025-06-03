@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import UserMenu from './UserMenu';
 
 export default function TelegramLogin({ onAuth }) {
   const containerRef = useRef(null);
   const fallbackRef = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn) return;
@@ -37,9 +40,10 @@ export default function TelegramLogin({ onAuth }) {
       }
     }, 3000);
 
-    window.onTelegramAuth = function(user) {
+    window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
-      if (onAuth) onAuth(user);
+      setUser(userObj);
+      if (onAuth) onAuth(userObj);
     };
     return () => {
       window.onTelegramAuth = undefined;
@@ -50,9 +54,18 @@ export default function TelegramLogin({ onAuth }) {
     };
   }, [onAuth, isLoggedIn]);
 
-  if (isLoggedIn) {
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    setShowMenu(false);
+  };
+
+  if (isLoggedIn && user) {
     return (
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => alert('Menu!')}>Menu</button>
+      <>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setShowMenu(true)}>Menu</button>
+        {showMenu && <UserMenu user={user} onLogout={handleLogout} onClose={() => setShowMenu(false)} />}
+      </>
     );
   }
 
