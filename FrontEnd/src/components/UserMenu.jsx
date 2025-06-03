@@ -1,16 +1,12 @@
-import { useState } from "react";
+import PropTypes from "prop-types";
 
-export default function UserMenu({ user, onLogout }) {
-  const [show, setShow] = useState(true);
-
-  if (!show) return null;
-
+export default function UserMenu({ user, onLogout, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
-          onClick={() => setShow(false)}
+          onClick={onClose}
           aria-label="Uždaryti"
         >
           ×
@@ -35,3 +31,14 @@ export default function UserMenu({ user, onLogout }) {
     </div>
   );
 }
+
+UserMenu.propTypes = {
+  user: PropTypes.shape({
+    username: PropTypes.string,
+    photo_url: PropTypes.string,
+    first_name: PropTypes.string,
+    last_name: PropTypes.string,
+  }).isRequired,
+  onLogout: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

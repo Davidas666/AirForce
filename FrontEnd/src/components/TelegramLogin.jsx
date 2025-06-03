@@ -64,7 +64,7 @@ export default function TelegramLogin({ onAuth }) {
     return (
       <>
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setShowMenu(true)}>Menu</button>
-        {showMenu && <UserMenu user={user} onLogout={handleLogout} />}
+        {showMenu && <UserMenu user={user} onLogout={handleLogout} onClose={() => setShowMenu(false)} />}
       </>
     );
   }
