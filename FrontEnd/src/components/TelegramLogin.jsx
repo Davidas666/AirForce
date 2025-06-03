@@ -8,6 +8,25 @@ export default function TelegramLogin({ onAuth }) {
   const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
 
+  // Siunčia naudotoją į backend po prisijungimo
+  const saveTelegramUser = async (userObj) => {
+    try {
+      await fetch('/api/telegram-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegram_id: userObj.id,
+          username: userObj.username,
+          first_name: userObj.first_name,
+          last_name: userObj.last_name,
+          photo_url: userObj.photo_url
+        })
+      });
+    } catch (e) {
+      // Galima rodyti klaidą, jei reikia
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) return;
     const container = containerRef.current;
@@ -43,6 +62,7 @@ export default function TelegramLogin({ onAuth }) {
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
+      saveTelegramUser(userObj); // išsaugo naudotoją DB
       if (onAuth) onAuth(userObj);
     };
     return () => {

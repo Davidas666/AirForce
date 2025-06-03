@@ -47,6 +47,7 @@ app.post('/api/telegram-user', async (req, res) => {
     );
     res.json({ user: result.rows[0] });
   } catch (err) {
+      console.error('Error saving Telegram user:', err);
     res.status(500).json({ error: err.message });
   }
 });
