@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const forecastRoutes = require('./routes/forecastRoutes');
-const cityRoutes = require('./routes/cityRoutes');
+const cityRoutes = require('./routes/cityRoutes.js');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3001;
@@ -31,7 +31,10 @@ app.get('/', (req, res) => {
 // Telegram user save endpoint
 app.post('/api/telegram-user', async (req, res) => {
   const { telegram_id, username, first_name, last_name, photo_url } = req.body;
-  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
+  if (!telegram_id) {
+    console.warn('POST /api/telegram-user: missing telegram_id. Body:', req.body);
+    return res.status(400).json({ error: 'telegram_id required' });
+  }
   try {
     const result = await pool.query(
       `INSERT INTO telegram_users (telegram_id, username, first_name, last_name, photo_url, last_login)
@@ -47,8 +50,19 @@ app.post('/api/telegram-user', async (req, res) => {
     );
     res.json({ user: result.rows[0] });
   } catch (err) {
-      console.error('Error saving Telegram user:', err);
-    res.status(500).json({ error: err.message });
+    console.error('Error saving Telegram user:', err, 'Request body:', req.body);
+    res.status(500).json({ error: 'Nepavyko išsaugoti naudotojo duomenų. Bandykite vėliau.' });
+  }
+});
+
+// GET endpoint visų naudotojų peržiūrai
+app.get('/api/telegram-users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM telegram_users ORDER BY last_login DESC');
+    res.json({ users: result.rows });
+  } catch (err) {
+    console.error('Error fetching Telegram users:', err);
+    res.status(500).json({ error: 'Nepavyko gauti naudotojų sąrašo.' });
   }
 });
 
