@@ -66,7 +66,7 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
     <header className="w-full px-6 py-3 bg-white shadow z-50">
       <div className="flex flex-wrap items-center justify-between gap-4 w-full max-w-6xl mx-auto">
         <div className="flex items-center flex-shrink-0">
-          <img src="/img/logo.jpg" alt="Logo" className="h-10 w-10 rounded" />
+          <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded" />
         </div>
         <div className="flex items-center flex-shrink-0">
           <span className="text-xl font-bold text-blue-700 whitespace-nowrap">

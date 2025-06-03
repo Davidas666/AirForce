@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function TelegramLogin({ onAuth }) {
   const containerRef = useRef(null);
   const fallbackRef = useRef(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    if (isLoggedIn) return;
     const container = containerRef.current;
+    const fallback = fallbackRef.current;
     if (!container) return;
-    // Išvalome tik widgeto scriptus, bet paliekame fallback mygtuką
     Array.from(container.childNodes).forEach(node => {
       if (node.tagName === 'SCRIPT') container.removeChild(node);
     });
@@ -20,33 +22,39 @@ export default function TelegramLogin({ onAuth }) {
     script.setAttribute('data-radius', '10');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    // Fix: Telegram widget domain support (www and non-www)
+    script.setAttribute('data-auth-url', window.location.origin + '/api/telegram-auth');
     container.appendChild(script);
 
-    // Kai widgetas užsikrauna, paslepiame fallback mygtuką
     script.onload = () => {
-      if (fallbackRef.current) fallbackRef.current.style.display = 'none';
+      if (fallback) fallback.style.display = 'none';
     };
-    // Jei widgetas nesikrauna per 3s, fallback lieka matomas
     setTimeout(() => {
       if (container.querySelector('iframe')) {
-        if (fallbackRef.current) fallbackRef.current.style.display = 'none';
+        if (fallback) fallback.style.display = 'none';
       } else {
-        if (fallbackRef.current) fallbackRef.current.style.display = 'block';
+        fallback && (fallback.style.display = 'block');
       }
     }, 3000);
 
     window.onTelegramAuth = function(user) {
+      setIsLoggedIn(true);
       if (onAuth) onAuth(user);
     };
     return () => {
       window.onTelegramAuth = undefined;
-      if (fallbackRef.current) fallbackRef.current.style.display = 'block';
-      // Pašaliname tik scriptus, fallback lieka
+      if (fallback) fallback.style.display = 'block';
       Array.from(container.childNodes).forEach(node => {
         if (node.tagName === 'SCRIPT') container.removeChild(node);
       });
     };
-  }, [onAuth]);
+  }, [onAuth, isLoggedIn]);
+
+  if (isLoggedIn) {
+    return (
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => alert('Menu!')}>Menu</button>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center my-4">
