@@ -6,4 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/', // svarbu deploy'ui į šaknį
   plugins: [react(), tailwindcss()],
+    server: {
+    proxy: {
+      '/api': 'http://localhost:3001'
+    }
+  }
 })
