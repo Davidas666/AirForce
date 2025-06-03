@@ -3,7 +3,7 @@ import { useUserCity } from "./hooks/useUserCity";
 import { useRecentCities } from "./hooks/useRecentCities";
 import Header from "./components/Header";
 import Body from "./components/Body";
-import TelegramLogin from "./components/TelegramLogin";
+import Footer from "./components/Footer";
 
 function App() {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -20,16 +20,13 @@ function App() {
         onCitySelect={setSelectedCity}
         recent={recent}
         handleSearch={setSelectedCity}
-      >
-        <div className="flex w-72 z-20 absolute left-1/2 -translate-x-1/2">
-          <TelegramLogin onAuth={handleTelegramAuth} />
-        </div>
-      </Header>
+      />
       <Body
         selectedCity={selectedCity}
         recent={recent}
         setRecent={setRecent}
       />
+      <Footer onTelegramAuth={handleTelegramAuth} />
     </>
   );
 }
