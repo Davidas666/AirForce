@@ -87,7 +87,7 @@ const renderButtons = () => {
           title={isFavorite ? "City is already in favorites" : "Add to favorites"}
           aria-disabled={isFavorite}
         >
-          Add To Favorites
+          Add to Favorites
         </button>
         <button
           className={`bg-red-500 text-white px-3 py-1 rounded transition-opacity ${!isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -96,20 +96,22 @@ const renderButtons = () => {
           title={!isFavorite ? "City is not in favorites" : "Remove from favorites"}
           aria-disabled={!isFavorite}
         >
-          Remove From Favorites
+          Remove from Favorites
         </button>
       </div>
     )
   );
 };
 
-  if (!user?.id) {
-    return (
-      <span className="ml-3 text-sm text-gray-400">
+if (!user?.id) {
+  return (
+    <div className="flex justify-center items-center w-full py-8">
+      <span className="text-sm text-gray-400 text-center">
         Please login to access Favourite cities functionality
       </span>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div>
