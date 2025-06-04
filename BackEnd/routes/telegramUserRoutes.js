@@ -6,7 +6,7 @@ const { saveTelegramUser, getTelegramUsers, updateUserFavorites } = require('../
 router.post('/', saveTelegramUser);
 
 // Get all Telegram users
-//router.get('/all', getTelegramUsers);
+router.get('/all', getTelegramUsers);
 
 // Update user's favorite cities (JSONB field)
 router.post('/favorites', updateUserFavorites);
