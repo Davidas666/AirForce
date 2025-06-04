@@ -82,6 +82,31 @@ app.get('/api/telegram-users', async (req, res) => {
   }
 });
 
+// Endpoint to update user's favorite cities
+app.post('/api/telegram-user/favorites', async (req, res) => {
+  const { telegram_id, favorite_cities } = req.body;
+  if (!telegram_id || !Array.isArray(favorite_cities)) {
+    logger.warn(`POST /api/telegram-user/favorites: missing data. Body: ${JSON.stringify(req.body)}`);
+    return res.status(400).json({ error: 'telegram_id and favorite_cities (array) required' });
+  }
+  try {
+    // Save as JSONB in DB
+    const result = await pool.query(
+      `UPDATE telegram_users SET favorite_cities = $1 WHERE telegram_id = $2 RETURNING *`,
+      [JSON.stringify(favorite_cities), telegram_id]
+    );
+    if (result.rowCount === 0) {
+      logger.warn(`User not found for updating favorites: ${telegram_id}`);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    logger.info(`Updated favorite cities for user ${telegram_id}: ${JSON.stringify(favorite_cities)}`);
+    res.json({ success: true, user: result.rows[0] });
+  } catch (err) {
+    logger.error(`Error updating favorite cities: ${err} | Body: ${JSON.stringify(req.body)}`);
+    res.status(500).json({ error: 'Nepavyko išsaugoti mėgstamų miestų. Bandykite vėliau.' });
+  }
+});
+
 app.listen(port, () => {
   logger.info(`Server running on port ${port}`);
 });
