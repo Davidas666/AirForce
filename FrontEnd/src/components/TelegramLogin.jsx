@@ -60,7 +60,12 @@ export default function TelegramLogin({ onAuth }) {
       setIsLoggedIn(true);
       setUser(userObj);
       document.cookie = `telegram_user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=${60*60*24*7}`;
-      saveTelegramUser(userObj);
+      // Siunčiam duomenis į backend
+      fetch('/api/telegram-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userObj)
+      });
       if (onAuth) onAuth(userObj);
     };
     return () => {
