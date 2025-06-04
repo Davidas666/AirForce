@@ -41,7 +41,7 @@ export default function FavoriteCitiesSidebar() {
     }
   }, []);
 
-  // Kai favoriteCities keičiasi ir naudotojas prisijungęs, išsaugoti į DB ir iškart užkrauti naujausius iš DB
+  // Kai favoriteCities keičiasi ir naudotojas prisijungęs, išsaugoti į DB (be GET po POST, kad nebūtų ciklo)
   useEffect(() => {
     const user = getUserFromCookie();
     if (user?.id) {
@@ -49,16 +49,7 @@ export default function FavoriteCitiesSidebar() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ telegram_id: user.id, favorite_cities: favoriteCities })
-      })
-        .then(() => {
-          // Po sėkmingo įrašymo iškart užkrauna naujausius iš DB
-          fetch(`/api/telegram-users?id=${user.id}`)
-            .then((res) => res.json())
-            .then((data) => {
-              const dbCities = data?.users?.[0]?.favorite_cities || [];
-              setFavoriteCities(dbCities);
-            });
-        });
+      });
     }
   }, [favoriteCities]);
 
