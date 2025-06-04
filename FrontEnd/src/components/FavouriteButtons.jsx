@@ -8,39 +8,53 @@ export default function FavouriteButtons({ user, cityName, favoriteCities, onAdd
     );
   }
   return (
-    <>
-      <button
-        className={`ml-3 px-3 py-1 rounded-full bg-blue-500 text-white font-bold text-lg shadow hover:bg-blue-700 transition ${
-          favoriteCities && favoriteCities.includes(cityName)
-            ? "opacity-50 cursor-not-allowed"
-            : ""
-        }`}
-        onClick={() => onAddFavorite(cityName)}
-        disabled={favoriteCities && favoriteCities.includes(cityName)}
-        title={
-          favoriteCities && favoriteCities.includes(cityName)
-            ? "Jau yra mėgstamuose"
-            : "Pridėti į mėgstamus"
-        }
-      >
-        +
-      </button>
-      <button
-        className={`ml-2 px-3 py-1 rounded-full bg-red-500 text-white font-bold text-lg shadow hover:bg-red-700 transition ${
-          !favoriteCities || !favoriteCities.includes(cityName)
-            ? "opacity-50 cursor-not-allowed"
-            : ""
-        }`}
-        onClick={() => onRemoveFavorite(cityName)}
-        disabled={!favoriteCities || !favoriteCities.includes(cityName)}
-        title={
-          !favoriteCities || !favoriteCities.includes(cityName)
-            ? "Nėra mėgstamuose"
-            : "Pašalinti iš mėgstamų"
-        }
-      >
-        –
-      </button>
-    </>
+        <div>
+      <FavoriteCitiesRow
+        favoriteCities={favoriteCities}
+        onSelect={onSelect}
+        currentCity={selectedCity}
+      />
+      {/* Example: Add/Remove buttons for the selected city */}
+      {user?.id && selectedCity && (
+        <div className="flex justify-center mt-2">
+          <button
+            className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+            onClick={() => handleAddFavorite(selectedCity)}
+            disabled={favoriteCities.includes(selectedCity)}
+          >
+            +
+          </button>
+          <button
+            className="bg-red-500 text-white px-3 py-1 rounded"
+            onClick={() => handleRemoveFavorite(selectedCity)}
+            disabled={!favoriteCities.includes(selectedCity)}
+          >
+            –
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
+
+  // Add favorite city
+  const handleAddFavorite = (city) => {
+    if (!user?.id || !city || favoriteCities.includes(city)) return;
+    fetch('/api/favorite-cities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, city })
+    })
+      .then(() => setFavoriteCities([...favoriteCities, city]));
+  };
+
+  // Remove favorite city
+  const handleRemoveFavorite = (city) => {
+    if (!user?.id || !city) return;
+    fetch('/api/favorite-cities', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, city })
+    })
+      .then(() => setFavoriteCities(favoriteCities.filter((c) => c !== city)));
+  };
