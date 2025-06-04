@@ -28,6 +28,17 @@ export default function TelegramLogin({ onAuth }) {
   };
 
   useEffect(() => {
+    // Tikrina ar yra naudotojo cookies ir automatiškai prisijungia
+    if (!isLoggedIn) {
+      const cookies = document.cookie.split(';').map(c => c.trim());
+      const userId = cookies.find(c => c.startsWith('telegram_id='));
+      const username = cookies.find(c => c.startsWith('username='));
+      if (userId && username) {
+        setIsLoggedIn(true);
+        setUser({ id: userId.split('=')[1], username: username.split('=')[1] });
+        return;
+      }
+    }
     if (isLoggedIn) return;
     const container = containerRef.current;
     const fallback = fallbackRef.current;
@@ -44,7 +55,6 @@ export default function TelegramLogin({ onAuth }) {
     script.setAttribute('data-radius', '10');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    // Fix: Telegram widget domain support (www and non-www)
     script.setAttribute('data-auth-url', window.location.origin + '/api/telegram-auth');
     container.appendChild(script);
 
@@ -62,7 +72,9 @@ export default function TelegramLogin({ onAuth }) {
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
-      saveTelegramUser(userObj); // išsaugo naudotoją DB
+      document.cookie = `telegram_id=${userObj.id}; path=/; max-age=${60*60*24*7}`;
+      document.cookie = `username=${userObj.username}; path=/; max-age=${60*60*24*7}`;
+      saveTelegramUser(userObj); 
       if (onAuth) onAuth(userObj);
     };
     return () => {
@@ -78,6 +90,8 @@ export default function TelegramLogin({ onAuth }) {
     setIsLoggedIn(false);
     setUser(null);
     setShowMenu(false);
+    document.cookie = 'telegram_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   };
 
   if (isLoggedIn && user) {
