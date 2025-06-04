@@ -7,27 +7,25 @@ export default function TelegramLogin({ onAuth }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-
-  // Siunčia naudotoją į backend po prisijungimo
-  const saveTelegramUser = async (userObj) => {
-    try {
-      await fetch('/api/telegram-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegram_id: userObj.id,
-          username: userObj.username,
-          first_name: userObj.first_name,
-          last_name: userObj.last_name,
-          photo_url: userObj.photo_url
-        })
-      });
-    } catch (e) {
-      // Galima rodyti klaidą, jei reikia
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      const cookies = document.cookie.split(';').map(c => c.trim());
+      const userCookie = cookies.find(c => c.startsWith('telegram_user='));
+      if (userCookie) {
+        try {
+          const userObj = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
+          setIsLoggedIn(true);
+          setUser(userObj);
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.error('Invalid user cookie format:', e);
+        }
+      }
+    }
+    setLoading(false);
     if (isLoggedIn) return;
     const container = containerRef.current;
     const fallback = fallbackRef.current;
@@ -44,7 +42,6 @@ export default function TelegramLogin({ onAuth }) {
     script.setAttribute('data-radius', '10');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    // Fix: Telegram widget domain support (www and non-www)
     script.setAttribute('data-auth-url', window.location.origin + '/api/telegram-auth');
     container.appendChild(script);
 
@@ -62,7 +59,13 @@ export default function TelegramLogin({ onAuth }) {
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
-      saveTelegramUser(userObj); // išsaugo naudotoją DB
+      document.cookie = `telegram_user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=${60*60*24*7}`;
+      // Siunčiam duomenis į backend
+      fetch('/api/telegram-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userObj)
+      });
       if (onAuth) onAuth(userObj);
     };
     return () => {
@@ -78,7 +81,12 @@ export default function TelegramLogin({ onAuth }) {
     setIsLoggedIn(false);
     setUser(null);
     setShowMenu(false);
+    document.cookie = 'telegram_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (isLoggedIn && user) {
     return (
