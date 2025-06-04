@@ -1,4 +1,4 @@
-export default function FavouriteButtons({ user, cityName, favoriteCities, onAddFavorite, onRemoveFavorite }) {
+export default function FavouriteButtons({ user, cityName, favoriteCities, onAddFavorite, onRemoveFavorite, selectedCity }) {
   if (!user) {
     return (
       <span className="ml-3 text-sm text-gray-400">
