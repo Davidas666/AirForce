@@ -23,6 +23,10 @@ export default function App() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+  console.log("User:", user);
+  console.log("Recent cities:", recent);
+  console.log("UserCity: " + userCity);
+  console.log("selectedCity: " + selectedCity);
 
   // Fetch favorite cities from backend
 useEffect(() => {
@@ -40,31 +44,31 @@ useEffect(() => {
 
 }, [user]);
 
-const handleAddFavorite = (recent) => {
-  if (!user?.id || !recent || favoriteCities.includes(recent)) return;
+const handleAddFavorite = (userCity) => {
+  if (!user?.id || !userCity || favoriteCities.includes(userCity)) return;
   fetch('/api/favorite-cities', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: user.id, recent })
+    body: JSON.stringify({ userId: user.id, userCity })
   })
     .then(() => {
-      setFavoriteCities([...favoriteCities, recent]);
+      setFavoriteCities([...favoriteCities, userCity]);
     });
-            console.log("add: " + user.id, recent);
+            console.log("add: " + user.id, userCity);
 
 };
 
-const handleRemoveFavorite = (recent) => {
-  if (!user?.id || !recent) return;
+const handleRemoveFavorite = (userCity) => {
+  if (!user?.id || !userCity) return;
   fetch('/api/favorite-cities', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: user.id, recent })
+    body: JSON.stringify({ userId: user.id, userCity })
   })
     .then(() => {
-      setFavoriteCities(favoriteCities.filter((c) => c !== recent));
+      setFavoriteCities(favoriteCities.filter((c) => c !== userCity));
     });
-        console.log("Remove: " + user.id, recent);
+        console.log("Remove: " + user.id, userCity);
 
 };
 
