@@ -39,6 +39,34 @@ export default function FavoriteCitiesSidebar({ currentCity }) {
     }
   }, []);
 
+  // Stebi naudotojo pasikeitimą (prisijungimą/atsijungimą) ir atnaujina sąrašą
+  useEffect(() => {
+    let lastUserId = getUserFromCookie()?.id;
+    const interval = setInterval(() => {
+      const currentUserId = getUserFromCookie()?.id;
+      if (currentUserId !== lastUserId) {
+        lastUserId = currentUserId;
+        setLoading(true);
+        if (currentUserId) {
+          fetch(`/api/favorite-cities?telegram_id=${currentUserId}`)
+            .then((res) => res.json())
+            .then((data) => {
+              setFavoriteCities(Array.isArray(data.cities) ? data.cities : []);
+              setLoading(false);
+            })
+            .catch(() => {
+              setFavoriteCities([]);
+              setLoading(false);
+            });
+        } else {
+          setFavoriteCities([]);
+          setLoading(false);
+        }
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Prideda miestą į DB ir atnaujina sąrašą
   const addFavoriteCity = (city) => {
     const user = getUserFromCookie();
