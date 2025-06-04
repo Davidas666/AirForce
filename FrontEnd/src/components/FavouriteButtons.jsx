@@ -1,3 +1,5 @@
+import FavoriteCitiesRow from "./FavoriteCitiesRow";
+
 export default function FavouriteButtons({ user, cityName, favoriteCities, onAddFavorite, onRemoveFavorite }) {
   if (!user) {
     return (
