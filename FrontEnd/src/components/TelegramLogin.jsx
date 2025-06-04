@@ -59,6 +59,7 @@ export default function TelegramLogin({ onAuth }) {
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
+        console.log("Telegram user id:", userObj.id);
       document.cookie = `telegram_user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=${60*60*24*7}`;
       // Siunčiam duomenis į backend
       fetch('/api/telegram-user', {
@@ -96,7 +97,6 @@ export default function TelegramLogin({ onAuth }) {
       </>
     );
   }
-
   return (
     <div className="flex flex-col items-center my-4">
       <div ref={containerRef} id="telegram-login-container" className="flex justify-center"></div>
