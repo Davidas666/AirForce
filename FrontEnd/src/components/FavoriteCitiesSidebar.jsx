@@ -5,55 +5,60 @@ export default function FavoriteCitiesSidebar() {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Bandome gauti iš localStorage, bet jei yra prisijungęs naudotojas – iš DB
+  // Helper: get user from cookies
+  function getUserFromCookie() {
     const userCookie = document.cookie
       .split(";")
       .map((c) => c.trim())
       .find((c) => c.startsWith("telegram_user="));
-    if (userCookie) {
-      try {
-        const userObj = JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
-        fetch(`/api/telegram-users?id=${userObj.id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (
-              data &&
-              data.users &&
-              data.users[0] &&
-              data.users[0].favorite_cities
-            ) {
-              setFavoriteCities(data.users[0].favorite_cities);
-              localStorage.setItem(
-                "favoriteCities",
-                JSON.stringify(data.users[0].favorite_cities)
-              );
-            } else {
-              // fallback į localStorage jei nėra DB duomenų
-              const stored = localStorage.getItem("favoriteCities");
-              setFavoriteCities(stored ? JSON.parse(stored) : []);
-            }
-            setLoading(false);
-          })
-          .catch(() => {
-            const stored = localStorage.getItem("favoriteCities");
-            setFavoriteCities(stored ? JSON.parse(stored) : []);
-            setLoading(false);
-          });
-      } catch {
-        const stored = localStorage.getItem("favoriteCities");
-        setFavoriteCities(stored ? JSON.parse(stored) : []);
-        setLoading(false);
-      }
+    if (!userCookie) return null;
+    try {
+      return JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
+    } catch {
+      return null;
+    }
+  }
+
+  // Load favorite cities ONLY from DB if user is logged in
+  useEffect(() => {
+    const user = getUserFromCookie();
+    if (user && user.id) {
+      fetch(`/api/telegram-users?id=${user.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const dbCities = data?.users?.[0]?.favorite_cities || [];
+          setFavoriteCities(dbCities);
+          setLoading(false);
+        })
+        .catch(() => {
+          setFavoriteCities([]);
+          setLoading(false);
+        });
     } else {
-      const stored = localStorage.getItem("favoriteCities");
-      setFavoriteCities(stored ? JSON.parse(stored) : []);
+      setFavoriteCities([]);
       setLoading(false);
     }
   }, []);
 
+  // Kai favoriteCities keičiasi ir naudotojas prisijungęs, išsaugoti į DB ir iškart užkrauti naujausius iš DB
   useEffect(() => {
-    localStorage.setItem("favoriteCities", JSON.stringify(favoriteCities));
+    const user = getUserFromCookie();
+    if (user?.id) {
+      fetch('/api/telegram-user/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegram_id: user.id, favorite_cities: favoriteCities })
+      })
+        .then(() => {
+          // Po sėkmingo įrašymo iškart užkrauna naujausius iš DB
+          fetch(`/api/telegram-users?id=${user.id}`)
+            .then((res) => res.json())
+            .then((data) => {
+              const dbCities = data?.users?.[0]?.favorite_cities || [];
+              setFavoriteCities(dbCities);
+            });
+        });
+    }
   }, [favoriteCities]);
 
   if (loading) return <div className="p-4">Kraunama...</div>;
