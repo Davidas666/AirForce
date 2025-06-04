@@ -23,7 +23,7 @@ export default function TelegramLogin({ onAuth }) {
         })
       });
     } catch (e) {
-      // Galima rodyti klaidą, jei reikia
+        console.error('Invalid error format:', e);
     }
   };
 
@@ -31,12 +31,16 @@ export default function TelegramLogin({ onAuth }) {
     // Tikrina ar yra naudotojo cookies ir automatiškai prisijungia
     if (!isLoggedIn) {
       const cookies = document.cookie.split(';').map(c => c.trim());
-      const userId = cookies.find(c => c.startsWith('telegram_id='));
-      const username = cookies.find(c => c.startsWith('username='));
-      if (userId && username) {
-        setIsLoggedIn(true);
-        setUser({ id: userId.split('=')[1], username: username.split('=')[1] });
-        return;
+      const userCookie = cookies.find(c => c.startsWith('telegram_user='));
+      if (userCookie) {
+        try {
+          const userObj = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
+          setIsLoggedIn(true);
+          setUser(userObj);
+          return;
+        } catch (e) {
+          console.error('Invalid user cookie format:', e);
+        }
       }
     }
     if (isLoggedIn) return;
@@ -72,9 +76,9 @@ export default function TelegramLogin({ onAuth }) {
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
-      document.cookie = `telegram_id=${userObj.id}; path=/; max-age=${60*60*24*7}`;
-      document.cookie = `username=${userObj.username}; path=/; max-age=${60*60*24*7}`;
-      saveTelegramUser(userObj); 
+      // Įrašo visą naudotojo objektą į cookies (JSON, 7 dienos)
+      document.cookie = `telegram_user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=${60*60*24*7}`;
+      saveTelegramUser(userObj);
       if (onAuth) onAuth(userObj);
     };
     return () => {
@@ -90,8 +94,8 @@ export default function TelegramLogin({ onAuth }) {
     setIsLoggedIn(false);
     setUser(null);
     setShowMenu(false);
-    document.cookie = 'telegram_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    document.cookie = 'username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    // Pašalina naudotojo cookies
+    document.cookie = 'telegram_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   };
 
   if (isLoggedIn && user) {
