@@ -102,6 +102,8 @@ export default function Body({
                       favoriteCities={favoriteCities}
                       onAddFavorite={onAddFavorite}
                       onRemoveFavorite={onRemoveFavorite}
+                      selectedCity={selectedCity}
+
                     />
                   )}
                 </div>
