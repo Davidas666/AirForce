@@ -1,19 +1,15 @@
 import { useState } from 'react';
 
-export default function FavoriteCitiesUI({ favoriteCities, setFavoriteCities }) {
-  const [cityInput, setCityInput] = useState("");
+export default function FavoriteCitiesUI({ favoriteCities, setFavoriteCities, currentCity }) {
   return (
     <div>
       <div className="flex mb-2">
-        <input
-          className="border rounded px-2 py-1 mr-2 flex-1"
-          type="text"
-          value={cityInput}
-          onChange={e => setCityInput(e.target.value)}
-          placeholder="Įveskite miestą"
-        />
-        <button className="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded" onClick={() => { setFavoriteCities.add(cityInput); setCityInput(""); }}>
-          Pridėti
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold w-full disabled:bg-gray-300 disabled:cursor-not-allowed"
+          onClick={() => setFavoriteCities.add(currentCity)}
+          disabled={!currentCity || favoriteCities.includes(currentCity)}
+        >
+          Pridėti dabartinį miestą
         </button>
       </div>
       <ul>

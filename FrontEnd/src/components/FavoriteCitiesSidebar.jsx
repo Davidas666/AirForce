@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import FavoriteCitiesUI from "./FavoriteCitiesUI";
+import { useUserCity } from "../hooks/useUserCity";
 
-export default function FavoriteCitiesSidebar() {
+export default function FavoriteCitiesSidebar({ currentCity }) {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,6 +75,7 @@ export default function FavoriteCitiesSidebar() {
       <FavoriteCitiesUI
         favoriteCities={favoriteCities}
         setFavoriteCities={{ add: addFavoriteCity, remove: removeFavoriteCity }}
+        currentCity={currentCity}
       />
     </aside>
   );
