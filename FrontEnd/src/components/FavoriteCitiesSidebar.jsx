@@ -5,7 +5,6 @@ export default function FavoriteCitiesSidebar() {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Helper: get user from cookies
   function getUserFromCookie() {
     const userCookie = document.cookie
       .split(";")
@@ -19,16 +18,14 @@ export default function FavoriteCitiesSidebar() {
     }
   }
 
-  // Load favorite cities ONLY from DB if user is logged in
+  // Užkrauna mėgstamus miestus iš naujo modelio (favorite_cities lentelės)
   useEffect(() => {
     const user = getUserFromCookie();
     if (user?.id) {
-      fetch(`/api/telegram-users?id=${user.id}`)
+      fetch(`/api/favorite-cities?telegram_id=${user.id}`)
         .then((res) => res.json())
         .then((data) => {
-          // Jei favorite_cities yra null, naudoti tuščią masyvą
-          const dbCities = data?.users?.[0]?.favorite_cities ?? [];
-          setFavoriteCities(Array.isArray(dbCities) ? dbCities : []);
+          setFavoriteCities(Array.isArray(data.cities) ? data.cities : []);
           setLoading(false);
         })
         .catch(() => {
@@ -41,17 +38,33 @@ export default function FavoriteCitiesSidebar() {
     }
   }, []);
 
-  // Kai favoriteCities keičiasi ir naudotojas prisijungęs, išsaugoti į DB (be GET po POST, kad nebūtų ciklo)
-  useEffect(() => {
+  // Prideda miestą į DB ir atnaujina sąrašą
+  const addFavoriteCity = (city) => {
     const user = getUserFromCookie();
-    if (user?.id) {
-      fetch('/api/telegram-user/favorites', {
+    if (user?.id && city && !favoriteCities.includes(city)) {
+      fetch('/api/favorite-cities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegram_id: user.id, favorite_cities: favoriteCities })
-      });
+        body: JSON.stringify({ telegram_id: user.id, city_name: city })
+      })
+        .then(() => {
+          setFavoriteCities([...favoriteCities, city]);
+        });
     }
-  }, [favoriteCities]);
+  };
+
+  // Pašalina miestą iš DB ir atnaujina sąrašą
+  const removeFavoriteCity = (city) => {
+    const user = getUserFromCookie();
+    if (user?.id && city) {
+      fetch(`/api/favorite-cities?telegram_id=${user.id}&city_name=${encodeURIComponent(city)}`, {
+        method: 'DELETE'
+      })
+        .then(() => {
+          setFavoriteCities(favoriteCities.filter((c) => c !== city));
+        });
+    }
+  };
 
   if (loading) return <div className="p-4">Kraunama...</div>;
 
@@ -60,7 +73,7 @@ export default function FavoriteCitiesSidebar() {
       <h2 className="font-bold mb-2">Mėgstami miestai</h2>
       <FavoriteCitiesUI
         favoriteCities={favoriteCities}
-        setFavoriteCities={setFavoriteCities}
+        setFavoriteCities={{ add: addFavoriteCity, remove: removeFavoriteCity }}
       />
     </aside>
   );
