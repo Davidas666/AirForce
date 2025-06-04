@@ -75,26 +75,33 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
   );
 
   // Render add/remove buttons for the selected city
-  const renderButtons = () => (
+const renderButtons = () => {
+  const isFavorite = favoriteCities.includes(selectedCity);
+  return (
     user?.id && selectedCity && (
       <div className="flex justify-center mt-2">
         <button
-          className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+          className={`bg-blue-500 text-white px-3 py-1 rounded mr-2 transition-opacity ${isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleAddFavorite(selectedCity)}
-          disabled={favoriteCities.includes(selectedCity)}
+          disabled={isFavorite}
+          title={isFavorite ? "City is already in favorites" : "Add to favorites"}
+          aria-disabled={isFavorite}
         >
-          +
+          Add To Favorites
         </button>
         <button
-          className="bg-red-500 text-white px-3 py-1 rounded"
+          className={`bg-red-500 text-white px-3 py-1 rounded transition-opacity ${!isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleRemoveFavorite(selectedCity)}
-          disabled={!favoriteCities.includes(selectedCity)}
+          disabled={!isFavorite}
+          title={!isFavorite ? "City is not in favorites" : "Remove from favorites"}
+          aria-disabled={!isFavorite}
         >
-          –
+          Remove From Favorites
         </button>
       </div>
     )
   );
+};
 
   if (!user?.id) {
     return (
