@@ -7,6 +7,7 @@ export default function TelegramLogin({ onAuth }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Siunčia naudotoją į backend po prisijungimo
   const saveTelegramUser = async (userObj) => {
@@ -37,12 +38,14 @@ export default function TelegramLogin({ onAuth }) {
           const userObj = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
           setIsLoggedIn(true);
           setUser(userObj);
+          setLoading(false);
           return;
         } catch (e) {
           console.error('Invalid user cookie format:', e);
         }
       }
     }
+    setLoading(false);
     if (isLoggedIn) return;
     const container = containerRef.current;
     const fallback = fallbackRef.current;
@@ -97,6 +100,10 @@ export default function TelegramLogin({ onAuth }) {
     // Pašalina naudotojo cookies
     document.cookie = 'telegram_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (isLoggedIn && user) {
     return (
