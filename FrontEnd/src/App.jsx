@@ -25,40 +25,42 @@ export default function App() {
   }, []);
 
   // Fetch favorite cities from backend
-  useEffect(() => {
-    if (!user?.id) {
-      setFavoriteCities([]);
-      return;
-    }
-    fetch(`/api/favorite-cities?telegram_id=${user.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setFavoriteCities(Array.isArray(data.cities) ? data.cities : []);
-      })
-      .catch(() => setFavoriteCities([]));
-  }, [user]);
-
-  const handleAddFavorite = (city) => {
-    if (!user?.id || !city || favoriteCities.includes(city)) return;
-    fetch('/api/favorite-cities', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telegram_id: user.id, city_name: city })
+useEffect(() => {
+  if (!user?.id) {
+    setFavoriteCities([]);
+    return;
+  }
+  fetch(`/api/favorite-cities?userId=${user.id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setFavoriteCities(Array.isArray(data) ? data : []);
     })
-      .then(() => {
-        setFavoriteCities([...favoriteCities, city]);
-      });
-  };
+    .catch(() => setFavoriteCities([]));
+}, [user]);
 
-  const handleRemoveFavorite = (city) => {
-    if (!user?.id || !city) return;
-    fetch(`/api/favorite-cities?telegram_id=${user.id}&city_name=${encodeURIComponent(city)}`, {
-      method: 'DELETE'
-    })
-      .then(() => {
-        setFavoriteCities(favoriteCities.filter((c) => c !== city));
-      });
-  };
+const handleAddFavorite = (city) => {
+  if (!user?.id || !city || favoriteCities.includes(city)) return;
+  fetch('/api/favorite-cities', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: user.id, city })
+  })
+    .then(() => {
+      setFavoriteCities([...favoriteCities, city]);
+    });
+};
+
+const handleRemoveFavorite = (city) => {
+  if (!user?.id || !city) return;
+  fetch('/api/favorite-cities', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: user.id, city })
+  })
+    .then(() => {
+      setFavoriteCities(favoriteCities.filter((c) => c !== city));
+    });
+};
 
   const handleTelegramAuth = (user) => {
     alert("Prisijungėte per Telegram: " + user.username);
