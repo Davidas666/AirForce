@@ -199,7 +199,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
       </div>
       {/* Atskirai, žemiau pagrindinio bloko, rodomas mėgstamų miestų blokas */}
       <div className="mx-auto mt-6 flex justify-end" style={{ maxWidth: "1020px" }}>
-        <FavoriteCitiesSidebar />
+        <FavoriteCitiesSidebar currentCity={cityName} />
       </div>
     </>
   );
