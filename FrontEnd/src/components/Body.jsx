@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { getWeatherCache, setWeatherCache, clearWeatherCache } from "../utils/weatherCache";
 import { useUserCity } from "../hooks/useUserCity";
 import HourlyWeatherSlider from "./HourlyWeatherSlider";
 import DailyWeatherCard from "./DailyWeatherCard";
@@ -17,10 +18,15 @@ export default function Body({ selectedCity, recent, setRecent }) {
   const [todayStartIdx, setTodayStartIdx] = useState(0);
   const [view, setView] = useState("hourly");
   const cityToShow = selectedCity || userCity;
+  const prevCityRef = useRef();
 
+  // Clear cache if city changes
   useEffect(() => {
-    if (view === "today") setTodayStartIdx(0);
-  }, [view]);
+    if (prevCityRef.current && prevCityRef.current !== cityToShow) {
+      clearWeatherCache(prevCityRef.current);
+    }
+    prevCityRef.current = cityToShow;
+  }, [cityToShow]);
 
   // Only fetch hourly data for "hourly" view
   useEffect(() => {
@@ -31,22 +37,23 @@ export default function Body({ selectedCity, recent, setRecent }) {
     setCityName("");
     setCountry("");
 
+    // Try cache first
+    const cached = getWeatherCache(cityToShow, "hourly");
+    if (cached) {
+      setHourly(cached.list);
+      setCityName(cached.city.name);
+      setCountry(cached.city.country);
+      setLoading(false);
+      return;
+    }
+
     fetch(`/api/forecast/hourly/${encodeURIComponent(cityToShow)}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();
       })
       .then((data) => {
-        const now = new Date();
-        let firstIdx = 0;
-        for (let i = data.list.length - 1; i >= 0; i--) {
-          const itemDate = new Date(data.list[i].dt_txt.replace(" ", "T"));
-          if (itemDate <= now) {
-            firstIdx = i;
-            break;
-          }
-        }
-        setStartIdx(firstIdx);
+        setWeatherCache(cityToShow, "hourly", data);
         setHourly(data.list);
         setCityName(data.city.name);
         setCountry(data.city.country);
@@ -68,12 +75,23 @@ export default function Body({ selectedCity, recent, setRecent }) {
     setError("");
     setDaily([]);
 
+    // Try cache first
+    const cached = getWeatherCache(cityToShow, "7days");
+    if (cached) {
+      setDaily(cached.list);
+      setCityName(cached.city.name);
+      setCountry(cached.city.country);
+      setLoading(false);
+      return;
+    }
+
     fetch(`/api/forecast/daily/${encodeURIComponent(cityToShow)}?cnt=7`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();
       })
       .then((data) => {
+        setWeatherCache(cityToShow, "7days", data);
         setDaily(data.list);
         setCityName(data.city.name);
         setCountry(data.city.country);
@@ -87,7 +105,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
       .catch((err) => setError("Error: " + err.message))
       .finally(() => setLoading(false));
   }, [view, cityToShow, setRecent]);
-
+  
   return (
     <>
       <div

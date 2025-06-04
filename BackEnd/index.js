@@ -28,8 +28,8 @@ const logger = winston.createLogger({
     winston.format.printf(({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`)
   ),
   transports: [
-    new winston.transports.File({ filename: 'backend-error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'backend-combined.log' }),
+    new winston.transports.File({ filename: path.join('logs', 'error.log'), level: 'error' }),
+    new winston.transports.File({ filename: path.join('logs', 'combined.log') }),
     new winston.transports.Console()
   ],
 });
