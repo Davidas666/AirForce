@@ -36,6 +36,8 @@ useEffect(() => {
       setFavoriteCities(Array.isArray(data) ? data : []);
     })
     .catch(() => setFavoriteCities([]));
+            console.log("loading: " + user.id, city);
+
 }, [user]);
 
 const handleAddFavorite = (city) => {
@@ -48,6 +50,8 @@ const handleAddFavorite = (city) => {
     .then(() => {
       setFavoriteCities([...favoriteCities, city]);
     });
+            console.log("add: " + user.id, city);
+
 };
 
 const handleRemoveFavorite = (city) => {
@@ -60,6 +64,8 @@ const handleRemoveFavorite = (city) => {
     .then(() => {
       setFavoriteCities(favoriteCities.filter((c) => c !== city));
     });
+        console.log("Remove: " + user.id, city);
+
 };
 
   const handleTelegramAuth = (user) => {
