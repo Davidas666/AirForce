@@ -13,8 +13,8 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch favorite cities on user change
-  useEffect(() => {
+  // Fetch favorite cities from backend
+  const fetchFavorites = () => {
     if (!user?.id) {
       setFavoriteCities([]);
       return;
@@ -23,9 +23,36 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
       .then((res) => res.json())
       .then((data) => setFavoriteCities(Array.isArray(data) ? data : []))
       .catch(() => setFavoriteCities([]));
+  };
+
+  useEffect(() => {
+    fetchFavorites();
+    // eslint-disable-next-line
   }, [user]);
 
-  // Inline FavoriteCitiesRow
+  // Add favorite city and refresh
+  const handleAddFavorite = (city) => {
+    if (!user?.id || !city || favoriteCities.includes(city)) return;
+    fetch('/api/favorite-cities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, city })
+    })
+      .then(fetchFavorites);
+  };
+
+  // Remove favorite city and refresh
+  const handleRemoveFavorite = (city) => {
+    if (!user?.id || !city) return;
+    fetch('/api/favorite-cities', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, city })
+    })
+      .then(fetchFavorites);
+  };
+
+  // Render favorite cities row
   const renderFavoriteCitiesRow = () => (
     <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
       {favoriteCities.map(city => (
@@ -47,9 +74,40 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
     </div>
   );
 
+  // Render add/remove buttons for the selected city
+  const renderButtons = () => (
+    user?.id && selectedCity && (
+      <div className="flex justify-center mt-2">
+        <button
+          className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+          onClick={() => handleAddFavorite(selectedCity)}
+          disabled={favoriteCities.includes(selectedCity)}
+        >
+          +
+        </button>
+        <button
+          className="bg-red-500 text-white px-3 py-1 rounded"
+          onClick={() => handleRemoveFavorite(selectedCity)}
+          disabled={!favoriteCities.includes(selectedCity)}
+        >
+          –
+        </button>
+      </div>
+    )
+  );
+
+  if (!user?.id) {
+    return (
+      <span className="ml-3 text-sm text-gray-400">
+        Please login to access Favourite cities functionality
+      </span>
+    );
+  }
+
   return (
     <div>
       {renderFavoriteCitiesRow()}
+      {renderButtons()}
     </div>
   );
 }

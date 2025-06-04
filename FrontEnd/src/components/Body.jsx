@@ -96,14 +96,6 @@ export default function Body({
                     {view === "hourly" && hourlyCountry && `, ${hourlyCountry}`}
                     {view === "7days" && dailyCountry && `, ${dailyCountry}`}
                   </span>
-                  {!loading && !error && cityName && (
-<FavouriteButtons
-  user={user}
-  selectedCity={selectedCity}
-  favoriteCities={favoriteCities}
-  setFavoriteCities={setFavoriteCities}
-/>
-                  )}
                 </div>
                 {loading && <div>Loading...</div>}
                 {error && <div className="text-red-500">{error}</div>}

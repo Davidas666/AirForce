@@ -32,10 +32,10 @@ export default function App() {
         recent={recent}
         handleSearch={setSelectedCity}
       />
-      <FavoriteWindow
-        selectedCity={selectedCity}
-        onSelect={setSelectedCity}
-      />
+<FavoriteWindow
+  selectedCity={selectedCity}
+  onSelect={setSelectedCity}
+/>
       <Body
         selectedCity={selectedCity}
         recent={recent}
