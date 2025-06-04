@@ -1,4 +1,5 @@
-export default function FavouriteButtons({ user, cityName, favoriteCities, onAddFavorite, onRemoveFavorite, selectedCity }) {
+export default function FavouriteButtons({ user, selectedCity }) {
+  console.log("FavouriteButtons rendered with user:", user, "and selectedCity:", selectedCity);
   if (!user) {
     return (
       <span className="ml-3 text-sm text-gray-400">

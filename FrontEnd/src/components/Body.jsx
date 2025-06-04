@@ -98,12 +98,7 @@ export default function Body({
                   {!loading && !error && cityName && (
                     <FavouriteButtons
                       user={user}
-                      cityName={cityName}
-                      favoriteCities={favoriteCities}
-                      onAddFavorite={onAddFavorite}
-                      onRemoveFavorite={onRemoveFavorite}
                       selectedCity={selectedCity}
-
                     />
                   )}
                 </div>
