@@ -22,12 +22,13 @@ export default function FavoriteCitiesSidebar() {
   // Load favorite cities ONLY from DB if user is logged in
   useEffect(() => {
     const user = getUserFromCookie();
-    if (user && user.id) {
+    if (user?.id) {
       fetch(`/api/telegram-users?id=${user.id}`)
         .then((res) => res.json())
         .then((data) => {
-          const dbCities = data?.users?.[0]?.favorite_cities || [];
-          setFavoriteCities(dbCities);
+          // Jei favorite_cities yra null, naudoti tuščią masyvą
+          const dbCities = data?.users?.[0]?.favorite_cities ?? [];
+          setFavoriteCities(Array.isArray(dbCities) ? dbCities : []);
           setLoading(false);
         })
         .catch(() => {
