@@ -36,35 +36,35 @@ useEffect(() => {
       setFavoriteCities(Array.isArray(data) ? data : []);
     })
     .catch(() => setFavoriteCities([]));
-            console.log("loading: " + user.id, city);
+            console.log("loading: " + user.id, recent);
 
 }, [user]);
 
-const handleAddFavorite = (city) => {
-  if (!user?.id || !city || favoriteCities.includes(city)) return;
+const handleAddFavorite = (recent) => {
+  if (!user?.id || !recent || favoriteCities.includes(recent)) return;
   fetch('/api/favorite-cities', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: user.id, city })
+    body: JSON.stringify({ userId: user.id, recent })
   })
     .then(() => {
-      setFavoriteCities([...favoriteCities, city]);
+      setFavoriteCities([...favoriteCities, recent]);
     });
-            console.log("add: " + user.id, city);
+            console.log("add: " + user.id, recent);
 
 };
 
-const handleRemoveFavorite = (city) => {
-  if (!user?.id || !city) return;
+const handleRemoveFavorite = (recent) => {
+  if (!user?.id || !recent) return;
   fetch('/api/favorite-cities', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: user.id, city })
+    body: JSON.stringify({ userId: user.id, recent })
   })
     .then(() => {
-      setFavoriteCities(favoriteCities.filter((c) => c !== city));
+      setFavoriteCities(favoriteCities.filter((c) => c !== recent));
     });
-        console.log("Remove: " + user.id, city);
+        console.log("Remove: " + user.id, recent);
 
 };
 
