@@ -39,3 +39,25 @@
 {"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-04T17:32:00.155Z"}
 {"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-04T17:32:00.300Z"}
 2025-06-04T17:32:00.305Z [info]: ::1 - - [04/Jun/2025:17:32:00 +0000] "GET /api/forecast/hourly/Vilnius HTTP/1.1" 200 38287 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Hourly forecast (limited) requested for city: Vilnius, count: 9","timestamp":"2025-06-04T17:44:31.939Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Vilnius","timestamp":"2025-06-04T17:44:32.121Z"}
+2025-06-04T17:44:32.122Z [info]: ::1 - - [04/Jun/2025:17:44:32 +0000] "GET /api/forecast/hourly/Vilnius/limited?cnt=9 HTTP/1.1" 200 3734 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Daily forecast requested for city: Vilnius, count: 7","timestamp":"2025-06-04T17:44:32.425Z"}
+{"level":"info","message":"Daily forecast response sent for city: Vilnius","timestamp":"2025-06-04T17:44:32.522Z"}
+2025-06-04T17:44:32.523Z [info]: ::1 - - [04/Jun/2025:17:44:32 +0000] "GET /api/forecast/daily/Vilnius?cnt=7 HTTP/1.1" 200 2863 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Hourly forecast requested for city: Vilnius","timestamp":"2025-06-04T17:44:32.868Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Vilnius","timestamp":"2025-06-04T17:44:32.953Z"}
+2025-06-04T17:44:32.955Z [info]: ::1 - - [04/Jun/2025:17:44:32 +0000] "GET /api/forecast/hourly/Vilnius HTTP/1.1" 200 38270 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+2025-06-04T17:44:35.302Z [info]: ::1 - - [04/Jun/2025:17:44:35 +0000] "GET /api/cities?query=ka HTTP/1.1" 200 441 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+2025-06-04T17:44:35.433Z [info]: ::1 - - [04/Jun/2025:17:44:35 +0000] "GET /api/cities?query=kas HTTP/1.1" 200 396 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Hourly forecast requested for city: Kashan","timestamp":"2025-06-04T17:44:36.262Z"}
+{"level":"info","message":"Hourly forecast response sent for city: Kashan","timestamp":"2025-06-04T17:44:36.346Z"}
+2025-06-04T17:44:36.348Z [info]: ::1 - - [04/Jun/2025:17:44:36 +0000] "GET /api/forecast/hourly/Kashan HTTP/1.1" 200 37361 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Daily forecast requested for city: Kashan, count: 7","timestamp":"2025-06-04T17:44:37.208Z"}
+{"level":"info","message":"Daily forecast response sent for city: Kashan","timestamp":"2025-06-04T17:44:37.250Z"}
+2025-06-04T17:44:37.251Z [info]: ::1 - - [04/Jun/2025:17:44:37 +0000] "GET /api/forecast/daily/Kashan?cnt=7 HTTP/1.1" 200 2827 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+{"level":"info","message":"Hourly forecast (limited) requested for city: Kashan, count: 9","timestamp":"2025-06-04T17:44:37.586Z"}
+{"level":"info","message":"Hourly forecast (limited) response sent for city: Kashan","timestamp":"2025-06-04T17:44:37.626Z"}
+2025-06-04T17:44:37.626Z [info]: ::1 - - [04/Jun/2025:17:44:37 +0000] "GET /api/forecast/hourly/Kashan/limited?cnt=9 HTTP/1.1" 200 3677 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+2025-06-04T17:52:37.870Z [info]: Server shutting down (SIGINT)
+2025-06-04T17:52:40.497Z [info]: Server running on port 3001
