@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import HourlyWeatherSlider from "./HourlyWeatherSlider";
 
 export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
   const [todayHourly, setTodayHourly] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const prevCity = useRef();
 
   useEffect(() => {
-    if (!city) return;
+    // Only fetch if city actually changed
+    if (!city || prevCity.current === city) return;
+    prevCity.current = city;
     setLoading(true);
     setError("");
-
     const now = new Date();
     const currentHour = now.getHours();
 
-    fetch(`/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${29 -currentHour}`)
+    fetch(`/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${29 - currentHour}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
         return res.json();

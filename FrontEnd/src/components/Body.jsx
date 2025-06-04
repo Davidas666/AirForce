@@ -22,8 +22,9 @@ export default function Body({ selectedCity, recent, setRecent }) {
     if (view === "today") setTodayStartIdx(0);
   }, [view]);
 
+  // Only fetch hourly data for "hourly" view
   useEffect(() => {
-    if (!cityToShow || (view !== "hourly" && view !== "today")) return;
+    if (!cityToShow || view !== "hourly") return;
     setLoading(true);
     setError("");
     setHourly([]);
@@ -60,6 +61,7 @@ export default function Body({ selectedCity, recent, setRecent }) {
       .finally(() => setLoading(false));
   }, [cityToShow, view, setRecent]);
 
+  // Only fetch daily data for "7days" view
   useEffect(() => {
     if (view !== "7days" || !cityToShow) return;
     setLoading(true);
@@ -174,14 +176,14 @@ export default function Body({ selectedCity, recent, setRecent }) {
                     />
                   )}
 
-                  {!loading && !error && view === "today" && cityToShow && (
-                    <TodayHourlyWeather
-                      city={cityToShow}
-                      startIdx={todayStartIdx}
-                      setStartIdx={setTodayStartIdx}
-                    />
-                  )}
-
+              {/* Only render TodayHourlyWeather for "today" view */}
+              {!loading && !error && view === "today" && cityToShow && (
+                <TodayHourlyWeather
+                  city={cityToShow}
+                  startIdx={todayStartIdx}
+                  setStartIdx={setTodayStartIdx}
+                />
+              )}
                   {!loading && !error && view === "7days" && daily.length > 0 && (
                     <div className="flex justify-center w-full">
                       <div className="flex gap-2 w-full overflow-x-auto justify-center">
