@@ -3,6 +3,8 @@ const express = require('express');
 const { Pool } = require('pg');
 const forecastRoutes = require('./routes/forecastRoutes');
 const cityRoutes = require('./routes/cityRoutes');
+const telegramUserRoutes = require('./routes/telegramUserRoutes');
+const favoriteCitiesRoutes = require('./routes/favoriteCitiesRoutes');
 const cors = require('cors');
 const winston = require('winston');
 const app = express();
@@ -37,123 +39,11 @@ app.use(cors({
 }));
 app.use('/api/forecast', forecastRoutes);
 app.use('/api/cities', cityRoutes);
+app.use('/api/telegram-user', telegramUserRoutes);
+app.use('/api/favorite-cities', favoriteCitiesRoutes);
 
 app.get('/', (req, res) => {
   res.send('Program running!');
-});
-
-// Telegram user save endpoint
-app.post('/api/telegram-user', async (req, res) => {
-  const { telegram_id, username, first_name, last_name, photo_url } = req.body;
-  if (!telegram_id) {
-    logger.warn(`POST /api/telegram-user: missing telegram_id. Body: ${JSON.stringify(req.body)}`);
-    return res.status(400).json({ error: 'telegram_id required' });
-  }
-  try {
-    const result = await pool.query(
-      `INSERT INTO telegram_users (telegram_id, username, first_name, last_name, photo_url, last_login)
-       VALUES ($1, $2, $3, $4, $5, NOW())
-       ON CONFLICT (telegram_id) DO UPDATE SET
-         username=EXCLUDED.username,
-         first_name=EXCLUDED.first_name,
-         last_name=EXCLUDED.last_name,
-         photo_url=EXCLUDED.photo_url,
-         last_login=NOW()
-       RETURNING *`,
-      [telegram_id, username, first_name, last_name, photo_url]
-    );
-    logger.info(`Telegram user saved: ${JSON.stringify(result.rows[0])}`);
-    res.json({ success: true, message: 'Naudotojas sėkmingai išsaugotas', user: result.rows[0] });
-  } catch (err) {
-    logger.error(`Error saving Telegram user: ${err} | Request body: ${JSON.stringify(req.body)}`);
-    res.status(500).json({ error: 'Nepavyko išsaugoti naudotojo duomenų. Bandykite vėliau.' });
-  }
-});
-
-// GET endpoint visų naudotojų peržiūrai
-app.get('/api/telegram-users', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM telegram_users ORDER BY last_login DESC');
-    logger.info(`Fetched ${result.rows.length} telegram users`);
-    res.json({ users: result.rows });
-  } catch (err) {
-    logger.error(`Error fetching Telegram users: ${err}`);
-    res.status(500).json({ error: 'Nepavyko gauti naudotojų sąrašo.' });
-  }
-});
-
-// Endpoint to update user's favorite cities
-app.post('/api/telegram-user/favorites', async (req, res) => {
-  const { telegram_id, favorite_cities } = req.body;
-  if (!telegram_id || !Array.isArray(favorite_cities)) {
-    logger.warn(`POST /api/telegram-user/favorites: missing data. Body: ${JSON.stringify(req.body)}`);
-    return res.status(400).json({ error: 'telegram_id and favorite_cities (array) required' });
-  }
-  try {
-    // Save as JSONB in DB
-    const result = await pool.query(
-      `UPDATE telegram_users SET favorite_cities = $1 WHERE telegram_id = $2 RETURNING *`,
-      [JSON.stringify(favorite_cities), telegram_id]
-    );
-    if (result.rowCount === 0) {
-      logger.warn(`User not found for updating favorites: ${telegram_id}`);
-      return res.status(404).json({ error: 'User not found' });
-    }
-    logger.info(`Updated favorite cities for user ${telegram_id}: ${JSON.stringify(favorite_cities)}`);
-    res.json({ success: true, user: result.rows[0] });
-  } catch (err) {
-    logger.error(`Error updating favorite cities: ${err} | Body: ${JSON.stringify(req.body)}`);
-    res.status(500).json({ error: 'Nepavyko išsaugoti mėgstamų miestų. Bandykite vėliau.' });
-  }
-});
-
-// --- FAVORITE CITIES TABLE ENDPOINTS ---
-// GET user's favorite cities
-app.get('/api/favorite-cities', async (req, res) => {
-  const { telegram_id } = req.query;
-  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
-  try {
-    const result = await pool.query(
-      'SELECT city_name FROM favorite_cities WHERE telegram_id = $1',
-      [telegram_id]
-    );
-    res.json({ cities: result.rows.map(r => r.city_name) });
-  } catch (err) {
-    logger.error(`Error fetching favorite cities: ${err}`);
-    res.status(500).json({ error: 'Nepavyko gauti mėgstamų miestų.' });
-  }
-});
-
-// ADD city to favorites
-app.post('/api/favorite-cities', async (req, res) => {
-  const { telegram_id, city_name } = req.body;
-  if (!telegram_id || !city_name) return res.status(400).json({ error: 'telegram_id and city_name required' });
-  try {
-    await pool.query(
-      'INSERT INTO favorite_cities (telegram_id, city_name) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-      [telegram_id, city_name]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    logger.error(`Error adding favorite city: ${err}`);
-    res.status(500).json({ error: 'Nepavyko pridėti mėgstamo miesto.' });
-  }
-});
-
-// DELETE city from favorites
-app.delete('/api/favorite-cities', async (req, res) => {
-  const { telegram_id, city_name } = req.query;
-  if (!telegram_id || !city_name) return res.status(400).json({ error: 'telegram_id and city_name required' });
-  try {
-    await pool.query(
-      'DELETE FROM favorite_cities WHERE telegram_id = $1 AND city_name = $2',
-      [telegram_id, city_name]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    logger.error(`Error deleting favorite city: ${err}`);
-    res.status(500).json({ error: 'Nepavyko pašalinti mėgstamo miesto.' });
-  }
 });
 
 app.listen(port, () => {
