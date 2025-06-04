@@ -6,7 +6,6 @@ import HourlyWeatherSlider from "./HourlyWeatherSlider";
 import DailyWeatherCard from "./DailyWeatherCard";
 import TodayHourlyWeather from "./TodayHourlyWeather";
 import ViewButtons from "./ViewButtons";
-import FavouriteButtons from "./FavouriteButtons";
 
 export default function Body({
   selectedCity,
