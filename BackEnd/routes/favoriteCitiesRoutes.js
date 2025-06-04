@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getFavoriteCities, addFavoriteCity, deleteFavoriteCity } = require('../models/favoriteCitiesModel');
+const controller = require('../controllers/favoriteCitiesController');
 
 // GET user's favorite cities
-router.get('/', getFavoriteCities);
+router.get('/', controller.getFavoriteCities);
 
 // ADD city to favorites
-router.post('/', addFavoriteCity);
+router.post('/', controller.addFavoriteCity);
 
 // DELETE city from favorites
-router.delete('/', deleteFavoriteCity);
+router.delete('/', controller.deleteFavoriteCity);
 
 module.exports = router;
