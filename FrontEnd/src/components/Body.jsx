@@ -89,7 +89,8 @@ export default function Body({
                 <div className="mb-2 text-gray-600 flex items-center">
                   City:{" "}
                   <span className="font-semibold ml-1">
-                    {view === "hourly" && (hourlyCityName || cityToShow || "...")}
+                    {view === "hourly" &&
+                      (hourlyCityName || cityToShow || "...")}
                     {view === "today" && (cityToShow || "...")}
                     {view === "7days" && (dailyCityName || cityToShow || "...")}
                     {view === "hourly" && hourlyCountry && `, ${hourlyCountry}`}
@@ -99,6 +100,8 @@ export default function Body({
                     <FavouriteButtons
                       user={user}
                       selectedCity={selectedCity}
+                      favoriteCities={favoriteCities}
+                      setFavoriteCities={setFavoriteCities}
                     />
                   )}
                 </div>

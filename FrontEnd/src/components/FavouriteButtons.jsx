@@ -1,4 +1,4 @@
-export default function FavouriteButtons({ user, selectedCity }) {
+export default function FavouriteButtons({ user, selectedCity, favoriteCities, setFavoriteCities }) {
   console.log("FavouriteButtons rendered with user:", user, "and selectedCity:", selectedCity);
   if (!user) {
     return (
