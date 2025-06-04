@@ -1,5 +1,3 @@
-import FavoriteCitiesRow from "./FavoriteCitiesRow";
-
 export default function FavouriteButtons({ user, cityName, favoriteCities, onAddFavorite, onRemoveFavorite }) {
   if (!user) {
     return (
@@ -10,12 +8,6 @@ export default function FavouriteButtons({ user, cityName, favoriteCities, onAdd
   }
   return (
         <div>
-      <FavoriteCitiesRow
-        favoriteCities={favoriteCities}
-        onSelect={onSelect}
-        currentCity={selectedCity}
-      />
-      {/* Example: Add/Remove buttons for the selected city */}
       {user?.id && selectedCity && (
         <div className="flex justify-center mt-2">
           <button
