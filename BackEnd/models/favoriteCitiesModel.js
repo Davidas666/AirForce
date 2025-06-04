@@ -1,56 +1,54 @@
-const pool = require('../db');
-const winston = require('winston');
+import { useEffect, useState } from "react";
+import { getWeatherCache, setWeatherCache, clearWeatherCache } from "../utils/weatherCache";
+import HourlyWeatherSlider from "./HourlyWeatherSlider";
 
-// GET user's favorite cities
-async function getFavoriteCities(req, res) {
-  const { telegram_id } = req.query;
-  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
-  try {
-    const result = await pool.query(
-      'SELECT city_name FROM favorite_cities WHERE telegram_id = $1',
-      [telegram_id]
-    );
-    res.json({ cities: result.rows.map(r => r.city_name) });
-  } catch (err) {
-    winston.error(`Error fetching favorite cities: ${err}`);
-    res.status(500).json({ error: 'Nepavyko gauti mėgstamų miestų.' });
-  }
+export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
+  const [todayHourly, setTodayHourly] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!city) return;
+
+    // Try cache first
+    const cached = getWeatherCache(city, "today");
+    if (cached && cached.list && cached.list.length > 0) {
+      setTodayHourly(cached.list);
+      setLoading(false);
+      setError("");
+      return;
+    }
+
+    // If not cached, fetch and cache
+    setLoading(true);
+    setError("");
+    setTodayHourly([]);
+    const now = new Date();
+    const currentHour = now.getHours();
+    const cnt = 29 - currentHour;
+
+    fetch(`/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${cnt}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch data");
+        return res.json();
+      })
+      .then((data) => {
+        setWeatherCache(city, "today", data);
+        setTodayHourly(data.list);
+      })
+      .catch((err) => setError("Error: " + err.message))
+      .finally(() => setLoading(false));
+  }, [city]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!todayHourly.length) return null;
+
+  return (
+    <HourlyWeatherSlider
+      hourly={todayHourly}
+      startIdx={startIdx}
+      setStartIdx={setStartIdx}
+    />
+  );
 }
-
-// ADD city to favorites
-async function addFavoriteCity(req, res) {
-  const { telegram_id, city_name } = req.body;
-  if (!telegram_id || !city_name) return res.status(400).json({ error: 'telegram_id and city_name required' });
-  try {
-    await pool.query(
-      'INSERT INTO favorite_cities (telegram_id, city_name) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-      [telegram_id, city_name]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    winston.error(`Error adding favorite city: ${err}`);
-    res.status(500).json({ error: 'Nepavyko pridėti mėgstamo miesto.' });
-  }
-}
-
-// DELETE city from favorites
-async function deleteFavoriteCity(req, res) {
-  const { telegram_id, city_name } = req.query;
-  if (!telegram_id || !city_name) return res.status(400).json({ error: 'telegram_id and city_name required' });
-  try {
-    await pool.query(
-      'DELETE FROM favorite_cities WHERE telegram_id = $1 AND city_name = $2',
-      [telegram_id, city_name]
-    );
-    res.json({ success: true });
-  } catch (err) {
-    winston.error(`Error deleting favorite city: ${err}`);
-    res.status(500).json({ error: 'Nepavyko pašalinti mėgstamo miesto.' });
-  }
-}
-
-module.exports = {
-  getFavoriteCities,
-  addFavoriteCity,
-  deleteFavoriteCity
-};
