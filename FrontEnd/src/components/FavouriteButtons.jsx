@@ -1,36 +1,4 @@
 export default function FavouriteButtons({ user, selectedCity, favoriteCities, setFavoriteCities }) {
-  console.log("FavouriteButtons rendered with user:", user, "and selectedCity:", selectedCity);
-  if (!user) {
-    return (
-      <span className="ml-3 text-sm text-gray-400">
-        Please login to access Favourite cities functionality
-      </span>
-    );
-  }
-  return (
-        <div>
-      {user?.id && selectedCity && (
-        <div className="flex justify-center mt-2">
-          <button
-            className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
-            onClick={() => handleAddFavorite(selectedCity)}
-            disabled={favoriteCities.includes(selectedCity)}
-          >
-            +
-          </button>
-          <button
-            className="bg-red-500 text-white px-3 py-1 rounded"
-            onClick={() => handleRemoveFavorite(selectedCity)}
-            disabled={!favoriteCities.includes(selectedCity)}
-          >
-            –
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
   // Add favorite city
   const handleAddFavorite = (city) => {
     if (!user?.id || !city || favoriteCities.includes(city)) return;
@@ -52,3 +20,34 @@ export default function FavouriteButtons({ user, selectedCity, favoriteCities, s
     })
       .then(() => setFavoriteCities(favoriteCities.filter((c) => c !== city)));
   };
+
+  if (!user) {
+    return (
+      <span className="ml-3 text-sm text-gray-400">
+        Please login to access Favourite cities functionality
+      </span>
+    );
+  }
+  return (
+    <div>
+      {user?.id && selectedCity && (
+        <div className="flex justify-center mt-2">
+          <button
+            className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+            onClick={() => handleAddFavorite(selectedCity)}
+            disabled={favoriteCities.includes(selectedCity)}
+          >
+            +
+          </button>
+          <button
+            className="bg-red-500 text-white px-3 py-1 rounded"
+            onClick={() => handleRemoveFavorite(selectedCity)}
+            disabled={!favoriteCities.includes(selectedCity)}
+          >
+            –
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
