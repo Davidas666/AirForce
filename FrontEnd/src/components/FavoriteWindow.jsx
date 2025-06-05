@@ -5,7 +5,6 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [user, setUser] = useState(getUserFromCookie());
 
-  // Keep user in sync with cookie (in case of login/logout)
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -13,8 +12,8 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch favorite cities from backend when user changes
-  useEffect(() => {
+  // Define fetchFavorites here!
+  const fetchFavorites = () => {
     if (!user?.id) {
       setFavoriteCities([]);
       return;
@@ -23,12 +22,12 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
       .then((res) => res.json())
       .then((data) => setFavoriteCities(Array.isArray(data) ? data : []))
       .catch(() => setFavoriteCities([]));
-  }, [user?.id]);
-
+  };
 
   useEffect(() => {
     fetchFavorites();
-  }, [user]);
+  }, [user?.id]);
+
 
   // Add favorite city and refresh
   const handleAddFavorite = (city) => {
