@@ -97,7 +97,7 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
           />
           <button
             type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 flex-shrink-0"
+            className="bg-gradient-to-r from-blue-600 to-sky-400 text-white px-4 py-2.5 rounded-r-3xl hover:bg-blue-600 flex-shrink-0"
             onClick={() => handleSearchCity()}
           >
             Search

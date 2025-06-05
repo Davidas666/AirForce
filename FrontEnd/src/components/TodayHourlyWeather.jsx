@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getWeatherCache, setWeatherCache } from "../utils/weatherCache";
 import HourlyWeatherSlider from "./HourlyWeatherSlider";
 
@@ -6,24 +6,26 @@ export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
   const [todayHourly, setTodayHourly] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const prevCity = useRef();
 
   useEffect(() => {
-    if (!city || prevCity.current === city) return;
-    prevCity.current = city;
-    setLoading(true);
-    setError("");
-    const now = new Date();
-    const currentHour = now.getHours();
-    const cnt = 29 - currentHour;
+    if (!city) return;
 
     // Try cache first
     const cached = getWeatherCache(city, "today");
-    if (cached) {
+    if (cached && cached.list && cached.list.length > 0) {
       setTodayHourly(cached.list);
       setLoading(false);
+      setError("");
       return;
     }
+
+    // If not cached, fetch and cache
+    setLoading(true);
+    setError("");
+    setTodayHourly([]);
+    const now = new Date();
+    const currentHour = now.getHours();
+    const cnt = 29 - currentHour;
 
     fetch(`/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${cnt}`)
       .then((res) => {
