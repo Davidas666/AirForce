@@ -35,7 +35,7 @@ export default function App() {
       <FavoriteWindow
         selectedCity={selectedCity}
         onSelect={setSelectedCity}
-        cityNotFound={!!error && error.includes("City not found")}
+        cityNotFound={!!error && error.includes("Failed to fetch data")}
       />
       <Body
         selectedCity={selectedCity}

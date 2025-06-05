@@ -21,6 +21,7 @@ export default function Body({
   const [todayStartIdx, setTodayStartIdx] = useState(0);
   const cityToShow = selectedCity || userCity;
   const user = getUserFromCookie();
+  const [bodyError, setBodyError] = useState("");
 
   // Use hooks for data fetching
   const {
