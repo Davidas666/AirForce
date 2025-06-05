@@ -36,13 +36,12 @@ export default function App() {
       <FavoriteWindow
         selectedCity={selectedCity}
         onSelect={setSelectedCity}
-        cityNotFound={!!error && error.includes("Failed to fetch data")}
+        cityNotFound={!!bodyError && bodyError.includes("Failed to fetch data")}
       />
       <Body
         selectedCity={selectedCity}
         setRecent={setRecent}
         setError={setBodyError}
-        // Remove favoriteCities, onAddFavorite, onRemoveFavorite props!
       />
       <Footer onTelegramAuth={handleTelegramAuth} />
     </>
