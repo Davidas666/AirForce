@@ -11,6 +11,7 @@ export default function App() {
   const [selectedCity, setSelectedCity] = useState(null);
   const userCity = useUserCity();
   const [recent, setRecent] = useRecentCities(userCity);
+  const [bodyError, setBodyError] = useState("");
 
   // User state (for login/logout)
   const [user, setUser] = useState(getUserFromCookie());
@@ -39,8 +40,8 @@ export default function App() {
       />
       <Body
         selectedCity={selectedCity}
-        recent={recent}
         setRecent={setRecent}
+        setError={setBodyError}
         // Remove favoriteCities, onAddFavorite, onRemoveFavorite props!
       />
       <Footer onTelegramAuth={handleTelegramAuth} />

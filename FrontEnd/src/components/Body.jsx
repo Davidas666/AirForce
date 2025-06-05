@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { getUserFromCookie } from "../utils/auth";
 import { useUserCity } from "../hooks/useUserCity";
 import { useHourlyWeather, useDailyWeather } from "../hooks/useWeatherData";
 import HourlyWeatherSlider from "./HourlyWeatherSlider";
@@ -7,21 +6,16 @@ import DailyWeatherCard from "./DailyWeatherCard";
 import TodayHourlyWeather from "./TodayHourlyWeather";
 import ViewButtons from "./ViewButtons";
 
-export default function Body({
-  selectedCity,
-  recent,
-  setRecent,
-  favoriteCities,
-  onAddFavorite,
-  onRemoveFavorite,
-}) {
+export default function Body({ selectedCity, setRecent, setError }) {
   const userCity = useUserCity();
   const [view, setView] = useState("hourly");
   const [startIdx, setStartIdx] = useState(0);
   const [todayStartIdx, setTodayStartIdx] = useState(0);
   const cityToShow = selectedCity || userCity;
-  const user = getUserFromCookie();
-  const [bodyError, setBodyError] = useState("");
+
+  useEffect(() => {
+    setError(error); // setError comes from App.jsx
+  }, [error]);
 
   // Use hooks for data fetching
   const {
