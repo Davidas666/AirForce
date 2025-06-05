@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { getUserFromCookie } from "../utils/auth";
 
-export default function FavoriteWindow({ selectedCity, onSelect }) {
+export default function FavoriteWindow({
+  selectedCity,
+  onSelect,
+  cityNotFound,
+}) {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [user, setUser] = useState(getUserFromCookie());
 
@@ -28,33 +32,30 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
     fetchFavorites();
   }, [user?.id]);
 
-
   // Add favorite city and refresh
   const handleAddFavorite = (city) => {
     if (!user?.id || !city || favoriteCities.includes(city)) return;
-    fetch('/api/favorite-cities', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id, city })
-    })
-      .then(fetchFavorites);
+    fetch("/api/favorite-cities", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id, city }),
+    }).then(fetchFavorites);
   };
 
   // Remove favorite city and refresh
   const handleRemoveFavorite = (city) => {
     if (!user?.id || !city) return;
-    fetch('/api/favorite-cities', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id, city })
-    })
-      .then(fetchFavorites);
+    fetch("/api/favorite-cities", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id, city }),
+    }).then(fetchFavorites);
   };
 
   // Render favorite cities row
   const renderFavoriteCitiesRow = () => (
     <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
-      {favoriteCities.map(city => (
+      {favoriteCities.map((city) => (
         <button
           key={city}
           className={`px-4 py-2 rounded-full font-semibold border transition ${
@@ -74,17 +75,24 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
   );
 
   // Render add/remove buttons for the selected city
-const renderButtons = () => {
+  const renderButtons = () => {
   const isFavorite = favoriteCities.includes(selectedCity);
+  const disableAdd = isFavorite || cityNotFound || !selectedCity;
   return (
     user?.id && selectedCity && (
       <div className="flex justify-center mt-2">
         <button
-          className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${disableAdd ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleAddFavorite(selectedCity)}
-          disabled={isFavorite}
-          title={isFavorite ? "City is already in favorites" : "Add to favorites"}
-          aria-disabled={isFavorite}
+          disabled={disableAdd}
+          title={
+            isFavorite
+              ? "City is already in favorites"
+              : cityNotFound
+              ? "City not found"
+              : "Add to favorites"
+          }
+          aria-disabled={disableAdd}
         >
           Add to Favorites
         </button>
@@ -102,15 +110,15 @@ const renderButtons = () => {
   );
 };
 
-if (!user?.id) {
-  return (
-    <div className="flex justify-center items-center w-full py-8">
-      <span className="text-sm text-gray-400 text-center">
-        Please login to access Favourite cities functionality
-      </span>
-    </div>
-  );
-}
+  if (!user?.id) {
+    return (
+      <div className="flex justify-center items-center w-full py-8">
+        <span className="text-sm text-gray-400 text-center">
+          Please login to access Favourite cities functionality
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div>

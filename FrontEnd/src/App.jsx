@@ -32,10 +32,11 @@ export default function App() {
         recent={recent}
         handleSearch={setSelectedCity}
       />
-<FavoriteWindow
-  selectedCity={selectedCity}
-  onSelect={setSelectedCity}
-/>
+      <FavoriteWindow
+        selectedCity={selectedCity}
+        onSelect={setSelectedCity}
+        cityNotFound={!!error && error.includes("City not found")}
+      />
       <Body
         selectedCity={selectedCity}
         recent={recent}
