@@ -79,7 +79,7 @@ export default function FavoriteWindow({
   const disableAdd = isFavorite || cityNotFound || !selectedCity;
   const disableRemove = !isFavorite || cityNotFound || !selectedCity;
   return (
-    user?.id && selectedCity && (
+    user?.id && (
       <div className="flex justify-center mt-2">
         <button
           className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${disableAdd ? "opacity-50 cursor-not-allowed" : ""}`}
