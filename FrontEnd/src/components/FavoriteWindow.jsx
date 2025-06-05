@@ -7,6 +7,7 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
 
   // Keep user in sync with cookie (in case of login/logout)
   useEffect(() => {
+    fetchFavorites();
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
     }, 1000);
@@ -27,7 +28,6 @@ export default function FavoriteWindow({ selectedCity, onSelect }) {
 
   useEffect(() => {
     fetchFavorites();
-    // eslint-disable-next-line
   }, [user]);
 
   // Add favorite city and refresh
