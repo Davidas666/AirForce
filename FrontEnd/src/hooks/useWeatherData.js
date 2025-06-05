@@ -1,27 +1,20 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getWeatherCache, setWeatherCache, clearWeatherCache } from "../utils/weatherCache";
-
-export function useHourlyWeather(city, setRecent, view) {
+export function useHourlyWeather(city, setRecent) {
   const [hourly, setHourly] = useState([]);
   const [cityName, setCityName] = useState("");
   const [country, setCountry] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const prevCityRef = useRef();
-  const prevViewRef = useRef();
 
   useEffect(() => {
     if (!city) return;
 
-    // Only clear cache if city or view actually changed
-    if (
-      (prevCityRef.current && prevCityRef.current !== city) ||
-      (prevViewRef.current && prevViewRef.current !== view)
-    ) {
+    if (prevCityRef.current && prevCityRef.current !== city) {
       clearWeatherCache(prevCityRef.current);
     }
     prevCityRef.current = city;
-    prevViewRef.current = view;
 
     setLoading(true);
     setError("");
@@ -58,11 +51,10 @@ export function useHourlyWeather(city, setRecent, view) {
       })
       .catch((err) => setError("Error: " + err.message))
       .finally(() => setLoading(false));
-  }, [city, setRecent, view]);
+  }, [city, setRecent]);
 
   return { hourly, cityName, country, loading, error };
 }
-
 export function useDailyWeather(city, setRecent, view) {
   const [daily, setDaily] = useState([]);
   const [cityName, setCityName] = useState("");

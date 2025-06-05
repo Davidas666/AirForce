@@ -13,14 +13,14 @@ export default function Body({ selectedCity, setRecent, setError }) {
   const [todayStartIdx, setTodayStartIdx] = useState(0);
   const cityToShow = selectedCity || userCity;
 
-  // Use hooks for data fetching
-  const {
-    hourly,
-    cityName: hourlyCityName,
-    country: hourlyCountry,
-    loading: loadingHourly,
-    error: errorHourly,
-  } = useHourlyWeather(view === "hourly" ? cityToShow : null, setRecent, view);
+  // Data hooks
+const {
+  hourly,
+  cityName: hourlyCityName,
+  country: hourlyCountry,
+  loading: loadingHourly,
+  error: errorHourly,
+} = useHourlyWeather(cityToShow, setRecent);
 
   const {
     daily,
@@ -30,16 +30,60 @@ export default function Body({ selectedCity, setRecent, setError }) {
     error: errorDaily,
   } = useDailyWeather(view === "7days" ? cityToShow : null, setRecent, view);
 
-  // Choose which data to show
-  const cityName = view === "hourly" ? hourlyCityName : dailyCityName;
-  const country = view === "hourly" ? hourlyCountry : dailyCountry;
-  const loading = view === "hourly" ? loadingHourly : loadingDaily;
-  const error = view === "hourly" ? errorHourly : errorDaily;
+  // Error and loading logic per view
+  let content = null;
+  let cityName = "";
+  let country = "";
+  let loading = false;
+  let error = "";
 
+if (view === "today") {
+  cityName = hourlyCityName || cityToShow;
+  country = hourlyCountry || "";
+  loading = false;
+  error = "";
+  content = cityToShow && (
+    <TodayHourlyWeather
+      city={cityToShow}
+      startIdx={todayStartIdx}
+      setStartIdx={setTodayStartIdx}
+    />
+  );
+  } else if (view === "hourly") {
+    cityName = hourlyCityName;
+    country = hourlyCountry;
+    loading = loadingHourly;
+    error = errorHourly;
+    content =
+      !loading && !error && hourly.length > 0 ? (
+        <HourlyWeatherSlider
+          hourly={hourly}
+          startIdx={startIdx}
+          setStartIdx={setStartIdx}
+        />
+      ) : null;
+  } else if (view === "7days") {
+    cityName = dailyCityName;
+    country = dailyCountry;
+    loading = loadingDaily;
+    error = errorDaily;
+    content =
+      !loading && !error && daily.length > 0 ? (
+        <div className="flex justify-center w-full">
+          <div className="flex gap-2 w-full overflow-x-auto justify-center">
+            {daily.map((item) => (
+              <DailyWeatherCard key={item.dt} item={item} />
+            ))}
+          </div>
+        </div>
+      ) : null;
+  }
+
+  // Set error for parent
   useEffect(() => {
     setError(error);
-  }, [error]);
-  
+  }, [error, setError]);
+
   return (
     <div
       className="mx-auto mt-10 p-6 bg-white rounded shadow flex gap-8 items-start"
@@ -83,44 +127,13 @@ export default function Body({ selectedCity, setRecent, setError }) {
                 <div className="mb-2 text-gray-600 flex items-center">
                   City:{" "}
                   <span className="font-semibold ml-1">
-                    {view === "hourly" &&
-                      (hourlyCityName || cityToShow || "...")}
-                    {view === "today" && (cityToShow || "...")}
-                    {view === "7days" && (dailyCityName || cityToShow || "...")}
-                    {view === "hourly" && hourlyCountry && `, ${hourlyCountry}`}
-                    {view === "7days" && dailyCountry && `, ${dailyCountry}`}
+                    {cityName || cityToShow || "..."}
+                    {country && `, ${country}`}
                   </span>
                 </div>
                 {loading && <div>Loading...</div>}
                 {error && <div className="text-red-500">{error}</div>}
-
-                {!loading &&
-                  !error &&
-                  view === "hourly" &&
-                  hourly.length > 0 && (
-                    <HourlyWeatherSlider
-                      hourly={hourly}
-                      startIdx={startIdx}
-                      setStartIdx={setStartIdx}
-                    />
-                  )}
-
-                {!loading && !error && view === "today" && cityToShow && (
-                  <TodayHourlyWeather
-                    city={cityToShow}
-                    startIdx={todayStartIdx}
-                    setStartIdx={setTodayStartIdx}
-                  />
-                )}
-                {!loading && !error && view === "7days" && daily.length > 0 && (
-                  <div className="flex justify-center w-full">
-                    <div className="flex gap-2 w-full overflow-x-auto justify-center">
-                      {daily.map((item) => (
-                        <DailyWeatherCard key={item.dt} item={item} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {content}
               </>
             )}
           </>
