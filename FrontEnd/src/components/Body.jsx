@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserCity } from "../hooks/useUserCity";
 import { useHourlyWeather, useDailyWeather } from "../hooks/useWeatherData";
 import HourlyWeatherSlider from "./HourlyWeatherSlider";
@@ -12,10 +12,6 @@ export default function Body({ selectedCity, setRecent, setError }) {
   const [startIdx, setStartIdx] = useState(0);
   const [todayStartIdx, setTodayStartIdx] = useState(0);
   const cityToShow = selectedCity || userCity;
-
-  useEffect(() => {
-    setError(error);
-  }, [error]);
 
   // Use hooks for data fetching
   const {
@@ -40,6 +36,10 @@ export default function Body({ selectedCity, setRecent, setError }) {
   const loading = view === "hourly" ? loadingHourly : loadingDaily;
   const error = view === "hourly" ? errorHourly : errorDaily;
 
+  useEffect(() => {
+    setError(error);
+  }, [error]);
+  
   return (
     <div
       className="mx-auto mt-10 p-6 bg-white rounded shadow flex gap-8 items-start"
