@@ -16,7 +16,6 @@ export default function FavoriteWindow({
     return () => clearInterval(interval);
   }, []);
 
-  // Define fetchFavorites here!
   const fetchFavorites = () => {
     if (!user?.id) {
       setFavoriteCities([]);
@@ -75,9 +74,10 @@ export default function FavoriteWindow({
   );
 
   // Render add/remove buttons for the selected city
-  const renderButtons = () => {
+ const renderButtons = () => {
   const isFavorite = favoriteCities.includes(selectedCity);
   const disableAdd = isFavorite || cityNotFound || !selectedCity;
+  const disableRemove = !isFavorite || cityNotFound || !selectedCity;
   return (
     user?.id && selectedCity && (
       <div className="flex justify-center mt-2">
@@ -86,10 +86,10 @@ export default function FavoriteWindow({
           onClick={() => handleAddFavorite(selectedCity)}
           disabled={disableAdd}
           title={
-            isFavorite
-              ? "City is already in favorites"
-              : cityNotFound
+            cityNotFound
               ? "City not found"
+              : isFavorite
+              ? "City is already in favorites"
               : "Add to favorites"
           }
           aria-disabled={disableAdd}
@@ -97,11 +97,17 @@ export default function FavoriteWindow({
           Add to Favorites
         </button>
         <button
-          className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${!isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${disableRemove ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleRemoveFavorite(selectedCity)}
-          disabled={!isFavorite}
-          title={!isFavorite ? "City is not in favorites" : "Remove from favorites"}
-          aria-disabled={!isFavorite}
+          disabled={disableRemove}
+          title={
+            cityNotFound
+              ? "City not found"
+              : !isFavorite
+              ? "City is not in favorites"
+              : "Remove from favorites"
+          }
+          aria-disabled={disableRemove}
         >
           Remove from Favorites
         </button>

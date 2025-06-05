@@ -14,7 +14,7 @@ export default function Body({ selectedCity, setRecent, setError }) {
   const cityToShow = selectedCity || userCity;
 
   useEffect(() => {
-    setError(error); // setError comes from App.jsx
+    setError(error);
   }, [error]);
 
   // Use hooks for data fetching
