@@ -9,9 +9,11 @@ export default function ViewButtons({ view, setView }) {
       {views.map(({ key, label }) => (
         <button
           key={key}
-          className={`px-4 py-2 rounded font-semibold border ${
-            view === key ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"
-          }`}
+          className={`px-4 py-2 rounded-2xl font-semibold border transition-colors
+            ${view === key
+              ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white border-blue-500"
+              : "bg-gray-100 text-gray-700 border-gray-300"}
+          `}
           onClick={() => setView(key)}
         >
           {label}

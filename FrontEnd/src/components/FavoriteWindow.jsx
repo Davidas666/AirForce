@@ -81,7 +81,7 @@ const renderButtons = () => {
     user?.id && selectedCity && (
       <div className="flex justify-center mt-2">
         <button
-          className={`bg-blue-500 text-white px-3 py-1 rounded mr-2 transition-opacity ${isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleAddFavorite(selectedCity)}
           disabled={isFavorite}
           title={isFavorite ? "City is already in favorites" : "Add to favorites"}
@@ -90,7 +90,7 @@ const renderButtons = () => {
           Add to Favorites
         </button>
         <button
-          className={`bg-red-500 text-white px-3 py-1 rounded transition-opacity ${!isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${!isFavorite ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={() => handleRemoveFavorite(selectedCity)}
           disabled={!isFavorite}
           title={!isFavorite ? "City is not in favorites" : "Remove from favorites"}
