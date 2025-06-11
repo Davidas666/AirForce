@@ -90,7 +90,7 @@ if (view === "today") {
     className="mx-auto mt-10 p-6 bg-white rounded shadow flex gap-8 items-start"
     style={{ maxWidth: "1020px", minHeight: "500px" }}
   >
-    <div className="flex-1 min-w-0">
+  <div className="flex-1 min-w-0 flex flex-col items-center">
       <div className="flex items-start justify-between">
         <h2 className="text-2xl font-bold mb-4">
           Nearest city weather check forecast
@@ -143,9 +143,9 @@ if (view === "today") {
       )}
     </div>
 
-    <div className="min-w-[260px] max-w-xs">
-      {cityToShow && <SubscriptionToggles selectedCity={cityToShow} />}
-    </div>
+  <div className="flex-shrink-0" style={{ width: 350 }}>
+    {cityToShow && <SubscriptionToggles selectedCity={cityToShow} />}
   </div>
+</div>
 );
 }

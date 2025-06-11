@@ -70,11 +70,20 @@ export default function SubscriptionToggles({ selectedCity }) {
         bgcolor: "#e3f2fd",
         borderRadius: 2,
         boxShadow: 1,
-        minWidth: 220,
-        maxWidth: 320,
+        minWidth: 320,
+        maxWidth: 420,
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "110px", // Make it less tall
       }}
     >
-      <Typography variant="subtitle1" sx={{ mb: 1, color: "#1976d2" }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ mb: 1, color: "#1976d2", fontSize: "1rem" }}
+      >
         Weather subscriptions for{" "}
         <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
       </Typography>
@@ -84,6 +93,8 @@ export default function SubscriptionToggles({ selectedCity }) {
           flexDirection: "row",
           gap: 2,
           justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
         }}
       >
         {SUBS.map((s) => (
@@ -95,9 +106,11 @@ export default function SubscriptionToggles({ selectedCity }) {
                 onChange={() => handleToggle(s.key)}
                 disabled={loading}
                 color="primary"
+                size="small"
               />
             }
             label={s.label}
+            sx={{ m: 0 }}
           />
         ))}
       </Box>
