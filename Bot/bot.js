@@ -1,117 +1,168 @@
-// Telegram bot pagrindinis failas
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
-const SubscriptionModel = require('./models/subscriptionModel');
-const { Pool } = require('pg');
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const subscriptionModel = new SubscriptionModel(pool);
-const express = require('express');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const winston = require('winston');
+const menuHandler = require('./handlers/menuHandler');
+const subscriptionHandler = require('./handlers/subscriptionHandler');
+const stateManager = require('./handlers/stateManager');
+const fetchClientCities = require('./helpers/fetchClientCities');
+const { Markup } = require('telegraf');
+
+const weatherHandler = require('./handlers/weatherHandler');
+
+// Initialize logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'bot.log' })
+  ]
+});
+
+// Database connection is now handled within the subscription model.
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) {
-  console.error('Nerastas TELEGRAM_BOT_TOKEN aplinkos kintamasis!');
+  logger.error('TELEGRAM_BOT_TOKEN not set!');
   process.exit(1);
 }
 
-// Sukuriamas naujas bot instance
 const bot = new TelegramBot(token, { polling: true });
-
-// Prenumeratos dialogo būsena
 const userStates = {};
 
-// Start komanda
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, 'Sveiki! Jūs sėkmingai užregistravote AirForce orų botą.');
+async function clearChat(chatId, keepMessages = 0) {
+  const user = stateManager.getOrCreateUserState(userStates, chatId);
+  if (!user.messages || user.messages.length <= keepMessages) return;
+
+  const messagesToDelete = user.messages.slice(0, -keepMessages);
+  for (const messageId of messagesToDelete) {
+    try {
+      await bot.deleteMessage(chatId, messageId);
+    } catch (err) {
+      if (err.response && err.response.body && err.response.body.description.includes('message to delete not found')) {
+        logger.warn(`Bandant ištrinti pranešimą [chatId: ${chatId}, messageId: ${messageId}], jis jau buvo ištrintas.`);
+      } else {
+        logger.error(`Klaida trinant pranešimą [chatId: ${chatId}, messageId: ${messageId}]:`, err);
+      }
+    }
+  }
+  user.messages = user.messages.slice(-keepMessages);
+}
+
+bot.on('polling_error', (error) => {
+  logger.error(`Polling error: ${error.code} - ${error.message}`);
 });
 
-bot.onText(/\/subscribe/, async (msg) => {
+// Įjungiame callback užklausas
+bot.on('callback_query', (query) => {
+  // Reikalinga, kad botas nebandytų atsakyti į callback'us, kuriuos jau apdorojome
+  bot.answerCallbackQuery(query.id).catch(err => {
+    logger.error('Klaida atsakant į callback:', err);
+  });
+});
+
+logger.info('Botas paleistas ir pasiruošęs priimti komandas.');
+
+// Paleidžiame automatinį pranešimų siuntimą
+const scheduler = require('./scheduler');
+scheduler.start(bot);
+
+// Komanda /start
+bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
-  userStates[chatId] = { step: 'city' };
-  bot.sendMessage(chatId, 'Įveskite miesto pavadinimą, kurio orus norite prenumeruoti:');
+  logger.info(`Vartotojas [chatId: ${chatId}] paspaudė /start`);
+  await clearChat(chatId, 0);
+  stateManager.resetState(userStates, chatId);
+  await menuHandler.showMainMenu(bot, chatId, userStates, 'Sveiki! Aš esu AirForce bot. Pasirinkite veiksmą:');
+});
+
+// Apdorojame callback užklausas
+bot.on('callback_query', async (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+  const messageId = callbackQuery.message.message_id;
+  const data = callbackQuery.data;
+  
+  try {
+    await subscriptionHandler.handleCallbackQuery(bot, chatId, messageId, data, userStates);
+  } catch (error) {
+    logger.error(`Klaida apdorojant callback [chatId: ${chatId}]:`, error);
+    try {
+      await bot.answerCallbackQuery({
+        callback_query_id: callbackQuery.id,
+        text: 'Įvyko klaida. Bandykite dar kartą.'
+      });
+    } catch (e) {
+      logger.error('Klaida siunčiant atsakymą į callback:', e);
+    }
+  }
 });
 
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
-  const state = userStates[chatId];
-  if (!state) return;
-  if (msg.text.startsWith('/')) return;
+  // Ignoruojame žinutes be teksto arba komandas
+  if (!msg.text || msg.text.startsWith('/')) return;
 
-  if (state.step === 'city') {
-    state.city = msg.text.trim();
-    state.step = 'frequency';
-    bot.sendMessage(chatId, 'Kaip dažnai norite gauti prognozę? Pasirinkite dažnumą:', {
-      reply_markup: {
-        keyboard: [['Vieną kartą per dieną'], ['Kartą per savaitę'], ['3 kartus per dieną']],
-        one_time_keyboard: true,
-        resize_keyboard: true
+  try {
+    const state = stateManager.getState(userStates, chatId);
+
+    await clearChat(chatId, 0);
+    logger.info(`Gauta žinutė [chatId: ${chatId}, text: ${msg.text}]`);
+
+    // Dialogo žingsnių valdymas
+    if (state?.step) {
+      switch (state.step) {
+        case 'city':
+          await subscriptionHandler.handleCityStep(bot, chatId, userStates, msg.text);
+          return;
+        case 'frequency':
+          await subscriptionHandler.handleFrequencyStep(bot, chatId, userStates, msg.text);
+          return;
+        case 'weather_city':
+          await weatherHandler.handleWeatherCityStep(bot, chatId, userStates, msg.text);
+          return;
       }
-    });
-    return;
-  }
-  if (state.step === 'frequency') {
-    let morning_forecast = false, weekly_forecast = false, daily_thrice_forecast = false;
-    if (msg.text.toLowerCase().includes('vieną kartą per dieną')) {
-      morning_forecast = true;
-    } else if (msg.text.toLowerCase().includes('kartą per savaitę')) {
-      weekly_forecast = true;
-      state.step = 'day_of_week'; // Galite papildyti, jei norite išsaugoti savaitės dieną atskirai
-      bot.sendMessage(chatId, 'Pasirinkite savaitės dieną, kada norite gauti prognozę:', {
-        reply_markup: {
-          keyboard: [['Pirmadienis','Antradienis','Trečiadienis'],['Ketvirtadienis','Penktadienis','Šeštadienis','Sekmadienis']],
-          one_time_keyboard: true,
-          resize_keyboard: true
-        }
-      });
-      state.morning_forecast = morning_forecast;
-      state.weekly_forecast = weekly_forecast;
-      state.daily_thrice_forecast = daily_thrice_forecast;
-      return;
-    } else if (msg.text.toLowerCase().includes('3 kartus per dieną')) {
-      daily_thrice_forecast = true;
-    } else {
-      bot.sendMessage(chatId, 'Nesupratau dažnumo. Bandykite dar kartą.');
-      return;
     }
-    // Išsaugom DB
-    console.log('BANDOME IŠSAUGOTI:', { chatId, city: state.city, morning_forecast, weekly_forecast, daily_thrice_forecast });
-    await subscriptionModel.addSubscription(chatId, state.city, morning_forecast, weekly_forecast, daily_thrice_forecast)
-      .then(() => {
-        console.log('PRENUMERATA IŠSAUGOTA!');
-        bot.sendMessage(chatId, `Prenumerata sėkmingai sukurta! Miestas: ${state.city}, dažnumas: ${msg.text}`);
-      })
-      .catch((err) => {
-        console.error('KLAIDA IŠSAUGANT PRENUMERATĄ:', err);
-        bot.sendMessage(chatId, 'Klaida išsaugant prenumeratą. Bandykite vėliau.');
-      });
-    delete userStates[chatId];
-  }
-  if (state.step === 'day_of_week') {
-    const days = ['Pirmadienis','Antradienis','Trečiadienis','Ketvirtadienis','Penktadienis','Šeštadienis','Sekmadienis'];
-    const selectedDay = days.find(d => msg.text.toLowerCase().includes(d.toLowerCase()));
-    if (!selectedDay) {
-      bot.sendMessage(chatId, 'Nesupratau savaitės dienos. Bandykite dar kartą.');
-      return;
+
+    // Pagrindinio meniu komandų valdymas
+    switch (msg.text) {
+      case 'Prenumeruoti':
+        await subscriptionHandler.startSubscriptionFlow(bot, chatId, userStates);
+        break;
+      case 'Mano prenumeratos':
+        await subscriptionHandler.handleShowSubscriptions(bot, chatId, userStates);
+        break;
+      case 'Klientų miestai':
+        await weatherHandler.handleClientCities(bot, chatId, userStates);
+        break;
+      case 'Orų prognozė':
+        await weatherHandler.handleWeatherForecast(bot, chatId, userStates);
+        break;
+      case 'Pagalba':
+        await menuHandler.showMainMenu(bot, chatId, userStates, 'Čia yra pagalbos tekstas. Susisiekite su mumis, jei turite klausimų.');
+        break;
+      case 'Grįžti atgal':
+        stateManager.resetState(userStates, chatId);
+        await menuHandler.showMainMenu(bot, chatId, userStates, 'Pasirinkite veiksmą:');
+        break;
+      default:
+        await menuHandler.showMainMenu(bot, chatId, userStates, 'Nesupratau komandos. Pasirinkite iš meniu.');
+        break;
     }
-    // Išsaugom DB su papildomu weekly_forecast ir galima būtų pridėti day_of_week stulpelį, jei reikia
-    const morning_forecast = state.morning_forecast || false;
-    const weekly_forecast = state.weekly_forecast || true;
-    const daily_thrice_forecast = state.daily_thrice_forecast || false;
-    console.log('BANDOME IŠSAUGOTI:', { chatId, city: state.city, morning_forecast, weekly_forecast, daily_thrice_forecast, selectedDay });
-    await subscriptionModel.addSubscription(chatId, state.city, morning_forecast, weekly_forecast, daily_thrice_forecast)
-      .then(() => {
-        console.log('PRENUMERATA IŠSAUGOTA!');
-        bot.sendMessage(chatId, `Prenumerata sėkmingai sukurta! Miestas: ${state.city}, dažnumas: Kartą per savaitę, diena: ${selectedDay}`);
-      })
-      .catch((err) => {
-        console.error('KLAIDA IŠSAUGANT PRENUMERATĄ:', err);
-        bot.sendMessage(chatId, 'Klaida išsaugant prenumeratą. Bandykite vėliau.');
-      });
-    delete userStates[chatId];
+  } catch (err) {
+    logger.error(`Klaida apdorojant žinutę [chatId: ${chatId}, text: ${msg.text}]:`, err);
   }
 });
 
-const app = express();
-app.use('/api/subscriptions', subscriptionRoutes);
-
-// Papildoma logika bus pridedama vėliau
+async function clearChat(chatId, leaveLastN = 1) {
+  const toDelete = stateManager.clearMessages(userStates, chatId, leaveLastN);
+  for (const msgId of toDelete) {
+    try {
+      await bot.deleteMessage(chatId, msgId);
+    } catch (e) {
+      logger.warn(`Nepavyko ištrinti žinutės [chatId: ${chatId}, msgId: ${msgId}]:`, e.message);
+    }
+  }
+}
