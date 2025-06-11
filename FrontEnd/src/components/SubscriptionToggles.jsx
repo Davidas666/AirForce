@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 const SUBS = [
   { key: "morning", label: "Morning" },
   { key: "weekly", label: "Weekly" },
-  { key: "daily_thrice", label: "Daily thrice" },
+  { key: "daily_thrice", label: "3 times a day" },
 ];
 
 export default function SubscriptionToggles({ selectedCity }) {
@@ -70,14 +70,14 @@ export default function SubscriptionToggles({ selectedCity }) {
         bgcolor: "#e3f2fd",
         borderRadius: 2,
         boxShadow: 1,
-        minWidth: 320,
-        maxWidth: 420,
+        minWidth: 520,
+        maxWidth: 620,
         width: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "110px", // Make it less tall
+        height: "110px",
       }}
     >
       <Typography
