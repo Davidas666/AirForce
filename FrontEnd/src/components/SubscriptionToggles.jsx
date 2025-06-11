@@ -63,57 +63,55 @@ export default function SubscriptionToggles({ selectedCity }) {
   if (!user?.id || !selectedCity) return null;
 
   return (
+  <Box
+    sx={{
+      my: 2,
+      p: 2,
+      bgcolor: "#e3f2fd",
+      borderRadius: 2,
+      boxShadow: 1,
+      minWidth: 340,
+      maxWidth: 400,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "90px",
+    }}
+  >
+    <Typography
+      variant="subtitle1"
+      sx={{ mb: 1, color: "#1976d2", fontSize: "0.95rem", textAlign: "center" }}
+    >
+      Weather subscriptions for{" "}
+      <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
+    </Typography>
     <Box
       sx={{
-        my: 2,
-        p: 2,
-        bgcolor: "#e3f2fd",
-        borderRadius: 2,
-        boxShadow: 1,
-        minWidth: 520,
-        maxWidth: 620,
-        width: "100%",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        flexDirection: "row",
+        gap: 1.5,
         justifyContent: "center",
-        height: "110px",
+        alignItems: "center",
       }}
     >
-      <Typography
-        variant="subtitle1"
-        sx={{ mb: 1, color: "#1976d2", fontSize: "1rem" }}
-      >
-        Weather subscriptions for{" "}
-        <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 2,
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        {SUBS.map((s) => (
-          <FormControlLabel
-            key={s.key}
-            control={
-              <Switch
-                checked={!!subs[s.key]}
-                onChange={() => handleToggle(s.key)}
-                disabled={loading}
-                color="primary"
-                size="small"
-              />
-            }
-            label={s.label}
-            sx={{ m: 0 }}
-          />
-        ))}
-      </Box>
+      {SUBS.map((s) => (
+        <FormControlLabel
+          key={s.key}
+          control={
+            <Switch
+              checked={!!subs[s.key]}
+              onChange={() => handleToggle(s.key)}
+              disabled={loading}
+              color="primary"
+              size="small"
+            />
+          }
+          label={<span style={{ fontSize: "0.95rem" }}>{s.label}</span>}
+          sx={{ m: 0 }}
+        />
+      ))}
     </Box>
-  );
+  </Box>
+);
 }

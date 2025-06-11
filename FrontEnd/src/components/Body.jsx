@@ -101,46 +101,48 @@ if (view === "today") {
       {!cityToShow && <div>Loading nearest city...</div>}
 
       {cityToShow && (
-        <>
-          {error && error.includes("Failed to fetch data") ? (
-            <div className="flex flex-col items-center justify-center mb-4">
-              <div className="flex items-center gap-2 text-red-600 text-lg font-semibold">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
-                  />
-                </svg>
-                <span>City not found</span>
-              </div>
-              <div className="text-gray-500 text-sm mt-1">
-                Please check the city name and try again.
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="mb-2 text-gray-600 flex items-center">
-                City:{" "}
-                <span className="font-semibold ml-1">
-                  {cityName || cityToShow || "..."}
-                  {country && `, ${country}`}
-                </span>
-              </div>
-              {loading && <div>Loading...</div>}
-              {error && <div className="text-red-500">{error}</div>}
-              {content}
-            </>
-          )}
-        </>
-      )}
+  <>
+    <SubscriptionToggles selectedCity={cityToShow} />
+
+    {error && error.includes("Failed to fetch data") ? (
+      <div className="flex flex-col items-center justify-center mb-4">
+        <div className="flex items-center gap-2 text-red-600 text-lg font-semibold">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
+            />
+          </svg>
+          <span>City not found</span>
+        </div>
+        <div className="text-gray-500 text-sm mt-1">
+          Please check the city name and try again.
+        </div>
+      </div>
+    ) : (
+      <>
+        <div className="mb-2 text-gray-600 flex items-center">
+          City:{" "}
+          <span className="font-semibold ml-1">
+            {cityName || cityToShow || "..."}
+            {country && `, ${country}`}
+          </span>
+        </div>
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+        {content}
+      </>
+    )}
+  </>
+)}
     </div>
 
   <div className="flex-shrink-0" style={{ width: 350 }}>
