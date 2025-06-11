@@ -25,13 +25,14 @@ export default function SubscriptionToggles({ selectedCity }) {
     fetch(`/api/subscription/user?telegram_id=${user.id}`)
       .then((res) => res.json())
       .then((data) => {
+          console.log("Subscription API data:", data);
         const found = (data.subscriptions || []).find(
           (s) => s.city.toLowerCase() === selectedCity.toLowerCase()
         );
         setSubs({
-          weekly: found?.weekly_forecast || false,
-          morning: found?.morning_forecast || false,
-          daily_thrice: found?.daily_thrice_forecast || false,
+          weekly: !!found?.weekly_forecast || false,
+          morning: !!found?.morning_forecast || false,
+          daily_thrice: !!found?.daily_thrice_forecast || false,
         });
       })
       .finally(() => setLoading(false));
