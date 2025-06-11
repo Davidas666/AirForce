@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getUserFromCookie } from "../utils/auth";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const SUBS = [
   { key: "weekly", label: "Weekly" },
@@ -25,14 +29,13 @@ export default function SubscriptionToggles({ selectedCity }) {
     fetch(`/api/subscription/user?telegram_id=${user.id}`)
       .then((res) => res.json())
       .then((data) => {
-          console.log("Subscription API data:", data);
         const found = (data.subscriptions || []).find(
           (s) => s.city.toLowerCase() === selectedCity.toLowerCase()
         );
         setSubs({
-          weekly: !!found?.weekly_forecast || false,
-          morning: !!found?.morning_forecast || false,
-          daily_thrice: !!found?.daily_thrice_forecast || false,
+          weekly: !!found?.weekly_forecast,
+          morning: !!found?.morning_forecast,
+          daily_thrice: !!found?.daily_thrice_forecast,
         });
       })
       .finally(() => setLoading(false));
@@ -60,26 +63,34 @@ export default function SubscriptionToggles({ selectedCity }) {
   if (!user?.id || !selectedCity) return null;
 
   return (
-    <div className="flex flex-col items-center my-4 p-4 bg-blue-50 rounded shadow max-w-md mx-auto">
-      <div className="font-semibold mb-2 text-blue-700">
-        Weather subscriptions for <span className="underline">{selectedCity}</span>
-      </div>
-      <div className="flex gap-4">
-        {SUBS.map((s) => (
-          <button
-            key={s.key}
-            className={`px-4 py-2 rounded-full font-semibold border transition ${
-              subs[s.key]
-                ? "bg-blue-500 text-white border-blue-500"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
-            }`}
-            disabled={loading}
-            onClick={() => handleToggle(s.key)}
-          >
-            {s.label} {subs[s.key] ? "ON" : "OFF"}
-          </button>
-        ))}
-      </div>
-    </div>
+    <Box
+      sx={{
+        my: 2,
+        p: 2,
+        bgcolor: "#e3f2fd",
+        borderRadius: 2,
+        boxShadow: 1,
+        minWidth: 220,
+        maxWidth: 320,
+      }}
+    >
+      <Typography variant="subtitle1" sx={{ mb: 1, color: "#1976d2" }}>
+        Weather subscriptions for <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
+      </Typography>
+      {SUBS.map((s) => (
+        <FormControlLabel
+          key={s.key}
+          control={
+            <Switch
+              checked={!!subs[s.key]}
+              onChange={() => handleToggle(s.key)}
+              disabled={loading}
+              color="primary"
+            />
+          }
+          label={s.label}
+        />
+      ))}
+    </Box>
   );
 }
