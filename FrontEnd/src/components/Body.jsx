@@ -5,6 +5,7 @@ import HourlyWeatherSlider from "./HourlyWeatherSlider";
 import DailyWeatherCard from "./DailyWeatherCard";
 import TodayHourlyWeather from "./TodayHourlyWeather";
 import ViewButtons from "./ViewButtons";
+import SubscriptionToggles from "./SubscriptionToggles";
 
 export default function Body({ selectedCity, setRecent, setError }) {
   const userCity = useUserCity();
@@ -91,7 +92,7 @@ if (view === "today") {
     >
       <div className="flex-1 min-w-0">
         <h2 className="text-2xl font-bold mb-4">
-          Nearest city weather forecast
+          Nearest city weather check forecast
         </h2>
         <ViewButtons view={view} setView={setView} />
 
@@ -99,6 +100,8 @@ if (view === "today") {
 
         {cityToShow && (
           <>
+            <SubscriptionToggles selectedCity={cityToShow} />
+
             {error && error.includes("Failed to fetch data") ? (
               <div className="flex flex-col items-center justify-center mb-4">
                 <div className="flex items-center gap-2 text-red-600 text-lg font-semibold">
