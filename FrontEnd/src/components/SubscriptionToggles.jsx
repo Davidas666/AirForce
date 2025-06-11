@@ -6,9 +6,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 const SUBS = [
-  { key: "weekly", label: "Weekly" },
   { key: "morning", label: "Morning" },
-  { key: "daily_thrice", label: "Weekly thrice" },
+  { key: "weekly", label: "Weekly" },
+  { key: "daily_thrice", label: "Daily thrice" },
 ];
 
 export default function SubscriptionToggles({ selectedCity }) {
@@ -75,22 +75,32 @@ export default function SubscriptionToggles({ selectedCity }) {
       }}
     >
       <Typography variant="subtitle1" sx={{ mb: 1, color: "#1976d2" }}>
-        Weather subscriptions for <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
+        Weather subscriptions for{" "}
+        <span style={{ textDecoration: "underline" }}>{selectedCity}</span>
       </Typography>
-      {SUBS.map((s) => (
-        <FormControlLabel
-          key={s.key}
-          control={
-            <Switch
-              checked={!!subs[s.key]}
-              onChange={() => handleToggle(s.key)}
-              disabled={loading}
-              color="primary"
-            />
-          }
-          label={s.label}
-        />
-      ))}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          justifyContent: "center",
+        }}
+      >
+        {SUBS.map((s) => (
+          <FormControlLabel
+            key={s.key}
+            control={
+              <Switch
+                checked={!!subs[s.key]}
+                onChange={() => handleToggle(s.key)}
+                disabled={loading}
+                color="primary"
+              />
+            }
+            label={s.label}
+          />
+        ))}
+      </Box>
     </Box>
   );
 }
