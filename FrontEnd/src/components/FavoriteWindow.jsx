@@ -29,7 +29,7 @@ export default function FavoriteWindow({ cityNotFound }) {
 
   useEffect(() => {
     fetchFavorites();
-  }, [user?.id]);
+  }, [user?.id, selectedCity]);
 
   // Add favorite city and refresh
   const handleAddFavorite = (city) => {
