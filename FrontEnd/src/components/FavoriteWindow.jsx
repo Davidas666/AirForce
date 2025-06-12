@@ -7,7 +7,7 @@ export default function FavoriteWindow({ cityNotFound }) {
   const [user, setUser] = useState(getUserFromCookie());
   const navigate = useNavigate();
   const { city } = useParams();
-  const selectedCity = city;
+  const selectedCity = city ? city.trim() : "";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,9 +31,14 @@ export default function FavoriteWindow({ cityNotFound }) {
     fetchFavorites();
   }, [user?.id, selectedCity]);
 
+  // Helper: case-insensitive check
+  const isFavorite = favoriteCities.some(
+    (fav) => fav.toLowerCase() === selectedCity.toLowerCase()
+  );
+
   // Add favorite city and refresh
   const handleAddFavorite = (city) => {
-    if (!user?.id || !city || favoriteCities.includes(city)) return;
+    if (!user?.id || !city || isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,7 +48,7 @@ export default function FavoriteWindow({ cityNotFound }) {
 
   // Remove favorite city and refresh
   const handleRemoveFavorite = (city) => {
-    if (!user?.id || !city) return;
+    if (!user?.id || !city || !isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -58,7 +63,7 @@ export default function FavoriteWindow({ cityNotFound }) {
         <button
           key={favCity}
           className={`px-4 py-2 rounded-full font-semibold border transition ${
-            favCity === selectedCity
+            favCity.toLowerCase() === selectedCity.toLowerCase()
               ? "bg-blue-500 text-white border-blue-500"
               : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
           }`}
@@ -75,7 +80,6 @@ export default function FavoriteWindow({ cityNotFound }) {
 
   // Render add/remove buttons for the selected city
   const renderButtons = () => {
-    const isFavorite = favoriteCities.includes(selectedCity);
     const disableAdd = isFavorite || cityNotFound || !selectedCity;
     const disableRemove = !isFavorite || cityNotFound || !selectedCity;
     return (
