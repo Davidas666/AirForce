@@ -7,7 +7,6 @@ export default function FavoriteWindow({ cityNotFound }) {
   const [user, setUser] = useState(getUserFromCookie());
   const navigate = useNavigate();
   const { city } = useParams();
-  const normalizedCity = city ? city.trim().toLowerCase() : "";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,39 +28,39 @@ export default function FavoriteWindow({ cityNotFound }) {
 
   useEffect(() => {
     fetchFavorites();
-  }, [user?.id, normalizedCity]);
+  }, [user?.id, city]);
 
-  const normalizeCity = (c) => (c ? c.trim().toLowerCase() : "");
+  // Case-sensitive check
+  const isFavorite = favoriteCities.includes(city);
 
-  const isFavorite = favoriteCities.some(
-    (fav) => normalizeCity(fav) === normalizedCity
-  );
-
-  const handleAddFavorite = () => {
-    if (!user?.id || !normalizedCity || isFavorite) return;
+  // Add favorite city and refresh
+  const handleAddFavorite = (cityName) => {
+    if (!user?.id || !cityName || isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city: normalizedCity }),
+      body: JSON.stringify({ userId: user.id, city: cityName }),
     }).then(fetchFavorites);
   };
 
-  const handleRemoveFavorite = () => {
-    if (!user?.id || !normalizedCity || !isFavorite) return;
+  // Remove favorite city and refresh
+  const handleRemoveFavorite = (cityName) => {
+    if (!user?.id || !cityName || !isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city: normalizedCity }),
+      body: JSON.stringify({ userId: user.id, city: cityName }),
     }).then(fetchFavorites);
   };
 
+  // Render favorite cities row
   const renderFavoriteCitiesRow = () => (
     <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
       {favoriteCities.map((favCity) => (
         <button
           key={favCity}
           className={`px-4 py-2 rounded-full font-semibold border transition ${
-            normalizeCity(favCity) === normalizedCity
+            favCity === city
               ? "bg-blue-500 text-white border-blue-500"
               : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
           }`}
@@ -76,10 +75,10 @@ export default function FavoriteWindow({ cityNotFound }) {
     </div>
   );
 
+  // Render add/remove buttons for the selected city
   const renderButtons = () => {
-    if (!normalizedCity) return null;
-    const disableAdd = isFavorite || cityNotFound;
-    const disableRemove = !isFavorite || cityNotFound;
+    const disableAdd = isFavorite || cityNotFound || !city;
+    const disableRemove = !isFavorite || cityNotFound || !city;
     return (
       user?.id && (
         <div className="flex justify-center mt-2">
@@ -87,7 +86,7 @@ export default function FavoriteWindow({ cityNotFound }) {
             className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${
               disableAdd ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={handleAddFavorite}
+            onClick={() => handleAddFavorite(city)}
             disabled={disableAdd}
             title={
               cityNotFound
@@ -104,7 +103,7 @@ export default function FavoriteWindow({ cityNotFound }) {
             className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${
               disableRemove ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={handleRemoveFavorite}
+            onClick={() => handleRemoveFavorite(city)}
             disabled={disableRemove}
             title={
               cityNotFound
@@ -122,7 +121,11 @@ export default function FavoriteWindow({ cityNotFound }) {
     );
   };
 
-  if (!normalizedCity) return null;
+  
+  console.log(selectedCity, "selectedCity in FavoriteWindow");
+  console.log(city, "city in FavoriteWindow");
+
+  if (!city) return null;
 
   if (!user?.id) {
     return (
