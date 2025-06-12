@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserFromCookie } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function FavoriteWindow({
   selectedCity,
@@ -8,6 +9,7 @@ export default function FavoriteWindow({
 }) {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [user, setUser] = useState(getUserFromCookie());
+const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,26 +54,29 @@ export default function FavoriteWindow({
   };
 
   // Render favorite cities row
-  const renderFavoriteCitiesRow = () => (
-    <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
-      {favoriteCities.map((city) => (
-        <button
-          key={city}
-          className={`px-4 py-2 rounded-full font-semibold border transition ${
-            city === selectedCity
-              ? "bg-blue-500 text-white border-blue-500"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
-          }`}
-          onClick={() => onSelect(city)}
-        >
-          {city}
-        </button>
-      ))}
-      {favoriteCities.length === 0 && (
-        <span className="text-gray-400">No favorite cities yet</span>
-      )}
-    </div>
-  );
+const renderFavoriteCitiesRow = () => (
+  <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
+    {favoriteCities.map((city) => (
+      <button
+        key={city}
+        className={`px-4 py-2 rounded-full font-semibold border transition ${
+          city === selectedCity
+            ? "bg-blue-500 text-white border-blue-500"
+            : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
+        }`}
+        onClick={() => {
+          onSelect(city);
+          navigate(`/${encodeURIComponent(city)}`);
+        }}
+      >
+        {city}
+      </button>
+    ))}
+    {favoriteCities.length === 0 && (
+      <span className="text-gray-400">No favorite cities yet</span>
+    )}
+  </div>
+);
 
   // Render add/remove buttons for the selected city
  const renderButtons = () => {

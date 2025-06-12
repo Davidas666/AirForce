@@ -1,13 +1,20 @@
 import { useState, useRef } from "react";
 import { useUserCity } from "../hooks/useUserCity";
 import UserCityDisplay from "./UserCityDisplay";
+import { useNavigate } from "react-router-dom";
 
-export default function Header({ onCitySelect, recent, handleSearch, children }) {
+export default function Header({
+  onCitySelect,
+  recent,
+  handleSearch,
+  children,
+}) {
   const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const userCity = useUserCity();
   const inputRef = useRef();
+  const navigate = useNavigate();
 
   const fetchSuggestions = async (value) => {
     if (value.length < 2) {
@@ -44,7 +51,7 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
   const handleSuggestionClick = (c) => {
     setCity(c.name);
     setShowSuggestions(false);
-    handleSearch(c.name);
+    navigate(`/${encodeURIComponent(c.name)}`);
   };
 
   const handleSearchCity = (searchCity) => {
@@ -52,7 +59,7 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
     if (!cityToSearch) return;
     setCity(cityToSearch);
     setShowSuggestions(false);
-    if (onCitySelect) onCitySelect(cityToSearch);
+    navigate(`/${encodeURIComponent(cityToSearch)}`);
   };
 
   const handleKeyDown = (e) => {
@@ -75,7 +82,10 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
         </div>
         <div className="flex items-center flex-shrink-0 min-w-0 max-w-[220px]">
           <span className="whitespace-nowrap truncate text-gray-700">
-            <UserCityDisplay city={userCity} onClick={() => onCitySelect(userCity)} />
+            <UserCityDisplay
+              city={userCity}
+              onClick={() => onCitySelect(userCity)}
+            />
           </span>
           {!userCity && (
             <span className="ml-2 text-gray-400 text-sm truncate max-w-[120px] overflow-hidden">
@@ -122,7 +132,7 @@ export default function Header({ onCitySelect, recent, handleSearch, children })
               key={c + idx}
               type="button"
               className="bg-gray-200 hover:bg-blue-200 text-gray-700 px-3 py-1 rounded-full text-sm transition flex-shrink-0"
-              onClick={() => handleSearch(c)}
+              onClick={() => navigate(`/${encodeURIComponent(c)}`)}
             >
               {c}
             </button>
