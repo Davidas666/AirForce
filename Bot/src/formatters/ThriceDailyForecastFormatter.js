@@ -120,42 +120,26 @@ class ThriceDailyForecastFormatter extends BaseFormatter {
   }
 
   getHourlyForecast() {
-    try {
-      if (!this.weatherData?.list || !Array.isArray(this.weatherData.list)) {
-        return 'Nepavyko gauti orų duomenų';
-      }
-
-      // Get forecasts for today (first 8 forecasts for 24 hours in 3-hour intervals)
-      const forecasts = this.weatherData.list.slice(0, 8);
-      
-      return forecasts.map(forecast => {
-        const time = this.formatTime(forecast.dt);
-        const temp = Math.round(forecast.main.temp);
-        const feelsLike = Math.round(forecast.main.feels_like);
-        const weatherInfo = this.getWeatherEmoji(forecast.weather[0].id.toString());
-        const windSpeed = forecast.wind.speed.toFixed(1);
-        const humidity = forecast.main.humidity;
-        const pressure = Math.round(forecast.main.pressure * 0.750062); // Convert hPa to mmHg
-        const visibility = (forecast.visibility / 1000).toFixed(1); // Convert meters to km
-        const rainVolume = this.getRainVolume(forecast);
-
-        return `🕒 ${time} ${temp}°C (jausmas: ${feelsLike}°C)
-` +
-          `${weatherInfo.emoji} ${weatherInfo.desc}
-` +
-          `💨 Vėjas: ${windSpeed} m/s
-` +
-          `💧 Drėgmė: ${humidity}%
-` +
-          `⏱️ Slėgis: ${pressure} mmHg
-` +
-          `👁️ Matomumas: ${visibility} km` +
-          `${rainVolume}`;
-      }).join('\n\n');
-    } catch (error) {
-      this.logger.error('Error formatting hourly forecast:', error);
-      return 'Nepavyko suformatuoti valandinės prognozės';
+    // Suranda visus šiandienos intervalus (3 val. žingsniu)
+    if (!this.weatherData?.list || !Array.isArray(this.weatherData.list)) {
+      return 'Nepavyko gauti orų duomenų';
     }
+    const today = new Date();
+    const todayDate = today.getDate();
+    const todayMonth = today.getMonth();
+    const todayYear = today.getFullYear();
+    // Filtruojame tik šiandienos prognozes
+    const todaysForecasts = this.weatherData.list.filter(forecast => {
+      const date = new Date(forecast.dt * 1000);
+      return date.getDate() === todayDate && date.getMonth() === todayMonth && date.getFullYear() === todayYear;
+    });
+    if (todaysForecasts.length === 0) {
+      return 'Šiandienos prognozių nėra';
+    }
+    return todaysForecasts.map(forecast => {
+      const time = new Date(forecast.dt * 1000).toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', hour12: false });
+      return `🕒 ${time} | 🌡️ ${forecast.main.temp}°C | 💧 ${forecast.main.humidity}% | 💨 ${forecast.wind.speed} m/s`;
+    }).join('\n');
   }
 }
 

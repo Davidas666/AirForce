@@ -145,58 +145,46 @@ class WeeklyForecastFormatter extends BaseFormatter {
 
   getWeeklyForecast() {
     const forecastsByDay = {};
-    
-    // Group forecasts by day
+    // Grupuoja prognozes pagal dieną
     this.weatherData.list.forEach(forecast => {
       const date = new Date(forecast.dt * 1000);
       date.setHours(0, 0, 0, 0);
       const dateKey = date.getTime();
-      
       if (!forecastsByDay[dateKey]) {
         forecastsByDay[dateKey] = [];
       }
       forecastsByDay[dateKey].push(forecast);
     });
-    
-    // Sort days and take next 7 days
+    // Surūšiuoja dienas ir ima 7 dienas
     const sortedDays = Object.entries(forecastsByDay)
       .sort(([a], [b]) => parseInt(a) - parseInt(b))
       .slice(0, 7);
-    
-    // Format each day's forecast
+    // Kuriuos laikus rodyti (8, 12, 20 val.)
+    const targetHours = [8, 12, 20];
+    // Formatuoja kiekvienos dienos santrauką
     return sortedDays.map(([_, forecasts]) => {
       const dayForecast = [];
-      
-      // Add day header
-      dayForecast.push(`📅 ${this.formatDate(forecasts[0].dt)}\n`);
-      
-      // Add hourly forecasts for the day
-      forecasts.forEach(forecast => {
-        const time = this.formatTime(forecast.dt);
-        const temp = Math.round(forecast.main.temp);
-        const feelsLike = Math.round(forecast.main.feels_like);
-        const weatherInfo = this.getWeatherEmoji(forecast.weather[0].id.toString());
-        const windSpeed = forecast.wind.speed.toFixed(1);
-        const humidity = forecast.main.humidity;
-        const pressure = Math.round(forecast.main.pressure * 0.750062); // Convert hPa to mmHg
-        const visibility = (forecast.visibility / 1000).toFixed(1); // Convert meters to km
-        const rainVolume = this.getRainVolume(forecast);
-
-        dayForecast.push(`🕒 ${time} ${temp}°C (jausmas: ${feelsLike}°C)
-` +
-          `${weatherInfo.emoji} ${weatherInfo.desc}
-` +
-          `💨 Vėjas: ${windSpeed} m/s
-` +
-          `💧 Drėgmė: ${humidity}%
-` +
-          `⏱️ Slėgis: ${pressure} mmHg
-` +
-          `👁️ Matomumas: ${visibility} km` +
-          `${rainVolume}`);
+      dayForecast.push(`📅 ${this.formatDate(forecasts[0].dt)}`);
+      // Randa artimiausią prognozę kiekvienam tiksliniam laikui
+      targetHours.forEach(targetHour => {
+        let closest = null;
+        let minDiff = Infinity;
+        forecasts.forEach(forecast => {
+          const date = new Date(forecast.dt * 1000);
+          const diff = Math.abs(date.getHours() - targetHour);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = forecast;
+          }
+        });
+        if (closest) {
+          const time = this.formatTime(closest.dt);
+          const temp = Math.round(closest.main.temp);
+          const weatherInfo = this.getWeatherEmoji(closest.weather[0].id.toString());
+          dayForecast.push(`🕒 ${time} ${weatherInfo.emoji} ${temp}°C`);
+        }
       });
-      
-      return dayForecast.join('\n\n');
+      return dayForecast.join('\n');
     }).join('\n\n');
   }
 }

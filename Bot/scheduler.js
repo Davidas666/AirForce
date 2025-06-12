@@ -1,11 +1,30 @@
 const subscriptionModel = require('./models/subscriptionModel');
-const fetchMultiDayForecast = require('./helpers/fetchMultiDayForecast');
+const { fetchMultiDayForecast, fetchHourlyForecast } = require('./helpers/fetchMultiDayForecast');
 const logger = require('./utils/logger');
 const { ForecastFormatterFactory } = require('./src/formatters');
 const path = require('path');
 
 // Įkeliamas failo vardas log'uose
 const { name } = path.parse(__filename);
+const SCHEDULE_HOUR = 14;
+const SCHEDULE_MINUTE = 26;
+
+// Konfigūruojami laikai kiekvienam prenumeratos tipui
+const scheduleTimes = {
+  morning: {
+    hour: parseInt(process.env.SCHEDULE_MORNING_HOUR) || 8,
+    minute: parseInt(process.env.SCHEDULE_MORNING_MINUTE) || 0
+  },
+  weekly: {
+    hour: parseInt(process.env.SCHEDULE_WEEKLY_HOUR) || 8,
+    minute: parseInt(process.env.SCHEDULE_WEEKLY_MINUTE) || 0,
+    day: parseInt(process.env.SCHEDULE_WEEKLY_DAY) || 1 // 1 = pirmadienis
+  },
+  thrice_daily: {
+    hours: (process.env.SCHEDULE_THRICE_HOURS || '8,15,19').split(',').map(h => parseInt(h, 10)),
+    minute: parseInt(process.env.SCHEDULE_THRICE_MINUTE) || 0
+  }
+};
 
 /**
  * Formatuoja orų prognozę pagal prenumeratos tipą
@@ -17,7 +36,7 @@ async function formatForecastBySubscription(weatherData, sub) {
   try {
     // Patikriname ar gauname teisingus duomenis
     if (!weatherData?.list || !Array.isArray(weatherData.list) || weatherData.list.length === 0) {
-      logger.error('Netinkamas orų duomenų formatas', { 
+      logger.error('Netinkamas orų duomenų formatas', {
         hasList: !!weatherData?.list,
         isArray: Array.isArray(weatherData?.list),
         listLength: weatherData?.list?.length
@@ -25,30 +44,43 @@ async function formatForecastBySubscription(weatherData, sub) {
       return 'Nepavyko gauti orų duomenų: neteisingas duomenų formatas';
     }
 
-    const isTest = sub.telegram_id && sub.telegram_id.startsWith('TEST_');
-    
+    const isTest = sub.telegram_id?.startsWith('TEST_');
+
+    let subscriptionType = 'weekly';
+    if (sub.morning_forecast) {
+      subscriptionType = 'morning';
+    } else if (sub.daily_thrice_forecast) {
+      subscriptionType = 'thrice_daily';
+    }
     logger.debug(`Formatuojama prognozė vartotojui ${sub.telegram_id}, miestas: ${sub.city}`, {
       forecastCount: weatherData.list.length,
-      subscriptionType: sub.morning_forecast ? 'morning' : 
-                        sub.daily_thrice_forecast ? 'thrice_daily' : 'weekly'
+      subscriptionType
     });
-    
+
     // Nustatome pranešimo tipą
-    let forecastType = 'weekly';
-    if (sub.morning_forecast) forecastType = 'morning';
-    else if (sub.daily_thrice_forecast) forecastType = 'thrice_daily';
-    
+    let forecastType = subscriptionType;
+
     // Sukuriame tinkamą formatuotoją
-    const formatter = ForecastFormatterFactory.create(
-      forecastType,
-      weatherData,
-      {
-        locale: 'lt-LT',
-        timezone: 'Europe/Vilnius',
-        isTest
-      }
-    );
-    
+    let formatter;
+    try {
+      formatter = ForecastFormatterFactory.create(
+        forecastType,
+        weatherData,
+        {
+          locale: 'lt-LT',
+          timezone: 'Europe/Vilnius',
+          isTest
+        }
+      );
+    } catch (e) {
+      logger.error('Nepavyko sukurti formatuotojo objektui:', forecastType, e);
+      return 'Nepavyko suformuoti pranešimo.';
+    }
+    if (!formatter) {
+      logger.error('Nepavyko sukurti formatuotojo objektui:', forecastType);
+      return 'Nepavyko suformuoti pranešimo.';
+    }
+
     // Grąžiname suformatuotą pranešimą
     return formatter.format();
   } catch (error) {
@@ -69,65 +101,77 @@ async function checkAndSendForecasts(bot, isTestRun = false) {
 
     const now = new Date();
     const currentHour = now.getHours();
-    const currentDay = now.getDay(); // 0 = sekmadienis, 1 = pirmadienis, ...
+    const currentMinute = now.getMinutes();
+    const currentDay = now.getDay();
 
     for (const sub of subscriptions) {
       let shouldSend = false;
-
+      let subType = null;
       if (isTestRun) {
-        shouldSend = true; // Testiniam paleidimui siunčiame visada
-      } else {
-        // Tikriname rytinę prognozę (8 val.)
-        if (sub.morning_forecast && currentHour === 8) {
-          shouldSend = true;
-        }
-        // Tikriname savaitinę prognozę (pirmadieniais 8 val.)
-        else if (sub.weekly_forecast && currentHour === 8 && currentDay === 1) {
-          shouldSend = true;
-        }
-        // Tikriname prognozę 1 kartą per dieną 14:26
-        else if (sub.daily_thrice_forecast && currentHour === 14 && now.getMinutes() === 26) {
-          shouldSend = true;
-        }
+        shouldSend = true;
+      } else if (
+        sub.morning_forecast &&
+        currentHour === scheduleTimes.morning.hour &&
+        currentMinute === scheduleTimes.morning.minute
+      ) {
+        shouldSend = true;
+        subType = 'morning';
+      } else if (
+        sub.weekly_forecast &&
+        currentHour === scheduleTimes.weekly.hour &&
+        currentMinute === scheduleTimes.weekly.minute &&
+        currentDay === scheduleTimes.weekly.day
+      ) {
+        shouldSend = true;
+        subType = 'weekly';
+      } else if (
+        sub.daily_thrice_forecast &&
+        scheduleTimes.thrice_daily.hours.includes(currentHour) &&
+        currentMinute === scheduleTimes.thrice_daily.minute
+      ) {
+        shouldSend = true;
+        subType = 'thrice_daily';
       }
 
       if (shouldSend) {
         logger.info(`Scheduler: Siunčiama prognozė vartotojui ${sub.telegram_id} miestui ${sub.city}`);
         try {
-          const weatherData = await fetchMultiDayForecast(sub.city);
-          
+          let weatherData;
+          if (subType === 'morning' || subType === 'thrice_daily') {
+            const cnt = Math.max(0, Math.ceil((24 - currentHour) / 3));
+            weatherData = await fetchHourlyForecast(sub.city, cnt);
+          } else if (subType === 'weekly') {
+            weatherData = await fetchMultiDayForecast(sub.city);
+          } else {
+            const cnt = Math.max(0, Math.ceil((24 - currentHour) / 3));
+            weatherData = await fetchHourlyForecast(sub.city, cnt);
+          }
+
           if (!weatherData) {
             logger.error(`Scheduler: Gauti tušti orų duomenys miestui ${sub.city}`);
             continue;
           }
-          
           if (!weatherData.list || !Array.isArray(weatherData.list)) {
-            logger.error(`Scheduler: Neteisingas orų duomenų formatas miestui ${sub.city}:`, 
-              JSON.stringify(weatherData).substring(0, 200));
+            logger.error(`Scheduler: Neteisingas orų duomenų formatas miestui ${sub.city}:`, JSON.stringify(weatherData).substring(0, 200));
             continue;
           }
-          
           logger.info(`Scheduler: Sėkmingai gauti orų duomenys miestui ${sub.city}, rasta įrašų: ${weatherData.list.length}`);
-          
-          // Siunčiame atskirus pranešimus pagal prenumeratos tipą
-          if (sub.morning_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'morning', '');
-          }
-          
-          if (sub.daily_thrice_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'thrice_daily', '');
-          }
-          
-          if (sub.weekly_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'weekly', '');
+
+          // Siunčiame tik tą prenumeratos tipą, kuris atitinka dabartinį laiką
+          if (
+            (subType === 'morning' && sub.morning_forecast) ||
+            (subType === 'thrice_daily' && sub.daily_thrice_forecast) ||
+            (subType === 'weekly' && sub.weekly_forecast)
+          ) {
+            await sendSubscriptionMessage(bot, sub, weatherData, subType, '');
+          } else {
+            logger.info(`Scheduler: Vartotojui ${sub.telegram_id} (${sub.city}) neatitinka prenumeratos tipas, pranešimas nesiunčiamas.`);
           }
         } catch (error) {
-          if (error.response && error.response.statusCode === 403) {
-            logger.warn(`Scheduler: Vartotojas ${sub.telegram_id} užblokavo botą.`);
-          } else {
-            logger.error(`Scheduler: Klaida siunčiant prognozę vartotojui ${sub.telegram_id}:`, error);
-          }
+          logger.error(`Scheduler: Klaida siunčiant prognozę vartotojui ${sub.telegram_id}:`, error);
         }
+        // 1 sek delay tarp naudotojų (rate limit)
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
   } catch (error) {
@@ -146,14 +190,12 @@ async function checkAndSendForecasts(bot, isTestRun = false) {
  * @returns {Promise<boolean>} True if message was sent successfully
  */
 async function sendSubscriptionMessage(bot, sub, weatherData, subType, header = '') {
+  let chatId = sub.chat_id || sub.telegram_id;
+  if (!chatId) {
+    logger.error(`Nenurodytas chat_id vartotojui: ${JSON.stringify(sub)}`);
+    return false;
+  }
   try {
-    // Ensure we have a valid chat_id
-    const chatId = sub.chat_id || sub.telegram_id;
-    if (!chatId) {
-      logger.error(`Nenurodytas chat_id vartotojui: ${JSON.stringify(sub)}`);
-      return false;
-    }
-
     // Create a temporary subscription object for the specific type
     const tempSub = {
       ...sub,
@@ -163,35 +205,33 @@ async function sendSubscriptionMessage(bot, sub, weatherData, subType, header = 
       chat_id: chatId,
       telegram_id: sub.telegram_id || chatId // Ensure telegram_id is set
     };
-    
     logger.info(`Formatuojamas ${subType} pranešimas vartotojui ${sub.telegram_id} (${sub.city})`);
-    
     // Format the message using the appropriate formatter
     const message = await formatForecastBySubscription(weatherData, tempSub);
-    
     // Handle both string and array of message parts
     const messages = Array.isArray(message) ? message : [message];
-    
     logger.info(`Siunčiamas ${subType} pranešimas vartotojui ${chatId} (${sub.city})`);
-    
+    // Pridedame prenumeratos tipą ir miesto pavadinimą prie kiekvienos žinutės
+    let typeLabel = '';
+    if (subType === 'morning') typeLabel = '🌅 Rytinė';
+    else if (subType === 'thrice_daily') typeLabel = 'Dienos prognozė';
+    else if (subType === 'weekly') typeLabel = 'Savaitės prognozė';
+    const cityName = weatherData.city?.name || sub.city || '';
     for (const msg of messages) {
-      await bot.sendMessage(chatId, msg, { parse_mode: 'HTML' });
-      // Add a small delay between messages to avoid rate limiting
+      const fullMsg = `<b>${typeLabel}</b>\n<b>${cityName}</b>\n${msg}`;
+      await bot.sendMessage(chatId, fullMsg, { parse_mode: 'HTML' });
       await new Promise(resolve => setTimeout(resolve, 500));
     }
-    
     logger.info(`${subType} pranešimas sėkmingai išsiųstas vartotojui ${sub.telegram_id} miestui ${sub.city}`);
     return true;
   } catch (error) {
     logger.error(`Klaida siunčiant ${subType} pranešimą vartotojui ${sub.telegram_id}:`, error);
-    
-    // Try to send error message if possible
     try {
       await bot.sendMessage(chatId, 'Įvyko klaida siunčiant prognozę. Bandykite vėliau.');
     } catch (e) {
       logger.error('Nepavyko išsiųsti klaidos pranešimo:', e);
-      return false;
     }
+    return false;
   }
 }
 
@@ -245,39 +285,24 @@ async function testAllSubscriptionTypes(bot) {
         logger.info(`Tikrinama prenumerata vartotojui ${sub.telegram_id}, miestas: ${sub.city}`);
         
         try {
-          // Gauname orų duomenis
-          logger.info(`Gaunami orų duomenys miestui: ${sub.city}`);
-          const weatherData = await fetchMultiDayForecast(sub.city);
-          
-          if (!weatherData) {
-            logger.error(`Gauti tušti orų duomenys miestui ${sub.city}`);
-            continue;
-          }
-          
-          if (!weatherData.list || !Array.isArray(weatherData.list)) {
-            logger.error(`Neteisingas orų duomenų formatas miestui ${sub.city}:`, JSON.stringify(weatherData).substring(0, 200));
-            continue;
-          }
-          
-          logger.info(`Sėkmingai gauti orų duomenys miestui ${sub.city}, rasta įrašų: ${weatherData.list.length}`);
-          
-          // Pridedame antraštę, kad būtų aišku, kad tai testas
-          const testHeader = `*🔹 TESTINIS PRANEŠIMAS (${new Date().toLocaleString('lt-LT')}) 🔹*\n` +
-                            `*Miestas:* ${sub.city}\n`;
-          
-          // Siunčiame atskirus pranešimus pagal prenumeratos tipą
+          let weatherData;
+          const now = new Date();
+          const currentHour = now.getHours();
+          // For each type, fetch the correct data
           if (sub.morning_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'morning', testHeader);
+            const cnt = Math.max(0, Math.ceil((24 - currentHour) / 3));
+            weatherData = await fetchHourlyForecast(sub.city, cnt);
+            await sendSubscriptionMessage(bot, sub, weatherData, 'morning', '*🔹 TESTINIS PRANEŠIMAS*\n');
           }
-          
           if (sub.daily_thrice_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'thrice_daily', testHeader);
+            const cnt = Math.max(0, Math.ceil((24 - currentHour) / 3));
+            weatherData = await fetchHourlyForecast(sub.city, cnt);
+            await sendSubscriptionMessage(bot, sub, weatherData, 'thrice_daily', '*🔹 TESTINIS PRANEŠIMAS*\n');
           }
-          
           if (sub.weekly_forecast) {
-            await sendSubscriptionMessage(bot, sub, weatherData, 'weekly', testHeader);
+            weatherData = await fetchMultiDayForecast(sub.city);
+            await sendSubscriptionMessage(bot, sub, weatherData, 'weekly', '*🔹 TESTINIS PRANEŠIMAS*\n');
           }
-          
         } catch (fetchError) {
           logger.error(`Klaida gaunant orų duomenis vartotojui ${sub.telegram_id} (${sub.city}):`, {
             message: fetchError.message,
@@ -304,33 +329,49 @@ async function testAllSubscriptionTypes(bot) {
 // Eksportuojame funkciją, kuri paleidžia planuotoją
 module.exports = {
   start: (bot) => {
-    // Tikriname ar reikia paleisti testinį režimą
     if (process.env.RUN_TESTS === 'true') {
       logger.info('Scheduler: Testinis pranešimų siuntimas pagal vartotojų prenumeratas numatytas po 5 sekundžių.');
       setTimeout(() => testAllSubscriptionTypes(bot), 5000);
       return;
     }
-    
-    // Nustatome laikrodžio tikrinimą kas minutę
     setInterval(() => {
       const now = new Date();
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
-      const currentDay = now.getDay(); // 0 = sekmadienis, 1 = pirmadienis, ...
-      
-      // Tikriname ar dabartinė valanda yra 14, o minutė 26
-      if (currentHour === 14 && currentMinute === 26) {
-        logger.info(`Scheduler: Pradedamas pranešimų siuntimas ${currentHour}:${currentMinute.toString().padStart(2, '0')}`);
+      const currentDay = now.getDay();
+      // Tikriname visus prenumeratos tipus
+      if (
+        currentHour === scheduleTimes.morning.hour &&
+        currentMinute === scheduleTimes.morning.minute
+      ) {
+        checkAndSendForecasts(bot, false);
+      }
+      if (
+        currentHour === scheduleTimes.weekly.hour &&
+        currentMinute === scheduleTimes.weekly.minute &&
+        currentDay === scheduleTimes.weekly.day
+      ) {
+        checkAndSendForecasts(bot, false);
+      }
+      if (
+        scheduleTimes.thrice_daily.hours.includes(currentHour) &&
+        currentMinute === scheduleTimes.thrice_daily.minute
+      ) {
         checkAndSendForecasts(bot, false);
       }
     }, 60000); // Tikriname kas minutę
-  
-    logger.info('Scheduler: Planuotojas paleistas. Pranešimai bus siunčiami 14:26 valandą.');
-    
-    // Paleidžiame iš karto, jei atitinka laiką (14:26)
+    logger.info(`Scheduler: Planuotojas paleistas. Laikai: Ryto: ${scheduleTimes.morning.hour}:${scheduleTimes.morning.minute}, Savaitės: ${scheduleTimes.weekly.hour}:${scheduleTimes.weekly.minute} (${scheduleTimes.weekly.day}), Triskart: ${scheduleTimes.thrice_daily.hours.join(',')}:${scheduleTimes.thrice_daily.minute}`);
+    // Paleidžiame iš karto, jei atitinka bet kurį laiką
     const now = new Date();
-    if (now.getHours() === 14 && now.getMinutes() === 26) {
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentDay = now.getDay();
+    if (
+      (currentHour === scheduleTimes.morning.hour && currentMinute === scheduleTimes.morning.minute) ||
+      (currentHour === scheduleTimes.weekly.hour && currentMinute === scheduleTimes.weekly.minute && currentDay === scheduleTimes.weekly.day) ||
+      (scheduleTimes.thrice_daily.hours.includes(currentHour) && currentMinute === scheduleTimes.thrice_daily.minute)
+    ) {
       checkAndSendForecasts(bot, false);
-    } 
+    }
   },
 };
