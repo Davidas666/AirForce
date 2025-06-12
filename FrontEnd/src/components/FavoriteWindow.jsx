@@ -120,9 +120,7 @@ export default function FavoriteWindow({ cityNotFound }) {
       )
     );
   };
-
-    console.log(city, "city in FavoriteWindow");
-
+  
   if (!city) return null;
 
   if (!user?.id) {
