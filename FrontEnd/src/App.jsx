@@ -49,33 +49,40 @@ function AppRoutes({
 
   return (
     <>
-      <Header
-        onCitySelect={setSelectedCity}
-        recent={recent}
-        handleSearch={setSelectedCity}
-      />
       <Routes>
         <Route
           path="/:city"
           element={
             <>
-              <CityPage setRecent={setRecent} setBodyError={setBodyError} />
               <FavoriteWindow
                 cityNotFound={
                   !!bodyError && bodyError.includes("Failed to fetch data")
                 }
               />
+              <Header
+                onCitySelect={setSelectedCity}
+                recent={recent}
+                handleSearch={setSelectedCity}
+              />
+              <CityPage setRecent={setRecent} setBodyError={setBodyError} />
             </>
           }
         />
         <Route
           path="/"
           element={
-            <Body
-              selectedCity={selectedCity}
-              setRecent={setRecent}
-              setError={setBodyError}
-            />
+            <>
+              <Header
+                onCitySelect={setSelectedCity}
+                recent={recent}
+                handleSearch={setSelectedCity}
+              />
+              <Body
+                selectedCity={selectedCity}
+                setRecent={setRecent}
+                setError={setBodyError}
+              />
+            </>
           }
         />
       </Routes>
