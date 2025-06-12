@@ -143,6 +143,7 @@ export default function Body({ selectedCity, setRecent, setError }) {
             )}
 
             <SubscriptionToggles selectedCity={cityToShow} />
+            <SubscribedCities />
           </>
         )}
       </div>
