@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useParams, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useParams,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { useUserCity } from "./hooks/useUserCity";
 import { useRecentCities } from "./hooks/useRecentCities";
 import Header from "./components/Header";
@@ -11,15 +18,19 @@ import { getUserFromCookie } from "./utils/auth";
 function CityPage({ setRecent, setBodyError }) {
   const { city } = useParams();
   return (
-    <Body
-      selectedCity={city}
-      setRecent={setRecent}
-      setError={setBodyError}
-    />
+    <Body selectedCity={city} setRecent={setRecent} setError={setBodyError} />
   );
 }
 
-function AppRoutes({ selectedCity, setSelectedCity, recent, setRecent, bodyError, setBodyError, handleTelegramAuth }) {
+function AppRoutes({
+  selectedCity,
+  setSelectedCity,
+  recent,
+  setRecent,
+  bodyError,
+  setBodyError,
+  handleTelegramAuth,
+}) {
   const userCity = useUserCity();
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,13 +54,15 @@ function AppRoutes({ selectedCity, setSelectedCity, recent, setRecent, bodyError
         recent={recent}
         handleSearch={setSelectedCity}
       />
-<FavoriteWindow
-  cityNotFound={!!bodyError && bodyError.includes("Failed to fetch data")}
-/>
+      <FavoriteWindow
+        cityNotFound={!!bodyError && bodyError.includes("Failed to fetch data")}
+      />
       <Routes>
         <Route
           path="/:city"
-          element={<CityPage setRecent={setRecent} setBodyError={setBodyError} />}
+          element={
+            <CityPage setRecent={setRecent} setBodyError={setBodyError} />
+          }
         />
         <Route
           path="/"
