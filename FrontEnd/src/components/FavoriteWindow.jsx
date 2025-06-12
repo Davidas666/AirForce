@@ -9,6 +9,8 @@ export default function FavoriteWindow({ cityNotFound }) {
   const { city } = useParams();
   const selectedCity = city ? city.trim() : "";
 
+
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -123,7 +125,8 @@ export default function FavoriteWindow({ cityNotFound }) {
       )
     );
   };
-
+  console.log("FavoriteWindow rendered for city:", selectedCity);
+  console.log("Current user:", user);
   if (!user?.id) {
     return (
       <div className="flex justify-center items-center w-full py-8">
