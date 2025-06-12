@@ -129,6 +129,8 @@ export default function FavoriteWindow({ cityNotFound }) {
     );
   };
 
+  console.log("Citie name:", selectedCity);
+  console.log("city:", city);
   if (!user?.id) {
     return (
       <div className="flex justify-center items-center w-full py-8">
