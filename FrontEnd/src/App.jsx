@@ -54,15 +54,15 @@ function AppRoutes({
           path="/:city"
           element={
             <>
-              <FavoriteWindow
-                cityNotFound={
-                  !!bodyError && bodyError.includes("Failed to fetch data")
-                }
-              />
               <Header
                 onCitySelect={setSelectedCity}
                 recent={recent}
                 handleSearch={setSelectedCity}
+              />
+              <FavoriteWindow
+                cityNotFound={
+                  !!bodyError && bodyError.includes("Failed to fetch data")
+                }
               />
               <CityPage setRecent={setRecent} setBodyError={setBodyError} />
             </>

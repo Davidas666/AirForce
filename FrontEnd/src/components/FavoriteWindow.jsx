@@ -7,8 +7,8 @@ export default function FavoriteWindow({ cityNotFound }) {
   const [user, setUser] = useState(getUserFromCookie());
   const navigate = useNavigate();
   const { city } = useParams();
-  const selectedCity = city ? city.trim() : "";
-  
+  const normalizedCity = city ? city.trim().toLowerCase() : "";
+
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -29,46 +29,39 @@ export default function FavoriteWindow({ cityNotFound }) {
 
   useEffect(() => {
     fetchFavorites();
-  }, [user?.id, selectedCity]);
+  }, [user?.id, normalizedCity]);
 
-  // Helper: normalize city name for backend and comparison
   const normalizeCity = (c) => (c ? c.trim().toLowerCase() : "");
 
-  // Helper: case-insensitive check
   const isFavorite = favoriteCities.some(
-    (fav) => normalizeCity(fav) === normalizeCity(selectedCity)
+    (fav) => normalizeCity(fav) === normalizedCity
   );
 
-  // Add favorite city and refresh
-  const handleAddFavorite = (city) => {
-    const normCity = normalizeCity(city);
-    if (!user?.id || !normCity || isFavorite) return;
+  const handleAddFavorite = () => {
+    if (!user?.id || !normalizedCity || isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city: normCity }),
+      body: JSON.stringify({ userId: user.id, city: normalizedCity }),
     }).then(fetchFavorites);
   };
 
-  // Remove favorite city and refresh
-  const handleRemoveFavorite = (city) => {
-    const normCity = normalizeCity(city);
-    if (!user?.id || !normCity || !isFavorite) return;
+  const handleRemoveFavorite = () => {
+    if (!user?.id || !normalizedCity || !isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city: normCity }),
+      body: JSON.stringify({ userId: user.id, city: normalizedCity }),
     }).then(fetchFavorites);
   };
 
-  // Render favorite cities row
   const renderFavoriteCitiesRow = () => (
     <div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
       {favoriteCities.map((favCity) => (
         <button
           key={favCity}
           className={`px-4 py-2 rounded-full font-semibold border transition ${
-            normalizeCity(favCity) === normalizeCity(selectedCity)
+            normalizeCity(favCity) === normalizedCity
               ? "bg-blue-500 text-white border-blue-500"
               : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
           }`}
@@ -83,10 +76,10 @@ export default function FavoriteWindow({ cityNotFound }) {
     </div>
   );
 
-  // Render add/remove buttons for the selected city
   const renderButtons = () => {
-    const disableAdd = isFavorite || cityNotFound || !selectedCity;
-    const disableRemove = !isFavorite || cityNotFound || !selectedCity;
+    if (!normalizedCity) return null;
+    const disableAdd = isFavorite || cityNotFound;
+    const disableRemove = !isFavorite || cityNotFound;
     return (
       user?.id && (
         <div className="flex justify-center mt-2">
@@ -94,7 +87,7 @@ export default function FavoriteWindow({ cityNotFound }) {
             className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${
               disableAdd ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={() => handleAddFavorite(selectedCity)}
+            onClick={handleAddFavorite}
             disabled={disableAdd}
             title={
               cityNotFound
@@ -111,7 +104,7 @@ export default function FavoriteWindow({ cityNotFound }) {
             className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${
               disableRemove ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={() => handleRemoveFavorite(selectedCity)}
+            onClick={handleRemoveFavorite}
             disabled={disableRemove}
             title={
               cityNotFound
@@ -129,8 +122,8 @@ export default function FavoriteWindow({ cityNotFound }) {
     );
   };
 
-  console.log("Citie name:", selectedCity);
-  console.log("city:", city);
+  if (!normalizedCity) return null;
+
   if (!user?.id) {
     return (
       <div className="flex justify-center items-center w-full py-8">
