@@ -1,4 +1,4 @@
-const { upsertSubscription, getSubscriptions } = require('../models/subscriptionModel');
+const { upsertSubscription, getSubscriptions, getUserSubscribedCities } = require('../models/subscriptionModel');
 
 exports.updateSubscription = async (req, res) => {
   const { telegram_id, city, type, enabled } = req.body;
@@ -19,6 +19,17 @@ exports.getUserSubscriptions = async (req, res) => {
   try {
     const subs = await getSubscriptions(telegram_id);
     res.json({ subscriptions: subs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getUserSubscribedCities = async (req, res) => {
+  const { telegram_id } = req.query;
+  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
+  try {
+    const cities = await getUserSubscribedCities(telegram_id);
+    res.json({ cities });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
