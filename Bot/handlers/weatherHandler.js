@@ -1,4 +1,4 @@
-const fetchMultiDayForecast = require('../helpers/fetchMultiDayForecast');
+const { fetchMultiDayForecast, fetchHourlyForecast } = require('../helpers/fetchMultiDayForecast');
 const logger = require('../utils/logger');
 const { ForecastFormatterFactory } = require('../src/formatters');
 
