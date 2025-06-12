@@ -7,7 +7,7 @@ export default function FavoriteWindow({ cityNotFound }) {
   const [user, setUser] = useState(getUserFromCookie());
   const navigate = useNavigate();
   const { city } = useParams();
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -121,9 +121,7 @@ export default function FavoriteWindow({ cityNotFound }) {
     );
   };
 
-  
-  console.log(selectedCity, "selectedCity in FavoriteWindow");
-  console.log(city, "city in FavoriteWindow");
+    console.log(city, "city in FavoriteWindow");
 
   if (!city) return null;
 
