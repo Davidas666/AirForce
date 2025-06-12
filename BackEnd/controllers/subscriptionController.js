@@ -25,8 +25,20 @@ exports.getUserSubscriptions = async (req, res) => {
 };
 
 exports.getUserSubscribedCities = async (req, res) => {
-  const { telegram_id } = req.query;
-  if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
+  const cookie = req.headers.cookie || "";
+  const match = cookie.match(/telegram_user=([^;]+)/);
+  if (!match) return res.status(401).json({ error: "Not authenticated" });
+
+  let user;
+  try {
+    user = JSON.parse(decodeURIComponent(match[1]));
+  } catch {
+    return res.status(400).json({ error: "Invalid user cookie" });
+  }
+
+  const telegram_id = user.id;
+  if (!telegram_id) return res.status(400).json({ error: "telegram_id required" });
+
   try {
     const cities = await getUserSubscribedCities(telegram_id);
     res.json({ cities });
