@@ -85,8 +85,8 @@ async function checkAndSendForecasts(bot, isTestRun = false) {
         else if (sub.weekly_forecast && currentHour === 8 && currentDay === 1) {
           shouldSend = true;
         }
-        // Tikriname prognozę 1 kartą per dieną 14:15
-        else if (sub.daily_thrice_forecast && currentHour === 14 && now.getMinutes() === 15) {
+        // Tikriname prognozę 1 kartą per dieną 14:18
+        else if (sub.daily_thrice_forecast && currentHour === 14 && now.getMinutes() === 18) {
           shouldSend = true;
         }
       }
@@ -318,8 +318,8 @@ module.exports = {
       const currentMinute = now.getMinutes();
       const currentDay = now.getDay(); // 0 = sekmadienis, 1 = pirmadienis, ...
       
-      // Tikriname ar dabartinė valanda yra 14, o minutė 15
-      if (currentHour === 14 && currentMinute === 15) {
+      // Tikriname ar dabartinė valanda yra 14, o minutė 18
+      if (currentHour === 14 && currentMinute === 18) {
         logger.info(`Scheduler: Pradedamas pranešimų siuntimas ${currentHour}:${currentMinute.toString().padStart(2, '0')}`);
         checkAndSendForecasts(bot, false);
       }
@@ -327,9 +327,9 @@ module.exports = {
   
     logger.info('Scheduler: Planuotojas paleistas. Pranešimai bus siunčiami 14:15 valandą.');
     
-    // Paleidžiame iš karto, jei atitinka laiką (14:15)
+    // Paleidžiame iš karto, jei atitinka laiką (14:18)
     const now = new Date();
-    if (now.getHours() === 14 && now.getMinutes() === 15) {
+    if (now.getHours() === 14 && now.getMinutes() === 18) {
       checkAndSendForecasts(bot, false);
     }
   },
