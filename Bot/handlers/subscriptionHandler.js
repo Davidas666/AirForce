@@ -1,14 +1,21 @@
-// Subscription dialog handler for AirForce bot
-const subscriptionModel = require('../models/subscriptionModel');
-const stateManager = require('./stateManager');
-const menuHandler = require('./menuHandler');
-const logger = require('../utils/logger');
 const { Markup } = require('telegraf');
+const logger = require('../utils/logger');
 
+/**
+ * Prenumeratų valdymo klasė, atsakinga už prenumeratų kūrimą, rodymą ir šalinimą
+ */
 class SubscriptionHandler {
-  constructor(messageService, subscriptionModel) {
+  /**
+   * @param {Object} messageService - Paslauga žinučių siuntimui
+   * @param {Object} subscriptionModel - Prenumeratų modelis
+   * @param {Object} stateManager - Būsenos valdymo servisas
+   * @param {Object} menuHandler - Meniu valdymo servisas
+   */
+  constructor(messageService, subscriptionModel, stateManager, menuHandler) {
     this.messageService = messageService;
     this.subscriptionModel = subscriptionModel;
+    this.stateManager = stateManager;
+    this.menuHandler = menuHandler;
     this.validFrequencies = ['1 kartą per dieną', '1 kartą per savaitę', '3 kartus per dieną'];
   }
 
@@ -20,17 +27,24 @@ class SubscriptionHandler {
     return freq.length ? freq.join(', ') : 'be dažnio';
   }
 
+  /**
+   * Sukuria mygtukų klaviatūrą su prenumeratų sąrašu
+   * @param {Array} subscriptions - Prenumeratų masyvas
+   * @returns {Object} Inline klaviatūros objektas
+   */
   createSubscriptionKeyboard(subscriptions) {
-    return Markup.inlineKeyboard(
-      subscriptions.map(sub => [
-        Markup.button.callback(
-          `❌ ${sub.city} (${this.formatFrequency(sub)})`,
-          `delete_sub_${sub.city}`
-        )
-      ]).concat([
-        [Markup.button.callback('🔙 Grįžti atgal', 'back_to_menu')]
-      ])
-    );
+    const buttons = subscriptions.map(sub => ({
+      text: `❌ ${sub.city} (${this.formatFrequency(sub)})`,
+      callback_data: `delete_sub_${sub.city}`
+    }));
+
+    const keyboard = [];
+    for (let i = 0; i < buttons.length; i += 2) {
+      keyboard.push(buttons.slice(i, i + 2));
+    }
+
+    keyboard.push([{ text: '🔙 Grįžti atgal', callback_data: 'back_to_menu' }]);
+    return Markup.inlineKeyboard(keyboard);
   }
 
   isValidCity(city) {
@@ -38,138 +52,227 @@ class SubscriptionHandler {
   }
 
   async startSubscriptionFlow(chatId, userStates) {
-    stateManager.resetState(userStates, chatId);
+    this.stateManager.setState(userStates, chatId, { step: 'city' });
     const messageId = await this.messageService.send(
-      chatId, 
-      'Įveskite miesto pavadinimą:', 
+      chatId,
+      'Įveskite miestą, kurio orus norite prenumeruoti:',
       { reply_markup: { keyboard: [['Grįžti atgal']], resize_keyboard: true } }
     );
-    stateManager.addMessage(userStates, chatId, messageId);
-    stateManager.setState(userStates, chatId, { step: 'city' });
+    this.stateManager.addMessage(userStates, chatId, messageId);
   }
 
-async function handleCityStep(bot, chatId, userStates, city) {
-  if (!isValidCity(city)) {
-    const sent = await bot.sendMessage(chatId, 'Neteisingas miesto formatas. Įveskite miestą iš naujo:');
-    stateManager.addMessage(userStates, chatId, sent.message_id);
-    return;
-  }
-
-  stateManager.setState(userStates, chatId, { step: 'frequency', city: city });
-  const sent = await bot.sendMessage(chatId, 'Pasirinkite pranešimų dažnumą:', {
-    reply_markup: {
-      keyboard: [
-        ['1 kartą per dieną'],
-        ['1 kartą per savaitę'],
-        ['3 kartus per dieną'],
-        ['Grįžti atgal']
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: false
-    }
-  });
-  stateManager.addMessage(userStates, chatId, sent.message_id);
-}
-
-async function handleFrequencyStep(bot, chatId, userStates, frequency) {
-  const state = stateManager.getState(userStates, chatId);
-  if (!validFrequencies.includes(frequency.toLowerCase().trim())) {
-    const sent = await bot.sendMessage(chatId, 'Neteisingas dažnumas. Pasirinkite iš mygtukų.');
-    stateManager.addMessage(userStates, chatId, sent.message_id);
-    return;
-  }
-
-  let morning_forecast = false, weekly_forecast = false, daily_thrice_forecast = false;
-  if (frequency === '1 kartą per dieną') morning_forecast = true;
-  if (frequency === '1 kartą per savaitę') weekly_forecast = true;
-  if (frequency === '3 kartus per dieną') daily_thrice_forecast = true;
-
-  await subscriptionModel.addSubscription(chatId, state.city, morning_forecast, weekly_forecast, daily_thrice_forecast);
-  stateManager.resetState(userStates, chatId);
-  await menuHandler.showMainMenu(bot, chatId, userStates, `Sėkmingai prenumeravote ${state.city} orus!`);
-}
-
-async function handleShowSubscriptions(bot, chatId, userStates) {
-  try {
-    const subscriptions = await subscriptionModel.getUserSubscriptions(chatId);
-    if (!subscriptions.length) {
-      await menuHandler.showMainMenu(bot, chatId, userStates, 'Neturite aktyvių prenumeratų.');
+  async handleCityStep(chatId, userStates, city) {
+    if (!this.isValidCity(city)) {
+      const messageId = await this.messageService.send(
+        chatId,
+        'Neteisingas miesto formatas. Įveskite miestą iš naujo:'
+      );
+      this.stateManager.addMessage(userStates, chatId, messageId);
       return;
     }
 
-    const keyboard = createSubscriptionKeyboard(subscriptions);
-    const sent = await bot.sendMessage(
+    this.stateManager.setState(userStates, chatId, {
+      step: 'frequency',
+      city: city.trim()
+    });
+
+    const messageId = await this.messageService.send(
       chatId,
-      'Jūsų prenumeratos. Spustelėkite norėdami pašalinti:',
+      'Pasirinkite pranešimų dažnumą:',
       {
-        ...keyboard,
-        parse_mode: 'Markdown'
+        reply_markup: {
+          keyboard: [
+            ['1 kartą per dieną'],
+            ['1 kartą per savaitę'],
+            ['3 kartus per dieną'],
+            ['Grįžti atgal']
+          ],
+          resize_keyboard: true
+        }
       }
     );
-    
-    stateManager.addMessage(userStates, chatId, sent.message_id);
-    stateManager.setState(userStates, chatId, { 
-      step: 'managing_subscriptions',
-      subscriptions: subscriptions
-    });
-  } catch (err) {
-    logger.error(`Klaida gaunant prenumeratas [chatId: ${chatId}]:`, err);
-    await menuHandler.showMainMenu(bot, chatId, userStates, 'Nepavyko gauti prenumeratų. Bandykite vėliau.');
+    this.stateManager.addMessage(userStates, chatId, messageId);
   }
-}
 
-async function handleCallbackQuery(bot, chatId, messageId, data, userStates) {
-  try {
-    if (data.startsWith('delete_sub_')) {
-      const city = data.replace('delete_sub_', '');
-      const subscription = await subscriptionModel.getSubscriptionById(chatId, city);
-      
-      if (!subscription) {
-        await bot.answerCallbackQuery({ callback_query_id: data.id, text: 'Prenerata nerasta.' });
+  async handleFrequencyStep(chatId, userStates, frequency) {
+    const state = this.stateManager.getState(userStates, chatId);
+    if (!this.validFrequencies.includes(frequency)) {
+      const messageId = await this.messageService.send(
+        chatId,
+        'Neteisingas dažnumas. Pasirinkite iš mygtukų.'
+      );
+      this.stateManager.addMessage(userStates, chatId, messageId);
+      return;
+    }
+
+    const frequencyMap = {
+      '1 kartą per dieną': { morning: true, weekly: false, dailyThrice: false },
+      '1 kartą per savaitę': { morning: false, weekly: true, dailyThrice: false },
+      '3 kartus per dieną': { morning: false, weekly: false, dailyThrice: true }
+    };
+
+    const { morning, weekly, dailyThrice } = frequencyMap[frequency];
+
+    try {
+      await this.subscriptionModel.addSubscription(
+        chatId,
+        state.city,
+        morning,
+        weekly,
+        dailyThrice
+      );
+
+      this.stateManager.resetState(userStates, chatId);
+      await this.menuHandler.showMainMenu(
+        chatId,
+        userStates,
+        `Sėkmingai prenumeravote ${state.city} orus!`
+      );
+    } catch (error) {
+      logger.error(`Klaida išsaugant prenumeratą: ${error}`);
+      await this.messageService.send(
+        chatId,
+        'Įvyko klaida išsaugant prenumeratą. Bandykite dar kartą.'
+      );
+    }
+  }
+
+  async handleShowSubscriptions(chatId, userStates) {
+    try {
+      const subscriptions = await this.subscriptionModel.getUserSubscriptions(chatId);
+
+      if (!subscriptions.length) {
+        await this.menuHandler.showMainMenu(chatId, userStates, 'Neturite aktyvių prenumeratų.');
         return;
       }
 
-      await subscriptionModel.deleteSubscription(chatId, city);
-      
-      // Atnaujiname prenumeratų sąrašą
-      const subscriptions = await subscriptionModel.getUserSubscriptions(chatId);
-      
-      if (subscriptions.length === 0) {
-        await bot.editMessageText(
-          'Sėkmingai pašalinta. Neturite likusių prenumeratų.',
-          { chat_id: chatId, message_id: messageId }
-        );
-        stateManager.resetState(userStates, chatId);
-        await menuHandler.showMainMenu(bot, chatId, userStates, 'Prenerata sėkmingai pašalinta!');
-        return;
-      }
-
-      const keyboard = createSubscriptionKeyboard(subscriptions);
-      await bot.editMessageText(
+      const keyboard = this.createSubscriptionKeyboard(subscriptions);
+      const messageId = await this.messageService.send(
+        chatId,
         'Jūsų prenumeratos. Spustelėkite norėdami pašalinti:',
         {
-          chat_id: chatId,
-          message_id: messageId,
           ...keyboard,
           parse_mode: 'Markdown'
         }
       );
-      
-      stateManager.setState(userStates, chatId, { 
+
+      this.stateManager.addMessage(userStates, chatId, messageId);
+      this.stateManager.setState(userStates, chatId, {
         step: 'managing_subscriptions',
-        subscriptions: subscriptions
+        subscriptions
       });
-      
-      await bot.answerCallbackQuery({ callback_query_id: data.id, text: `Prenerata ${city} pašalinta.` });
-    } else if (data === 'back_to_menu') {
-      stateManager.resetState(userStates, chatId);
-      await menuHandler.showMainMenu(bot, chatId, userStates, 'Pasirinkite veiksmą:');
+    } catch (error) {
+      logger.error(`Klaida gaunant prenumeratas [chatId: ${chatId}]:`, error);
+      await this.menuHandler.showMainMenu(
+        chatId,
+        userStates,
+        'Nepavyko gauti prenumeratų. Bandykite vėliau.'
+      );
     }
-  } catch (error) {
-    logger.error(`Klaida apdorojant callback [chatId: ${chatId}]:`, error);
-    await bot.answerCallbackQuery({ callback_query_id: data.id, text: 'Įvyko klaida. Bandykite dar kartą.' });
+  }
+
+  async handleCallbackQuery(bot, chatId, messageId, data, userStates) {
+    const callbackQueryId = data.id;
+    const callbackData = data.data || data;
+
+    try {
+      if (callbackData.startsWith('delete_sub_')) {
+        const city = callbackData.replace('delete_sub_', '');
+
+        await this.messageService.editMessage(
+          chatId,
+          messageId,
+          `Ar tikrai norite pašalinti prenumeratą miestui ${city}?`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '✅ Taip', callback_data: `confirm_delete_${city}` },
+                  { text: '❌ Ne', callback_data: 'back_to_subscriptions' }
+                ]
+              ]
+            }
+          }
+        );
+
+        this.stateManager.setState(userStates, chatId, {
+          step: 'confirm_delete',
+          cityToDelete: city,
+          previousMessageId: messageId
+        });
+
+        await this.messageService.answerCallback(callbackQueryId, 'Pasirinkite veiksmą su prenumerata');
+      } else if (callbackData.startsWith('confirm_delete_')) {
+        const city = callbackData.replace('confirm_delete_', '');
+
+        try {
+          await this.subscriptionModel.deleteSubscription(chatId, city);
+          const subscriptions = await this.subscriptionModel.getUserSubscriptions(chatId);
+
+          if (!subscriptions.length) {
+            await this.messageService.editMessage(
+              chatId,
+              messageId,
+              'Sėkmingai pašalinta. Neturite likusių prenumeratų.'
+            );
+            this.stateManager.resetState(userStates, chatId);
+            await this.menuHandler.showMainMenu(chatId, userStates, 'Prenumerata sėkmingai pašalinta!');
+            return;
+          }
+
+          const keyboard = this.createSubscriptionKeyboard(subscriptions);
+          await this.messageService.editMessage(
+            chatId,
+            messageId,
+            'Jūsų prenumeratos. Spustelėkite norėdami pašalinti:',
+            {
+              ...keyboard,
+              parse_mode: 'Markdown'
+            }
+          );
+
+          this.stateManager.setState(userStates, chatId, {
+            step: 'managing_subscriptions',
+            subscriptions
+          });
+
+          await this.messageService.answerCallback(callbackQueryId, `Prenumerata ${city} pašalinta.`);
+        } catch (error) {
+          logger.error(`Klaida trinant prenumeratą ${city}:`, error);
+          await this.messageService.answerCallback(
+            callbackQueryId,
+            'Nepavyko pašalinti prenumeratos. Bandykite dar kartą.',
+            true
+          );
+        }
+      } else if (callbackData === 'back_to_subscriptions' || callbackData === 'back_to_menu') {
+        try {
+          this.stateManager.resetState(userStates, chatId);
+          await this.menuHandler.showMainMenu(chatId, userStates, 'Pasirinkite veiksmą:');
+          await this.messageService.answerCallback(callbackQueryId, 'Grįžtama į pagrindinį meniu');
+        } catch (menuError) {
+          logger.error('Klaida grąžinant į meniu:', menuError);
+          await this.messageService.answerCallback(
+            callbackQueryId,
+            'Įvyko klaida. Bandykite dar kartą.',
+            true
+          );
+        }
+      }
+    } catch (error) {
+      logger.error(`Klaida apdorojant callback [chatId: ${chatId}]:`, error);
+      try {
+        await this.messageService.answerCallback(
+          callbackQueryId,
+          'Įvyko klaida. Bandykite dar kartą.',
+          true
+        );
+      } catch (e) {
+        logger.error('Nepavyko išsiųsti klaidos pranešimo:', e);
+      }
+    }
   }
 }
 
 module.exports = SubscriptionHandler;
-  
