@@ -29,16 +29,4 @@ async function getSubscriptions(telegram_id) {
   return result.rows;
 }
 
-async function getUserSubscribedCities(telegram_id) {
-  // Adjust table/column names as needed for your schema
-  const result = await db.query(
-    `SELECT DISTINCT city
-     FROM subscriptions
-     WHERE telegram_id = $1
-       AND (morning_forecast = true OR weekly_forecast = true OR daily_thrice_forecast = true)`,
-    [telegram_id]
-  );
-  return result.rows.map(row => row.city);
-}
-
-module.exports = { getUserSubscribedCities, upsertSubscription, getSubscriptions };
+module.exports = {upsertSubscription, getSubscriptions };
