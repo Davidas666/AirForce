@@ -1,4 +1,5 @@
 const BaseFormatter = require('./BaseFormatter');
+const { fetchMultiDayForecast, fetchHourlyForecast } = require('../../helpers/fetchMultiDayForecast');
 
 class ThriceDailyForecastFormatter extends BaseFormatter {
   format() {
