@@ -9,8 +9,6 @@ export default function FavoriteWindow({ cityNotFound }) {
   const { city } = useParams();
   const selectedCity = city ? city.trim() : "";
 
-
-  
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -33,28 +31,33 @@ export default function FavoriteWindow({ cityNotFound }) {
     fetchFavorites();
   }, [user?.id, selectedCity]);
 
+  // Helper: normalize city name for backend and comparison
+  const normalizeCity = (c) => (c ? c.trim().toLowerCase() : "");
+
   // Helper: case-insensitive check
   const isFavorite = favoriteCities.some(
-    (fav) => fav.toLowerCase() === selectedCity.toLowerCase()
+    (fav) => normalizeCity(fav) === normalizeCity(selectedCity)
   );
 
   // Add favorite city and refresh
   const handleAddFavorite = (city) => {
-    if (!user?.id || !city || isFavorite) return;
+    const normCity = normalizeCity(city);
+    if (!user?.id || !normCity || isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city }),
+      body: JSON.stringify({ userId: user.id, city: normCity }),
     }).then(fetchFavorites);
   };
 
   // Remove favorite city and refresh
   const handleRemoveFavorite = (city) => {
-    if (!user?.id || !city || !isFavorite) return;
+    const normCity = normalizeCity(city);
+    if (!user?.id || !normCity || !isFavorite) return;
     fetch("/api/favorite-cities", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, city }),
+      body: JSON.stringify({ userId: user.id, city: normCity }),
     }).then(fetchFavorites);
   };
 
@@ -65,7 +68,7 @@ export default function FavoriteWindow({ cityNotFound }) {
         <button
           key={favCity}
           className={`px-4 py-2 rounded-full font-semibold border transition ${
-            favCity.toLowerCase() === selectedCity.toLowerCase()
+            normalizeCity(favCity) === normalizeCity(selectedCity)
               ? "bg-blue-500 text-white border-blue-500"
               : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
           }`}
@@ -125,8 +128,7 @@ export default function FavoriteWindow({ cityNotFound }) {
       )
     );
   };
-  console.log("FavoriteWindow rendered for city:", selectedCity);
-  console.log("Current user:", user);
+
   if (!user?.id) {
     return (
       <div className="flex justify-center items-center w-full py-8">
