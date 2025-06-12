@@ -54,14 +54,18 @@ function AppRoutes({
         recent={recent}
         handleSearch={setSelectedCity}
       />
-      <FavoriteWindow
-        cityNotFound={!!bodyError && bodyError.includes("Failed to fetch data")}
-      />
       <Routes>
         <Route
           path="/:city"
           element={
-            <CityPage setRecent={setRecent} setBodyError={setBodyError} />
+            <>
+              <CityPage setRecent={setRecent} setBodyError={setBodyError} />
+              <FavoriteWindow
+                cityNotFound={
+                  !!bodyError && bodyError.includes("Failed to fetch data")
+                }
+              />
+            </>
           }
         />
         <Route
