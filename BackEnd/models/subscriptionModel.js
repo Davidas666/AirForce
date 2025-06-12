@@ -18,7 +18,7 @@ async function upsertSubscription(telegram_id, city, type, enabled) {
     [telegram_id, city, enabled]
   );
   return result.rows[0];
-}
+};
 
 // Get subscriptions for a user
 async function getSubscriptions(telegram_id) {
@@ -27,6 +27,18 @@ async function getSubscriptions(telegram_id) {
     [telegram_id]
   );
   return result.rows;
+};
+
+// Get all cities a user is subscribed
+async function getUserSubscribedCities(telegram_id) {
+  const result = await pool.query(
+    `SELECT DISTINCT city
+     FROM subscriptions
+     WHERE telegram_id = $1
+       AND (morning_forecast = true OR weekly_forecast = true OR daily_thrice_forecast = true)`,
+    [telegram_id]
+  );
+  return result.rows.map(row => row.city);
 }
 
-module.exports = { upsertSubscription, getSubscriptions };
+module.exports = {upsertSubscription, getSubscriptions, getUserSubscribedCities };
