@@ -5,6 +5,7 @@ import HourlyWeatherSlider from "./HourlyWeatherSlider";
 import DailyWeatherCard from "./DailyWeatherCard";
 import TodayHourlyWeather from "./TodayHourlyWeather";
 import ViewButtons from "./ViewButtons";
+import SubscriptionToggles from "./SubscriptionToggles";
 
 export default function Body({ selectedCity, setRecent, setError }) {
   const userCity = useUserCity();
@@ -14,13 +15,13 @@ export default function Body({ selectedCity, setRecent, setError }) {
   const cityToShow = selectedCity || userCity;
 
   // Data hooks
-const {
-  hourly,
-  cityName: hourlyCityName,
-  country: hourlyCountry,
-  loading: loadingHourly,
-  error: errorHourly,
-} = useHourlyWeather(cityToShow, setRecent);
+  const {
+    hourly,
+    cityName: hourlyCityName,
+    country: hourlyCountry,
+    loading: loadingHourly,
+    error: errorHourly,
+  } = useHourlyWeather(cityToShow, setRecent);
 
   const {
     daily,
@@ -37,18 +38,18 @@ const {
   let loading = false;
   let error = "";
 
-if (view === "today") {
-  cityName = hourlyCityName || cityToShow;
-  country = hourlyCountry || "";
-  loading = false;
-  error = "";
-  content = cityToShow && (
-    <TodayHourlyWeather
-      city={cityToShow}
-      startIdx={todayStartIdx}
-      setStartIdx={setTodayStartIdx}
-    />
-  );
+  if (view === "today") {
+    cityName = hourlyCityName || cityToShow;
+    country = hourlyCountry || "";
+    loading = false;
+    error = "";
+    content = cityToShow && (
+      <TodayHourlyWeather
+        city={cityToShow}
+        startIdx={todayStartIdx}
+        setStartIdx={setTodayStartIdx}
+      />
+    );
   } else if (view === "hourly") {
     cityName = hourlyCityName;
     country = hourlyCountry;
@@ -89,10 +90,12 @@ if (view === "today") {
       className="mx-auto mt-10 p-6 bg-white rounded shadow flex gap-8 items-start"
       style={{ maxWidth: "1020px", minHeight: "500px" }}
     >
-      <div className="flex-1 min-w-0">
-        <h2 className="text-2xl font-bold mb-4">
-          Nearest city weather forecast
-        </h2>
+      <div className="flex-1 min-w-0 flex flex-col items-center">
+        <div className="flex items-start justify-between">
+          <h2 className="text-2xl font-bold mb-4">
+            Nearest city weather check forecast
+          </h2>
+        </div>
         <ViewButtons view={view} setView={setView} />
 
         {!cityToShow && <div>Loading nearest city...</div>}
@@ -136,6 +139,8 @@ if (view === "today") {
                 {content}
               </>
             )}
+
+            <SubscriptionToggles selectedCity={cityToShow} />
           </>
         )}
       </div>

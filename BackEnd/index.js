@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const forecastRoutes = require('./routes/forecastRoutes');
 const cityRoutes = require('./routes/cityRoutes');
 const telegramUserRoutes = require('./routes/telegramUserRoutes');
@@ -52,6 +53,7 @@ app.use(morgan('combined', {
   }
 }));
 
+app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/forecast', forecastRoutes);
 app.use('/api/cities', cityRoutes);
 app.use('/api/telegram-user', telegramUserRoutes);
