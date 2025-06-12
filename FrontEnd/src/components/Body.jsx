@@ -6,6 +6,7 @@ import DailyWeatherCard from "./DailyWeatherCard";
 import TodayHourlyWeather from "./TodayHourlyWeather";
 import ViewButtons from "./ViewButtons";
 import SubscriptionToggles from "./SubscriptionToggles";
+import SubscribedCities from "./SubscribedCities";
 
 export default function Body({ selectedCity, setRecent, setError }) {
   const userCity = useUserCity();
