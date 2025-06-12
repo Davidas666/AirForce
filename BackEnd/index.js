@@ -1,7 +1,8 @@
 require('dotenv').config();
+console.log('✅ Loaded API key:', process.env.OPENWEATHERMAP_API_KEY);
+
 const express = require('express');
 const { Pool } = require('pg');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const forecastRoutes = require('./routes/forecastRoutes');
 const cityRoutes = require('./routes/cityRoutes');
 const telegramUserRoutes = require('./routes/telegramUserRoutes');
@@ -15,7 +16,7 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Ensure logs directory exists
+
 fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
 
 const pool = new Pool({
@@ -46,14 +47,14 @@ app.use(cors({
   credentials: true
 }));
 
-// Morgan HTTP logging to winston
+
 app.use(morgan('combined', {
   stream: {
     write: (message) => logger.info(message.trim())
   }
 }));
 
-app.use('/api/subscription', subscriptionRoutes);
+
 app.use('/api/forecast', forecastRoutes);
 app.use('/api/cities', cityRoutes);
 app.use('/api/telegram-user', telegramUserRoutes);
@@ -65,10 +66,12 @@ app.get('/', (req, res) => {
 });
 
 
+if (require.main === module) {
+  app.listen(port, () => {
+    logger.info(`Server running on port ${port}`);
+  });
+}
 
-app.listen(port, () => {
-  logger.info(`Server running on port ${port}`);
-});
 
 process.on('SIGINT', () => {
   logger.info('Server shutting down (SIGINT)');
@@ -85,3 +88,5 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at: %o, reason: %o', promise, reason);
 });
+
+module.exports = app;

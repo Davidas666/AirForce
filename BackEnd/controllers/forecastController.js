@@ -17,8 +17,13 @@ exports.getForecastByCity = async (req, res) => {
     logger.info(`Forecast response sent for city: ${city}`);
     res.json(data);
   } catch (error) {
-    logger.error('Error in getForecastByCity: %o', error);
-    res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+    if (error.response && error.response.status === 404) {
+      logger.warn(`City not found: ${city}`);
+      res.status(404).json({ error: 'City not found' });
+    } else {
+      logger.error('Error in getForecastByCity: %o', error);
+      res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+    }
   }
 };
 
@@ -32,8 +37,13 @@ exports.getDailyForecastByCity = async (req, res) => {
     logger.info(`Daily forecast response sent for city: ${city}`);
     res.json(data);
   } catch (error) {
-    logger.error('Error in getDailyForecastByCity: %o', error);
-    res.status(500).json({ error: 'Failed to get daily forecast', details: error.message });
+    if (error.response && error.response.status === 404) {
+      logger.warn(`City not found: ${city}`);
+      res.status(404).json({ error: 'City not found' });
+    } else {
+      logger.error('Error in getDailyForecastByCity: %o', error);
+      res.status(500).json({ error: 'Failed to get daily forecast', details: error.message });
+    }
   }
 };
 
@@ -46,9 +56,18 @@ exports.getMultiDayForecastByCity = async (req, res) => {
     logger.info(`Multi-day forecast response sent for city: ${city}`);
     res.json(data);
   } catch (error) {
-    logger.error('Error in getMultiDayForecastByCity: %o', error);
-    res.status(500).json({ error: 'Failed to get multi-day forecast', details: error.message });
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
   }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+
 };
 
 exports.getHourlyForecastByCity = async (req, res) => {
@@ -60,9 +79,18 @@ exports.getHourlyForecastByCity = async (req, res) => {
     logger.info(`Hourly forecast response sent for city: ${city}`);
     res.json(data);
   } catch (error) {
-    logger.error('Error in getHourlyForecastByCity: %o', error);
-    res.status(500).json({ error: 'Failed to get hourly forecast', details: error.message });
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
   }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+
 };
 
 exports.getHourlyForecastByCityCnt = async (req, res) => {
@@ -75,7 +103,16 @@ exports.getHourlyForecastByCityCnt = async (req, res) => {
     logger.info(`Hourly forecast (limited) response sent for city: ${city}`);
     res.json(data);
   } catch (error) {
-    logger.error('Error in getHourlyForecastByCityCnt: %o', error);
-    res.status(500).json({ error: 'Failed to get limited hourly forecast', details: error.message });
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
   }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+
 };

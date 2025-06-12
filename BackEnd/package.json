@@ -1,16 +1,20 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "description": "AirForce backend API server for weather forecasting",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
+  "start": "node index.js",
+  "dev": "nodemon index.js",
+  "test": "jest",
+  "test:cucumber": "cucumber-js",
+  "test:filter": "cucumber-js features/filterForecast.feature",
+  "test:all": "npm run test && npm run test:cucumber"
+}
+,
+  "author": "AirForce Team",
   "license": "ISC",
-  "description": "",
+  "keywords": ["weather", "API", "forecast", "backend", "express", "cucumber", "jest"],
   "dependencies": {
     "argon2": "^0.43.0",
     "axios": "^1.9.0",
@@ -26,6 +30,9 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@cucumber/cucumber": "^9.2.1",
+    "jest": "^30.0.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^6.3.3"
   }
 }

@@ -91,6 +91,7 @@ export default function Body({ selectedCity, setRecent, setError }) {
       className="mx-auto mt-10 p-6 bg-white rounded shadow flex gap-8 items-start"
       style={{ maxWidth: "1020px", minHeight: "500px" }}
     >
+
       <div className="flex-1 min-w-0 flex flex-col items-center">
         <div className="flex items-start justify-between">
           <h2 className="text-2xl font-bold mb-4">

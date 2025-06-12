@@ -12,7 +12,7 @@ export default function SubscribedCities() {
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
-    fetch(`/api/subscription/user-cities?telegram_id=${user.id}`)
+    fetch("/api/subscription/user-cities", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         setCities(Array.isArray(data.cities) ? data.cities : []);
