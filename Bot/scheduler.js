@@ -85,8 +85,8 @@ async function checkAndSendForecasts(bot, isTestRun = false) {
         else if (sub.weekly_forecast && currentHour === 8 && currentDay === 1) {
           shouldSend = true;
         }
-        // Tikriname prognozę 3 kartus per dieną (8, 14, 20 val.)
-        else if (sub.daily_thrice_forecast && [8, 14, 20].includes(currentHour)) {
+        // Tikriname prognozę 1 kartą per dieną 14:15
+        else if (sub.daily_thrice_forecast && currentHour === 14 && now.getMinutes() === 15) {
           shouldSend = true;
         }
       }
@@ -301,7 +301,7 @@ async function testAllSubscriptionTypes(bot) {
   }
 }
 
-// Eksportuojame funkciją, kuri paleidžia planuoklį
+// Eksportuojame funkciją, kuri paleidžia planuotoją
 module.exports = {
   start: (bot) => {
     // Tikriname ar reikia paleisti testinį režimą
@@ -318,18 +318,18 @@ module.exports = {
       const currentMinute = now.getMinutes();
       const currentDay = now.getDay(); // 0 = sekmadienis, 1 = pirmadienis, ...
       
-      // Tikriname ar dabartinė valanda yra 8, 14 arba 20, o minutė 00
-      if ([8, 14, 20].includes(currentHour) && currentMinute === 0) {
+      // Tikriname ar dabartinė valanda yra 14, o minutė 15
+      if (currentHour === 14 && currentMinute === 15) {
         logger.info(`Scheduler: Pradedamas pranešimų siuntimas ${currentHour}:${currentMinute.toString().padStart(2, '0')}`);
         checkAndSendForecasts(bot, false);
       }
     }, 60000); // Tikriname kas minutę
   
-    logger.info('Scheduler: Planuotojas paleistas. Pranešimai bus siunčiami 8:00, 14:00 ir 20:00 valandą.');
+    logger.info('Scheduler: Planuotojas paleistas. Pranešimai bus siunčiami 14:15 valandą.');
     
-    // Paleidžiame iš karto, jei atitinka laiką (8:00, 14:00 arba 20:00)
+    // Paleidžiame iš karto, jei atitinka laiką (14:15)
     const now = new Date();
-    if ([8, 14, 20].includes(now.getHours()) && now.getMinutes() === 0) {
+    if (now.getHours() === 14 && now.getMinutes() === 15) {
       checkAndSendForecasts(bot, false);
     }
   },
