@@ -8,7 +8,7 @@ export default function FavoriteWindow({ cityNotFound }) {
   const navigate = useNavigate();
   const { city } = useParams();
   const selectedCity = city ? city.trim() : "";
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
