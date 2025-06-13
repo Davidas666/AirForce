@@ -9,6 +9,7 @@ export default function TelegramLogin({ onAuth }) {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Check if user is already logged in via cookie
   useEffect(() => {
     if (!isLoggedIn) {
       const cookies = document.cookie.split(';').map(c => c.trim());
@@ -45,6 +46,7 @@ export default function TelegramLogin({ onAuth }) {
     script.setAttribute('data-auth-url', window.location.origin + '/api/telegram-auth');
     container.appendChild(script);
 
+    // Fallback link if script fails to load or takes too long
     script.onload = () => {
       if (fallback) fallback.style.display = 'none';
     };
@@ -56,12 +58,13 @@ export default function TelegramLogin({ onAuth }) {
       }
     }, 3000);
 
+    // Global function to handle Telegram auth response
     window.onTelegramAuth = function(userObj) {
       setIsLoggedIn(true);
       setUser(userObj);
         console.log("Telegram user id:", userObj.id);
       document.cookie = `telegram_user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=${60*60*24*7}`;
-      // Siunčiam duomenis į backend
+      // Send user data to the server
       fetch('/api/telegram-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,6 +72,7 @@ export default function TelegramLogin({ onAuth }) {
       });
       if (onAuth) onAuth(userObj);
     };
+    // Cleanup function to remove script and reset global function
     return () => {
       window.onTelegramAuth = undefined;
       if (fallback) fallback.style.display = 'block';
@@ -78,6 +82,7 @@ export default function TelegramLogin({ onAuth }) {
     };
   }, [onAuth, isLoggedIn]);
 
+  // Handle logout
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUser(null);
@@ -85,10 +90,12 @@ export default function TelegramLogin({ onAuth }) {
     document.cookie = 'telegram_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   };
 
+  // If loading, show loading state
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // If user is logged in, show menu button and user menu
   if (isLoggedIn && user) {
     return (
       <>
@@ -97,6 +104,7 @@ export default function TelegramLogin({ onAuth }) {
       </>
     );
   }
+  // If user is not logged in, show Telegram login button
   return (
     <div className="flex flex-col items-center my-4">
       <div ref={containerRef} id="telegram-login-container" className="flex justify-center"></div>

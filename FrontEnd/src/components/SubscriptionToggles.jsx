@@ -11,6 +11,7 @@ const SUBS = [
   { key: "daily_thrice", label: "3 times a day" },
 ];
 
+// SubscriptionToggles component allows users to manage their weather subscriptions for a specific city
 export default function SubscriptionToggles({ selectedCity }) {
   const [user, setUser] = useState(getUserFromCookie());
   const [subs, setSubs] = useState({});
@@ -49,6 +50,7 @@ export default function SubscriptionToggles({ selectedCity }) {
     return () => clearTimeout(timer);
   }, [notif]);
 
+  // Handle toggle switch for enabling/disabling subscriptions
   const handleToggle = (type) => {
     if (!user?.id || !selectedCity) return;
     const enabled = !subs[type];
@@ -73,8 +75,10 @@ export default function SubscriptionToggles({ selectedCity }) {
       .finally(() => setLoading(false));
   };
 
+  // If user is not logged in or no city selected, return null
   if (!user?.id || !selectedCity) return null;
 
+  // Return the subscription toggles UI
   return (
     <Box
       sx={{

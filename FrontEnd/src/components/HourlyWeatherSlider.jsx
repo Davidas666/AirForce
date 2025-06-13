@@ -2,12 +2,13 @@ import HourlyWeatherCard from "./HourlyWeatherCard";
 
 export default function HourlyWeatherSlider({ hourly, startIdx, setStartIdx }) {
   const visibleCount = 6;
-
   const handlePrev = () => setStartIdx(idx => Math.max(0, idx - 1));
   const handleNext = () => setStartIdx(idx => Math.min(hourly.length - visibleCount, idx + 1));
 
+  // Ensure startIdx is within bounds
   const visibleHours = hourly.slice(startIdx, startIdx + visibleCount);
 
+  // Return Hourly weather slider component
   return (
     <div className="flex justify-center w-full">
       <div className="relative flex items-center" style={{ width: "820px" }}>
@@ -64,5 +65,3 @@ export default function HourlyWeatherSlider({ hourly, startIdx, setStartIdx }) {
     </div>
   );
 }
-
-//tesing .gitignore

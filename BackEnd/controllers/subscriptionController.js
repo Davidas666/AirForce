@@ -1,5 +1,6 @@
 const { upsertSubscription, getSubscriptions, getUserSubscribedCities } = require('../models/subscriptionModel');
 
+// Controller for managing user subscriptions
 exports.updateSubscription = async (req, res) => {
   const { telegram_id, city, type, enabled } = req.body;
   if (!telegram_id || !city || !type || typeof enabled !== 'boolean') {
@@ -13,6 +14,7 @@ exports.updateSubscription = async (req, res) => {
   }
 };
 
+// Controller to get user subscriptions
 exports.getUserSubscriptions = async (req, res) => {
   const { telegram_id } = req.query;
   if (!telegram_id) return res.status(400).json({ error: 'telegram_id required' });
@@ -24,6 +26,7 @@ exports.getUserSubscriptions = async (req, res) => {
   }
 };
 
+// Controller to get cities the user is subscribed to
 exports.getUserSubscribedCities = async (req, res) => {
   const cookie = req.headers.cookie || "";
   const match = cookie.match(/telegram_user=([^;]+)/);

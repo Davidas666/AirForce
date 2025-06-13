@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import FavoriteWindow from "./components/FavoriteWindow";
 import { getUserFromCookie } from "./utils/auth";
 
+// CityPage component to display weather for a specific city
 function CityPage({ setRecent, setBodyError }) {
   const { city } = useParams();
   return (
@@ -22,6 +23,7 @@ function CityPage({ setRecent, setBodyError }) {
   );
 }
 
+// AppRoutes component to define the main application routes
 function AppRoutes({
   selectedCity,
   setSelectedCity,
@@ -91,6 +93,7 @@ function AppRoutes({
   );
 }
 
+// Main App component that initializes state and renders the application
 export default function App() {
   const [selectedCity, setSelectedCity] = useState(null);
   const userCity = useUserCity();
@@ -98,6 +101,7 @@ export default function App() {
   const [bodyError, setBodyError] = useState("");
   const [user, setUser] = useState(getUserFromCookie());
 
+  // If userCity is detected, set it as the selected city
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());

@@ -1,4 +1,5 @@
 function parseWeatherResponse(apiResponse) {
+// Validate the input to ensure it is an object
   if (!apiResponse || typeof apiResponse !== 'object') {
     throw new Error('Invalid API response format');
   }

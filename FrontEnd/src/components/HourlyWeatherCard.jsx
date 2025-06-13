@@ -1,14 +1,18 @@
 export default function HourlyWeatherCard({ item }) {
   const dateObj = new Date(item.dt_txt || item.dt * 1000);
   const date = dateObj.toLocaleDateString();
+  // Format date to "MMM DD"
   const dayShort = dateObj
     .toLocaleDateString("en-US", { weekday: "short" })
     .slice(0, 2);
+  // Format time to "HH:MM"
   const hour = item.dt_txt
     ? item.dt_txt.slice(11, 16)
     : dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  // Round temperature to nearest integer
   const temp = Math.round(item.main?.temp ?? item.temp);
 
+  // Return Hourly weather card component
   return (
     <div className="bg-blue-100 p-4 rounded shadow flex flex-col items-center box-border w-[130px] min-w-[130px] max-w-[130px]">
       <div className="text-xs text-gray-500 mb-1 w-full text-center">

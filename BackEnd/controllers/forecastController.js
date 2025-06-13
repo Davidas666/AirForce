@@ -8,6 +8,7 @@ const {
   fetchHourlyForecastByCityCnt
 } = require('../models/forecastModel');
 
+// Controller for handling weather forecast requests
 exports.getForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -27,6 +28,7 @@ exports.getForecastByCity = async (req, res) => {
   }
 };
 
+// Controller for handling daily weather forecast requests
 exports.getDailyForecastByCity = async (req, res) => {
   const city = req.params.city;
   const cnt = req.query.cnt || 7;
@@ -47,6 +49,7 @@ exports.getDailyForecastByCity = async (req, res) => {
   }
 };
 
+// Controller for handling multi-day weather forecast requests
 exports.getMultiDayForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -67,9 +70,9 @@ exports.getMultiDayForecastByCity = async (req, res) => {
   logger.error('Error in getForecastByCity: %o', error);
   res.status(500).json({ error: 'Failed to get forecast', details: error.message });
 }
-
 };
 
+// Controller for handling hourly weather forecast requests
 exports.getHourlyForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -93,6 +96,7 @@ exports.getHourlyForecastByCity = async (req, res) => {
 
 };
 
+// Controller for handling limited hourly weather forecast requests
 exports.getHourlyForecastByCityCnt = async (req, res) => {
   const city = req.params.city;
   const cnt = req.query.cnt || 7;
@@ -114,5 +118,4 @@ exports.getHourlyForecastByCityCnt = async (req, res) => {
   logger.error('Error in getForecastByCity: %o', error);
   res.status(500).json({ error: 'Failed to get forecast', details: error.message });
 }
-
 };

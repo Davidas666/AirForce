@@ -1,6 +1,6 @@
 import TelegramLogin from "./TelegramLogin";
 
-// Modern, minimal footer for AirForce Weather
+// Minimal footer for AirForce Weather
 export default function Footer({ onTelegramAuth }) {
   return (
     <footer className="w-full bg-gray-100 border-t py-4 text-center text-gray-600 text-sm fixed bottom-0 left-0 z-50" style={{minHeight:'64px'}}>

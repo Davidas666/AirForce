@@ -1,5 +1,6 @@
 const axios = require('axios');
 
+// This module provides functions to fetch weather forecasts from the OpenWeatherMap API.
 async function fetchForecastByCity(city, apiKey) {
   const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
     params: {
@@ -12,6 +13,7 @@ async function fetchForecastByCity(city, apiKey) {
   return response.data;
 }
 
+// Fetches a multi-day weather forecast for a given city.
 async function fetchMultiDayForecastByCity(city, apiKey) {
   const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast', {
     params: {
@@ -24,6 +26,7 @@ async function fetchMultiDayForecastByCity(city, apiKey) {
   return response.data;
 }
 
+// Fetches an hourly weather forecast for a given city.
 async function fetchHourlyForecastByCity(city, apiKey) {
   const response = await axios.get('https://pro.openweathermap.org/data/2.5/forecast/hourly', {
     params: {
@@ -36,6 +39,7 @@ async function fetchHourlyForecastByCity(city, apiKey) {
   return response.data;
 }
 
+// Fetches a daily weather forecast for a given city.
 async function fetchDailyForecastByCity(city, cnt, apiKey) {
   const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast/daily', {
     params: {
@@ -49,6 +53,7 @@ async function fetchDailyForecastByCity(city, cnt, apiKey) {
   return response.data;
 }
 
+// Fetches an hourly weather forecast for a given city with a specified count.
 async function fetchHourlyForecastByCityCnt(city, cnt, apiKey) {
   const response = await axios.get('https://pro.openweathermap.org/data/2.5/forecast/hourly', {
     params: {

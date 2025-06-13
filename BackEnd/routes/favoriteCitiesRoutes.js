@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/favoriteCitiesController.js');
+
 // GET user's favorite cities
 router.get('/', controller.getFavoriteCities);
 

@@ -1,5 +1,6 @@
 const { createLogger, format, transports } = require('winston');
 
+// Logger configuration using Winston
 const logger = createLogger({
   level: 'info',
   format: format.combine(
@@ -14,6 +15,7 @@ const logger = createLogger({
   ],
 });
 
+// If not in production, also log to console
 if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
     format: format.combine(

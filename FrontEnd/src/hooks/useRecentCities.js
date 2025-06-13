@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 export function useRecentCities(userCity) {
   const [recent, setRecent] = useState([]);
 
+  // Initialize recent cities from cookie on first render
   useEffect(() => {
     try {
       const fromCookie = Cookies.get("recentCities");
@@ -16,12 +17,14 @@ export function useRecentCities(userCity) {
     }
   }, []);
 
+  // Update cookie whenever recent cities change
   useEffect(() => {
     if (recent.length > 0) {
       Cookies.set("recentCities", JSON.stringify(recent), { expires: 30 });
     }
   }, [recent]);
 
+  // Add userCity to recent cities if it's valid and not already present
   useEffect(() => {
     if (userCity && userCity.trim()) {
       setRecent((prev) => {
@@ -35,5 +38,6 @@ export function useRecentCities(userCity) {
     }
   }, [userCity]);
 
+  // Clear recent cities when userCity is empty
   return [recent, setRecent];
 }

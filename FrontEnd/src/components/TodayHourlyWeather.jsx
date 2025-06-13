@@ -27,6 +27,7 @@ export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
     const currentHour = now.getHours();
     const cnt = 29 - currentHour;
 
+    // Fetch hourly forecast for today, limited to remaining hours
     fetch(`/api/forecast/hourly/${encodeURIComponent(city)}/limited?cnt=${cnt}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
@@ -40,10 +41,14 @@ export default function TodayHourlyWeather({ city, startIdx, setStartIdx }) {
       .finally(() => setLoading(false));
   }, [city]);
 
+  // If no city is provided, return null
   if (loading) return <div>Loading...</div>;
+  // If there's an error, display it
   if (error) return <div className="text-red-500">{error}</div>;
+  // If no hourly data for today, return null
   if (!todayHourly.length) return null;
 
+  // Return the HourlyWeatherSlider component with today's hourly data
   return (
     <HourlyWeatherSlider
       hourly={todayHourly}

@@ -8,6 +8,7 @@ export default function FavoriteWindow({ cityNotFound }) {
   const navigate = useNavigate();
   const { city } = useParams();
   
+  // Update user state every second to reflect any changes in cookie
   useEffect(() => {
     const interval = setInterval(() => {
       setUser(getUserFromCookie());
@@ -15,6 +16,7 @@ export default function FavoriteWindow({ cityNotFound }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch favorite cities from the server
   const fetchFavorites = () => {
     if (!user?.id) {
       setFavoriteCities([]);
@@ -26,6 +28,7 @@ export default function FavoriteWindow({ cityNotFound }) {
       .catch(() => setFavoriteCities([]));
   };
 
+  // Fetch favorite cities when user or city changes
   useEffect(() => {
     fetchFavorites();
   }, [user?.id, city]);
@@ -121,8 +124,10 @@ export default function FavoriteWindow({ cityNotFound }) {
     );
   };
   
+  // If no city is provided, return null
   if (!city) return null;
 
+  // If user is not logged in, show message
   if (!user?.id) {
     return (
       <div className="flex justify-center items-center w-full py-8">

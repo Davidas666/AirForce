@@ -34,6 +34,7 @@ class WeatherHandler {
     this.forecastApiBase = process.env.FORECAST_API_URL || 'http://localhost:3001/api';
   }
 
+  // Handles the weather city step
   async handleWeatherCityStep(chatId, userStates, city) {
     try {
       const messageId = await this.messageService.send(
@@ -65,8 +66,7 @@ class WeatherHandler {
     }
   }
 
-
-
+  // Handles the weather forecast based on user input
   async handleCallbackQuery(bot, chatId, messageId, data, userStates) {
     try {
       const callbackData = data.data || data;
@@ -88,6 +88,7 @@ class WeatherHandler {
     }
   }
 
+  // Shows the weather forecast for a specific city
   async showWeatherForecast(chatId, userStates, city, days = 1) {
     try {
       const weatherData = await fetchMultiDayForecast(city);

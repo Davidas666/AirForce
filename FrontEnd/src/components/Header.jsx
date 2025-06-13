@@ -16,6 +16,7 @@ export default function Header({
   const inputRef = useRef();
   const navigate = useNavigate();
 
+  // Fetches city suggestions based on user input
   const fetchSuggestions = async (value) => {
     if (value.length < 2) {
       setSuggestions([]);
@@ -26,6 +27,7 @@ export default function Header({
     setSuggestions(data);
   };
 
+  // Handles input change, fetches suggestions, and manages suggestion visibility
   const handleInputChange = (e) => {
     const value = e.target.value;
     setCity(value);
@@ -38,22 +40,26 @@ export default function Header({
     }
   };
 
+  // Handles focus and blur events to show/hide suggestions
   const handleFocus = () => {
     if (city.length >= 2 && suggestions.length > 0) {
       setShowSuggestions(true);
     }
   };
 
+  // Handles blur event to hide suggestions after a short delay
   const handleBlur = () => {
     setTimeout(() => setShowSuggestions(false), 150);
   };
 
+  // Handles suggestion click, sets city, hides suggestions, and navigates to the city page
   const handleSuggestionClick = (c) => {
     setCity(c.name);
     setShowSuggestions(false);
     navigate(`/${encodeURIComponent(c.name)}`);
   };
 
+  // Handles city search, sets city, hides suggestions, and navigates to the city page
   const handleSearchCity = (searchCity) => {
     const cityToSearch = searchCity || city.trim();
     if (!cityToSearch) return;
@@ -62,13 +68,15 @@ export default function Header({
     navigate(`/${encodeURIComponent(cityToSearch)}`);
   };
 
+  // Handles Enter key press to trigger city search
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleSearchCity();
     }
   };
-
+  
+  // Return header
   return (
     <header className="w-full px-6 py-3 bg-white shadow z-50">
       <div className="flex flex-wrap items-center justify-between gap-4 w-full max-w-6xl mx-auto">
@@ -138,7 +146,6 @@ export default function Header({
             </button>
           ))}
         </div>
-        {/* Telegram prisijungimo mygtukas dešinėje */}
         <div className="flex items-center flex-shrink-0 ml-2 lg:ml-auto">
           {children}
         </div>

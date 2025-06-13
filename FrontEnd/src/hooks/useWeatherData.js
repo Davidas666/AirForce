@@ -9,13 +9,16 @@ export function useHourlyWeather(city, setRecent) {
   const prevCityRef = useRef();
 
   useEffect(() => {
+    // If no city is provided, do nothing
     if (!city) return;
 
+    // Only clear cache if city actually changed
     if (prevCityRef.current && prevCityRef.current !== city) {
       clearWeatherCache(prevCityRef.current);
     }
     prevCityRef.current = city;
 
+    // Reset state
     setLoading(true);
     setError("");
     setHourly([]);
@@ -32,6 +35,7 @@ export function useHourlyWeather(city, setRecent) {
       return;
     }
 
+    // If not cached, fetch and cache
     fetch(`/api/forecast/hourly/${encodeURIComponent(city)}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");
@@ -77,6 +81,7 @@ export function useDailyWeather(city, setRecent, view) {
     prevCityRef.current = city;
     prevViewRef.current = view;
 
+    // Reset state
     setLoading(true);
     setError("");
     setDaily([]);
@@ -93,6 +98,7 @@ export function useDailyWeather(city, setRecent, view) {
       return;
     }
 
+    // If not cached, fetch and cache
     fetch(`/api/forecast/daily/${encodeURIComponent(city)}?cnt=7`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch data");

@@ -1,12 +1,15 @@
 export default function DailyWeatherCard({ item }) {
   const dateObj = new Date(item.dt * 1000);
 
+  // Format the day as a short string (e.g., "Mo", "Tu")
   const dayShort = dateObj
     .toLocaleDateString("en-US", { weekday: "short" })
     .slice(0, 2);
 
+  // Format the date as a string (e.g., "10/01/2023")
   const date = dateObj.toLocaleDateString();
 
+  // Return the card with weather information
   return (
     <div className="bg-blue-50 p-4 rounded shadow flex flex-col items-center w-[130px] min-w-[130px] max-w-[130px]">
       <div className="text-xs text-gray-500 mb-1 w-full text-center">

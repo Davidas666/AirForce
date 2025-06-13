@@ -3,6 +3,7 @@ const path = require('path');
 
 let cityList = null;
 
+// Load the city list from a JSON file
 function loadCityList() {
   if (!cityList) {
     cityList = JSON.parse(
@@ -12,6 +13,7 @@ function loadCityList() {
   return cityList;
 }
 
+// Search for cities based on user input
 function searchCities(query) {
   const cities = loadCityList();
   const q = (query || '').toLowerCase();

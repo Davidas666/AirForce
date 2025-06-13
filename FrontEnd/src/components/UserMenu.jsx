@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 
 export default function UserMenu({ user, onLogout, onClose }) {
+  // Return menu component with user details and logout button
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] relative">
@@ -32,6 +33,7 @@ export default function UserMenu({ user, onLogout, onClose }) {
   );
 }
 
+// PropTypes for UserMenu component
 UserMenu.propTypes = {
   user: PropTypes.shape({
     username: PropTypes.string,

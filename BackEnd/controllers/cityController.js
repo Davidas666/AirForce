@@ -1,5 +1,6 @@
 const { searchCities } = require('../models/cityModel');
 
+// Controller to handle city suggestions based on user input
 exports.getCitySuggestions = (req, res) => {
   const query = req.query.q?.toLowerCase();
   if (!query) {

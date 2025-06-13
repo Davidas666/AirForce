@@ -9,6 +9,7 @@ export default function SubscribedCities() {
   const user = getUserFromCookie();
   const navigate = useNavigate();
 
+  // Fetch subscribed cities from the API when the component mounts
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
@@ -24,10 +25,14 @@ export default function SubscribedCities() {
       });
   }, [user?.id]);
 
+  // If user is not logged in, return null
   if (!user?.id) return null;
+  // If loading or error, show appropriate message
   if (loading) return <div className="text-gray-500 text-center my-2">Loading your subscriptions...</div>;
+  // If there's an error, show the error message
   if (error) return <div className="text-red-500 text-center my-2">{error}</div>;
 
+  // Return the list of subscribed cities
   return (
     <div className="my-4 w-full flex flex-col items-center">
       <h3 className="font-semibold text-blue-700 mb-2">Your Subscribed Cities</h3>

@@ -1,9 +1,12 @@
 export default function ViewButtons({ view, setView }) {
+  // Define the available views with their keys and labels
   const views = [
     { key: "today", label: "Today" },
     { key: "hourly", label: "Hourly" },
     { key: "7days", label: "7 days" },
   ];
+
+  // Return a set of buttons to switch between views
   return (
     <div className="flex gap-4 mb-6">
       {views.map(({ key, label }) => (
