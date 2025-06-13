@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>FrontEnd/src/components/UserMenu.jsx - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul><h3>Global</h3><ul><li><a href="global.html#clearWeatherCache">clearWeatherCache</a></li><li><a href="global.html#getUserFromCookie">getUserFromCookie</a></li><li><a href="global.html#getWeatherCache">getWeatherCache</a></li><li><a href="global.html#setWeatherCache">setWeatherCache</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">FrontEnd/src/components/UserMenu.jsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import PropTypes from "prop-types";
+
+/**
+ * UserMenu component displays user info and logout option.
+ * @component
+ * @param {Object} props
+ * @param {Object} props.user - User object.
+ * @param {Function} props.onLogout - Logout handler.
+ * @param {Function} props.onClose - Close handler.
+ * @returns {JSX.Element}
+ */
+
+export default function UserMenu({ user, onLogout, onClose }) {
+  // Return menu component with user details and logout button
+  return (
+    &lt;div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+      &lt;div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] relative">
+        &lt;button
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+          onClick={onClose}
+          aria-label="Uždaryti"
+        >
+          ×
+        &lt;/button>
+        &lt;h2 className="text-xl font-bold mb-4 text-blue-700">Jūsų profilis&lt;/h2>
+        &lt;div className="mb-2">
+          &lt;span className="font-semibold">Telegram vartotojas:&lt;/span> @{user.username}
+        &lt;/div>
+        {user.photo_url &amp;&amp; (
+          &lt;img src={user.photo_url} alt="User" className="w-20 h-20 rounded-full mx-auto mb-2" />
+        )}
+        &lt;div className="mb-2">
+          &lt;span className="font-semibold">Vardas:&lt;/span> {user.first_name} {user.last_name || ""}
+        &lt;/div>
+        &lt;button
+          className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          onClick={onLogout}
+        >
+          Atsijungti
+        &lt;/button>
+      &lt;/div>
+    &lt;/div>
+  );
+}
+
+// PropTypes for UserMenu component
+UserMenu.propTypes = {
+  user: PropTypes.shape({
+    username: PropTypes.string,
+    photo_url: PropTypes.string,
+    first_name: PropTypes.string,
+    last_name: PropTypes.string,
+  }).isRequired,
+  onLogout: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

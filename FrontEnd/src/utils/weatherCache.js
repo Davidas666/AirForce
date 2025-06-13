@@ -1,3 +1,10 @@
+/**
+ * Get cached weather data for a city and view.
+ * @param {string} city - City name.
+ * @param {string} view - View type (e.g., "hourly", "7days").
+ * @returns {Object|null} Cached data or null if not found/expired.
+ */
+
 export function getWeatherCache(city, view) {
   try {
     const key = `weather_${city}_${view}`;
@@ -12,12 +19,24 @@ export function getWeatherCache(city, view) {
   }
 }
 
+/**
+ * Set weather data in cache for a city and view.
+ * @param {string} city - City name.
+ * @param {string} view - View type.
+ * @param {Object} data - Data to cache.
+ */
+
 export function setWeatherCache(city, view, data) {
   try {
     const key = `weather_${city}_${view}`;
     localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
   } catch {}
 }
+
+/**
+ * Clear all cached weather data for a city.
+ * @param {string} city - City name.
+ */
 
 export function clearWeatherCache(city) {
   Object.keys(localStorage)

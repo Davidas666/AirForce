@@ -7,12 +7,16 @@
     "include": [
       "BackEnd/controllers",
       "BackEnd/models",
+      "BackEnd/utils",
+      "FrontEnd/src/components",
+      "FrontEnd/src/hooks",
+      "FrontEnd/src/utils",
       "Bot/models",
       "Bot/handlers",
       "Bot/src",
       "Bot/services"
     ],
-    "includePattern": "\\.(jsx|js|ts|tsx)$",
+    "includePattern": "\\.(js|jsx|ts|tsx)$",
     "excludePattern": "(node_modules/|docs/|__tests__/|test/|spec/|examples/)"
   },
   "plugins": ["plugins/markdown"],
@@ -23,7 +27,7 @@
       "outputSourceFiles": true,
       "includeDate": false,
       "useLongnameInNav": true,
-      "systemName": "AirForce API & Bot",
+      "systemName": "AirForce API & App",
       "footer": "",
       "copyright": "AirForce © 2025",
       "navType": "vertical",
@@ -33,14 +37,14 @@
       "inverseNav": true
     }
   },
-"opts": {
-  "destination": "./docs/jsdoc/",
-  "encoding": "utf8",
-  "private": true,
-  "recurse": true,
-  "template": "node_modules/docdash",
-  "package": "./package.json"
-},
+  "opts": {
+    "destination": "./docs/jsdoc/",
+    "encoding": "utf8",
+    "private": true,
+    "recurse": true,
+    "template": "node_modules/docdash",
+    "package": "./package.json"
+  },
   "docdash": {
     "static": true,
     "sort": true,

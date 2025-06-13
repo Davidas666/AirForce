@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["./Bot", "./Backend"],
+    "include": ["./Bot", "./Backend", ".Frontend"],
     "exclude": ["node_modules"]
   },
   "opts": {

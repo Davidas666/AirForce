@@ -1,4 +1,8 @@
-  // Get Telegram user from cookie
+/**
+ * Get Telegram user object from the 'telegram_user' cookie.
+ * @returns {Object|null} User object if found, otherwise null.
+ */
+
 export function getUserFromCookie() {
   const userCookie = document.cookie
     .split(";")

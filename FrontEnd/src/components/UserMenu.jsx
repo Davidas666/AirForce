@@ -1,5 +1,15 @@
 import PropTypes from "prop-types";
 
+/**
+ * UserMenu component displays user info and logout option.
+ * @component
+ * @param {Object} props
+ * @param {Object} props.user - User object.
+ * @param {Function} props.onLogout - Logout handler.
+ * @param {Function} props.onClose - Close handler.
+ * @returns {JSX.Element}
+ */
+
 export default function UserMenu({ user, onLogout, onClose }) {
   // Return menu component with user details and logout button
   return (

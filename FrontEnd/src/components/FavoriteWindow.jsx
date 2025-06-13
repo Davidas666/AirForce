@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { getUserFromCookie } from "../utils/auth";
 import { useNavigate, useParams } from "react-router-dom";
 
+/**
+ * FavoriteWindow component displays and manages user's favorite cities.
+ * @component
+ * @param {Object} props
+ * @param {boolean} props.cityNotFound - Whether the selected city was not found.
+ * @returns {JSX.Element|null}
+ */
+
 export default function FavoriteWindow({ cityNotFound }) {
   const [favoriteCities, setFavoriteCities] = useState([]);
   const [user, setUser] = useState(getUserFromCookie());

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>FrontEnd/src/components/FavoriteWindow.jsx - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul><h3>Global</h3><ul><li><a href="global.html#clearWeatherCache">clearWeatherCache</a></li><li><a href="global.html#getUserFromCookie">getUserFromCookie</a></li><li><a href="global.html#getWeatherCache">getWeatherCache</a></li><li><a href="global.html#setWeatherCache">setWeatherCache</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">FrontEnd/src/components/FavoriteWindow.jsx</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useEffect, useState } from "react";
+import { getUserFromCookie } from "../utils/auth";
+import { useNavigate, useParams } from "react-router-dom";
+
+/**
+ * FavoriteWindow component displays and manages user's favorite cities.
+ * @component
+ * @param {Object} props
+ * @param {boolean} props.cityNotFound - Whether the selected city was not found.
+ * @returns {JSX.Element|null}
+ */
+
+export default function FavoriteWindow({ cityNotFound }) {
+  const [favoriteCities, setFavoriteCities] = useState([]);
+  const [user, setUser] = useState(getUserFromCookie());
+  const navigate = useNavigate();
+  const { city } = useParams();
+  
+  // Update user state every second to reflect any changes in cookie
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUser(getUserFromCookie());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fetch favorite cities from the server
+  const fetchFavorites = () => {
+    if (!user?.id) {
+      setFavoriteCities([]);
+      return;
+    }
+    fetch(`/api/favorite-cities?userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => setFavoriteCities(Array.isArray(data) ? data : []))
+      .catch(() => setFavoriteCities([]));
+  };
+
+  // Fetch favorite cities when user or city changes
+  useEffect(() => {
+    fetchFavorites();
+  }, [user?.id, city]);
+
+  // Case-sensitive check
+  const isFavorite = favoriteCities.includes(city);
+
+  // Add favorite city and refresh
+  const handleAddFavorite = (cityName) => {
+    if (!user?.id || !cityName || isFavorite) return;
+    fetch("/api/favorite-cities", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id, city: cityName }),
+    }).then(fetchFavorites);
+  };
+
+  // Remove favorite city and refresh
+  const handleRemoveFavorite = (cityName) => {
+    if (!user?.id || !cityName || !isFavorite) return;
+    fetch("/api/favorite-cities", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id, city: cityName }),
+    }).then(fetchFavorites);
+  };
+
+  // Render favorite cities row
+  const renderFavoriteCitiesRow = () => (
+    &lt;div className="w-full flex gap-2 px-6 py-2 bg-gray-50 border-b border-gray-200 justify-center">
+      {favoriteCities.map((favCity) => (
+        &lt;button
+          key={favCity}
+          className={`px-4 py-2 rounded-full font-semibold border transition ${
+            favCity === city
+              ? "bg-blue-500 text-white border-blue-500"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
+          }`}
+          onClick={() => navigate(`/${encodeURIComponent(favCity)}`)}
+        >
+          {favCity}
+        &lt;/button>
+      ))}
+      {favoriteCities.length === 0 &amp;&amp; (
+        &lt;span className="text-gray-400">No favorite cities yet&lt;/span>
+      )}
+    &lt;/div>
+  );
+
+  // Render add/remove buttons for the selected city
+  const renderButtons = () => {
+    const disableAdd = isFavorite || cityNotFound || !city;
+    const disableRemove = !isFavorite || cityNotFound || !city;
+    return (
+      user?.id &amp;&amp; (
+        &lt;div className="flex justify-center mt-2">
+          &lt;button
+            className={`bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-1 rounded-2xl mr-2 transition-opacity ${
+              disableAdd ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={() => handleAddFavorite(city)}
+            disabled={disableAdd}
+            title={
+              cityNotFound
+                ? "City not found"
+                : isFavorite
+                ? "City is already in favorites"
+                : "Add to favorites"
+            }
+            aria-disabled={disableAdd}
+          >
+            Add to Favorites
+          &lt;/button>
+          &lt;button
+            className={`bg-gradient-to-r from-red-500 to-pink-400 text-white px-3 py-1 rounded-2xl transition-opacity ${
+              disableRemove ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={() => handleRemoveFavorite(city)}
+            disabled={disableRemove}
+            title={
+              cityNotFound
+                ? "City not found"
+                : !isFavorite
+                ? "City is not in favorites"
+                : "Remove from favorites"
+            }
+            aria-disabled={disableRemove}
+          >
+            Remove from Favorites
+          &lt;/button>
+        &lt;/div>
+      )
+    );
+  };
+  
+  // If no city is provided, return null
+  if (!city) return null;
+
+  // If user is not logged in, show message
+  if (!user?.id) {
+    return (
+      &lt;div className="flex justify-center items-center w-full py-8">
+        &lt;span className="text-sm text-gray-400 text-center">
+          Please login to access Favourite cities functionality
+        &lt;/span>
+      &lt;/div>
+    );
+  }
+
+  return (
+    &lt;div>
+      {renderFavoriteCitiesRow()}
+      {renderButtons()}
+    &lt;/div>
+  );
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

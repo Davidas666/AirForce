@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserFromCookie } from "../utils/auth";
 
+/**
+ * SubscribedCities component displays a list of cities the user is subscribed to.
+ * Clicking a city navigates to its weather page.
+ * @component
+ * @returns {JSX.Element|null}
+ */
+
 export default function SubscribedCities() {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
