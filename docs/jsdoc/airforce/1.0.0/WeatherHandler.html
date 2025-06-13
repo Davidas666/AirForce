@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>WeatherHandler - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">WeatherHandler</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        WeatherHandler
+        </h2>
+        
+            <div class="class-description usertext"><p>Handles weather-related user interactions for the AirForce Telegram bot.</p></div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="WeatherHandler"><span class="type-signature"></span>new WeatherHandler<span class="signature">(messageService, stateManager, menuHandler)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Bot_handlers_weatherHandler.js.html">Bot/handlers/weatherHandler.js</a>, <a href="Bot_handlers_weatherHandler.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Creates a new WeatherHandler instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>messageService</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Service for sending messages to Telegram</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stateManager</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>State manager utility</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>menuHandler</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Menu handler utility</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="handleCallbackQuery"><span class="type-signature">(async) </span>handleCallbackQuery<span class="signature">(bot, chatId, messageId, data, userStates)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Bot_handlers_weatherHandler.js.html">Bot/handlers/weatherHandler.js</a>, <a href="Bot_handlers_weatherHandler.js.html#line95">line 95</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Handles the callback query when the user selects a forecast type from the inline menu.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Telegram bot instance</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>chatId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Telegram chat ID of the user</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>messageId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Telegram message ID</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback data from Telegram</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userStates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing all users' states</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="handleWeatherCityStep"><span class="type-signature">(async) </span>handleWeatherCityStep<span class="signature">(chatId, userStates, city)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Bot_handlers_weatherHandler.js.html">Bot/handlers/weatherHandler.js</a>, <a href="Bot_handlers_weatherHandler.js.html#line55">line 55</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Handles the step where the user selects the forecast type for a given city.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>chatId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Telegram chat ID of the user</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userStates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing all users' states</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>city</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>City for which the forecast is requested</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="handleWeatherForecast"><span class="type-signature">(async) </span>handleWeatherForecast<span class="signature">(chatId, userStates)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Bot_handlers_weatherHandler.js.html">Bot/handlers/weatherHandler.js</a>, <a href="Bot_handlers_weatherHandler.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Starts the weather forecast flow by asking the user for a city name.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>chatId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Telegram chat ID of the user</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userStates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object containing all users' states</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="showWeatherForecast"><span class="type-signature">(async) </span>showWeatherForecast<span class="signature">(chatId, userStates, city, days<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Bot_handlers_weatherHandler.js.html">Bot/handlers/weatherHandler.js</a>, <a href="Bot_handlers_weatherHandler.js.html#line124">line 124</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Shows the weather forecast for a specific city and time range.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>chatId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Telegram chat ID of the user</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userStates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Object containing all users' states</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>city</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>City for which the forecast is requested</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>days</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Number of days for the forecast (1 for today, 3 for 3-day forecast)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

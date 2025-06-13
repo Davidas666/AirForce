@@ -4,9 +4,16 @@
     "dictionaries": ["jsdoc", "closure"]
   },
   "source": {
-    "include": ["BackEnd/controllers", "BackEnd/models"],
+    "include": [
+      "BackEnd/controllers",
+      "BackEnd/models",
+      "Bot/models",
+      "Bot/handlers",
+      "Bot/src",
+      "Bot/services"
+    ],
     "includePattern": "\\.(jsx|js|ts|tsx)$",
-    "excludePattern": "(node_modules/|docs/)"
+    "excludePattern": "(node_modules/|docs/|__tests__/|test/|spec/|examples/)"
   },
   "plugins": ["plugins/markdown"],
   "templates": {
@@ -15,19 +22,40 @@
     "default": {
       "outputSourceFiles": true,
       "includeDate": false,
-      "useLongnameInNav": true
+      "useLongnameInNav": true,
+      "systemName": "AirForce API & Bot",
+      "footer": "",
+      "copyright": "AirForce © 2025",
+      "navType": "vertical",
+      "theme": "cosmo",
+      "linenums": true,
+      "collapseSymbols": true,
+      "inverseNav": true
     }
   },
-  "opts": {
-    "destination": "./docs/jsdoc/",
-    "encoding": "utf8",
-    "private": true,
-    "recurse": true,
-    "template": "node_modules/docdash"
-  },
+"opts": {
+  "destination": "./docs/jsdoc/",
+  "encoding": "utf8",
+  "private": true,
+  "recurse": true,
+  "template": "node_modules/docdash",
+  "package": "./package.json"
+},
   "docdash": {
     "static": true,
     "sort": true,
+    "search": true,
+    "collapse": true,
+    "typedefs": true,
+    "removeQuotes": "none",
+    "menu": {
+      "GitHub Repo": {
+        "href": "https://github.com/Davidas666/AirForce",
+        "target": "_blank",
+        "class": "menu-item",
+        "id": "github_repo"
+      }
+    },
     "sectionOrder": [
       "Tutorials",
       "Classes",
@@ -38,5 +66,8 @@
       "Mixins",
       "Interfaces"
     ]
+  },
+  "markdown": {
+    "idInHeadings": true
   }
 }

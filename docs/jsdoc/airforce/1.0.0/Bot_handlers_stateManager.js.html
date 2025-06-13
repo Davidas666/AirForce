@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Bot/handlers/stateManager.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Bot/handlers/stateManager.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// State management for AirForce bot
+module.exports = {
+  /**
+   * Returns the state object for a given user by chatId.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @returns {Object|null} The user's state object or null if not found
+   */
+  getState(states, chatId) {
+    return states[chatId] || null;
+  },
+
+  /**
+   * Returns the user's state object or creates one if it does not exist.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @returns {Object} The user's state object
+   */
+  getOrCreateUserState(states, chatId) {
+    if (!states[chatId]) {
+      states[chatId] = { messages: [] };
+    }
+    return states[chatId];
+  },
+
+  /**
+   * Adds a message to the user's state.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @param {number} messageId - ID of the message to add
+   */
+  addMessage(states, chatId, messageId) {
+    const user = this.getOrCreateUserState(states, chatId);
+    user.messages.push(messageId);
+  },
+
+  /**
+   * Sets the user's state to the provided payload.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @param {Object} payload - New state payload
+   */
+  setState(states, chatId, payload) {
+    const user = this.getOrCreateUserState(states, chatId);
+    Object.assign(user, payload);
+  },
+
+  /**
+   * Clears the user's messages, leaving the last N messages.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @param {number} [leaveLastN=2] - Number of messages to leave
+   * @returns {Array&lt;number>} IDs of messages to delete
+   */
+  clearMessages(states, chatId, leaveLastN = 2) {
+    const user = this.getOrCreateUserState(states, chatId);
+    const messages = user.messages || [];
+    const toDelete = messages.slice(0, Math.max(0, messages.length - leaveLastN));
+    user.messages = messages.slice(-leaveLastN);
+    return toDelete;
+  },
+
+  /**
+   * Resets the user's state, keeping the message history for cleanup.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   */
+  resetState(states, chatId) {
+    const user = this.getOrCreateUserState(states, chatId);
+    const messages = user.messages || [];
+    states[chatId] = { messages: messages };
+  },
+
+  /**
+   * Sets the last menu callback for the user.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   * @param {Function} callback - Last menu callback
+   */
+  setLastMenu(states, chatId, callback) {
+    const user = this.getOrCreateUserState(states, chatId);
+    user.lastMenu = callback;
+  },
+
+  /**
+   * Runs the last menu callback for the user.
+   * @param {Object} states - Object containing all users' states
+   * @param {number} chatId - Telegram chat ID
+   */
+  async runLastMenu(states, chatId) {
+    const user = this.getOrCreateUserState(states, chatId);
+    if (typeof user.lastMenu === 'function') {
+      await user.lastMenu();
+    }
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

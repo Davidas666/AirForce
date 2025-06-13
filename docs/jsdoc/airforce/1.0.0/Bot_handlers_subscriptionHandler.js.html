@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Bot/handlers/subscriptionHandler.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Bot/handlers/subscriptionHandler.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { Markup } = require('telegraf');
+const logger = require('../utils/logger');
+
+/**
+ * Prenumeratų valdymo klasė, atsakinga už prenumeratų kūrimą, rodymą ir šalinimą
+ */
+/**
+ * Handles user subscription logic for the AirForce Telegram bot.
+ */
+class SubscriptionHandler {
+  /**
+   * Creates a new SubscriptionHandler instance.
+   * @param {Object} messageService - Service for sending messages to Telegram
+   * @param {Object} subscriptionModel - Model for managing subscriptions
+   * @param {Object} stateManager - State manager utility
+   * @param {Object} menuHandler - Menu handler utility
+   */
+  constructor(messageService, subscriptionModel, stateManager, menuHandler) {
+    this.messageService = messageService;
+    this.subscriptionModel = subscriptionModel;
+    this.stateManager = stateManager;
+    this.menuHandler = menuHandler;
+    this.validFrequencies = ['1 kartą per dieną', '1 kartą per savaitę', '3 kartus per dieną'];
+  }
+
+  /**
+   * Formats the subscription frequency as a readable string.
+   * @param {Object} sub - Subscription object
+   * @returns {string} Frequency description
+   */
+  formatFrequency(sub) {
+    const freq = [];
+    if (sub.morning_forecast) freq.push('1x/day');
+    if (sub.weekly_forecast) freq.push('1x/week');
+    if (sub.daily_thrice_forecast) freq.push('3x/day');
+    return freq.length ? freq.join(', ') : 'no frequency';
+  }
+
+  /**
+   * Creates an inline keyboard with the list of subscriptions.
+   * @param {Array&lt;Object>} subscriptions - Array of subscription objects
+   * @returns {Object} Inline keyboard object
+   */
+  createSubscriptionKeyboard(subscriptions) {
+    const buttons = subscriptions.map(sub => ({
+      text: `❌ ${sub.city} (${this.formatFrequency(sub)})`,
+      callback_data: `delete_sub_${sub.city}`
+    }));
+
+    const keyboard = [];
+    for (let i = 0; i &lt; buttons.length; i += 2) {
+      keyboard.push(buttons.slice(i, i + 2));
+    }
+
+    keyboard.push([{ text: '🔙 Grįžti atgal', callback_data: 'back_to_menu' }]);
+    return Markup.inlineKeyboard(keyboard);
+  }
+
+  isValidCity(city) {
+    return city &amp;&amp; /^[a-zA-ZąčęėįšųūžĄČĘĖĮŠŲŪŽ\s-]{2,50}$/.test(city.trim());
+  }
+
+  async startSubscriptionFlow(chatId, userStates) {
+    this.stateManager.setState(userStates, chatId, { step: 'city' });
+    const messageId = await this.messageService.send(
+      chatId,
+      'Įveskite miestą, kurio orus norite prenumeruoti:',
+      { reply_markup: { keyboard: [['Grįžti atgal']], resize_keyboard: true } }
+    );
+    this.stateManager.addMessage(userStates, chatId, messageId);
+  }
+
+  async handleCityStep(chatId, userStates, city) {
+    if (!this.isValidCity(city)) {
+      const messageId = await this.messageService.send(
+        chatId,
+        'Neteisingas miesto formatas. Įveskite miestą iš naujo:'
+      );
+      this.stateManager.addMessage(userStates, chatId, messageId);
+      return;
+    }
+
+    this.stateManager.setState(userStates, chatId, {
+      step: 'frequency',
+      city: city.trim()
+    });
+
+    const messageId = await this.messageService.send(
+      chatId,
+      'Pasirinkite pranešimų dažnumą:',
+      {
+        reply_markup: {
+          keyboard: [
+            ['1 kartą per dieną'],
+            ['1 kartą per savaitę'],
+            ['3 kartus per dieną'],
+            ['Grįžti atgal']
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+    this.stateManager.addMessage(userStates, chatId, messageId);
+  }
+
+  async handleFrequencyStep(chatId, userStates, frequency) {
+    const state = this.stateManager.getState(userStates, chatId);
+    if (!this.validFrequencies.includes(frequency)) {
+      const messageId = await this.messageService.send(
+        chatId,
+        'Neteisingas dažnumas. Pasirinkite iš mygtukų.'
+      );
+      this.stateManager.addMessage(userStates, chatId, messageId);
+      return;
+    }
+
+    const frequencyMap = {
+      '1 kartą per dieną': { morning: true, weekly: false, dailyThrice: false },
+      '1 kartą per savaitę': { morning: false, weekly: true, dailyThrice: false },
+      '3 kartus per dieną': { morning: false, weekly: false, dailyThrice: true }
+    };
+
+    const { morning, weekly, dailyThrice } = frequencyMap[frequency];
+
+    try {
+      await this.subscriptionModel.addSubscription(
+        chatId,
+        state.city,
+        morning,
+        weekly,
+        dailyThrice
+      );
+
+      this.stateManager.resetState(userStates, chatId);
+      await this.menuHandler.showMainMenu(
+        chatId,
+        userStates,
+        `Sėkmingai prenumeravote ${state.city} orus!`
+      );
+    } catch (error) {
+      logger.error(`Klaida išsaugant prenumeratą: ${error}`);
+      await this.messageService.send(
+        chatId,
+        'Įvyko klaida išsaugant prenumeratą. Bandykite dar kartą.'
+      );
+    }
+  }
+
+  async handleShowSubscriptions(chatId, userStates) {
+    try {
+      const subscriptions = await this.subscriptionModel.getUserSubscriptions(chatId);
+
+      if (!subscriptions.length) {
+        await this.menuHandler.showMainMenu(chatId, userStates, 'Neturite aktyvių prenumeratų.');
+        return;
+      }
+
+      const keyboard = this.createSubscriptionKeyboard(subscriptions);
+      const messageId = await this.messageService.send(
+        chatId,
+        'Jūsų prenumeratos. Spustelėkite norėdami pašalinti:',
+        {
+          ...keyboard,
+          parse_mode: 'Markdown'
+        }
+      );
+
+      this.stateManager.addMessage(userStates, chatId, messageId);
+      this.stateManager.setState(userStates, chatId, {
+        step: 'managing_subscriptions',
+        subscriptions
+      });
+    } catch (error) {
+      logger.error(`Klaida gaunant prenumeratas [chatId: ${chatId}]:`, error);
+      await this.menuHandler.showMainMenu(
+        chatId,
+        userStates,
+        'Nepavyko gauti prenumeratų. Bandykite vėliau.'
+      );
+    }
+  }
+
+  async handleCallbackQuery(bot, chatId, messageId, data, userStates) {
+    const callbackQueryId = data.id;
+    const callbackData = data.data || data;
+
+    try {
+      if (callbackData.startsWith('delete_sub_')) {
+        const city = callbackData.replace('delete_sub_', '');
+
+        await this.messageService.editMessage(
+          chatId,
+          messageId,
+          `Ar tikrai norite pašalinti prenumeratą miestui ${city}?`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '✅ Taip', callback_data: `confirm_delete_${city}` },
+                  { text: '❌ Ne', callback_data: 'back_to_subscriptions' }
+                ]
+              ]
+            }
+          }
+        );
+
+        this.stateManager.setState(userStates, chatId, {
+          step: 'confirm_delete',
+          cityToDelete: city,
+          previousMessageId: messageId
+        });
+
+        await this.messageService.answerCallback(callbackQueryId, 'Pasirinkite veiksmą su prenumerata');
+      } else if (callbackData.startsWith('confirm_delete_')) {
+        const city = callbackData.replace('confirm_delete_', '');
+
+        try {
+          await this.subscriptionModel.deleteSubscription(chatId, city);
+          const subscriptions = await this.subscriptionModel.getUserSubscriptions(chatId);
+
+          if (!subscriptions.length) {
+            await this.messageService.editMessage(
+              chatId,
+              messageId,
+              'Sėkmingai pašalinta. Neturite likusių prenumeratų.'
+            );
+            this.stateManager.resetState(userStates, chatId);
+            await this.menuHandler.showMainMenu(chatId, userStates, 'Prenumerata sėkmingai pašalinta!');
+            return;
+          }
+
+          const keyboard = this.createSubscriptionKeyboard(subscriptions);
+          await this.messageService.editMessage(
+            chatId,
+            messageId,
+            'Jūsų prenumeratos. Spustelėkite norėdami pašalinti:',
+            {
+              ...keyboard,
+              parse_mode: 'Markdown'
+            }
+          );
+
+          this.stateManager.setState(userStates, chatId, {
+            step: 'managing_subscriptions',
+            subscriptions
+          });
+
+          await this.messageService.answerCallback(callbackQueryId, `Prenumerata ${city} pašalinta.`);
+        } catch (error) {
+          logger.error(`Klaida trinant prenumeratą ${city}:`, error);
+          await this.messageService.answerCallback(
+            callbackQueryId,
+            'Nepavyko pašalinti prenumeratos. Bandykite dar kartą.',
+            true
+          );
+        }
+      } else if (callbackData === 'back_to_subscriptions' || callbackData === 'back_to_menu') {
+        try {
+          this.stateManager.resetState(userStates, chatId);
+          await this.menuHandler.showMainMenu(chatId, userStates, 'Pasirinkite veiksmą:');
+          await this.messageService.answerCallback(callbackQueryId, 'Grįžtama į pagrindinį meniu');
+        } catch (menuError) {
+          logger.error('Klaida grąžinant į meniu:', menuError);
+          await this.messageService.answerCallback(
+            callbackQueryId,
+            'Įvyko klaida. Bandykite dar kartą.',
+            true
+          );
+        }
+      }
+    } catch (error) {
+      logger.error(`Klaida apdorojant callback [chatId: ${chatId}]:`, error);
+      try {
+        await this.messageService.answerCallback(
+          callbackQueryId,
+          'Įvyko klaida. Bandykite dar kartą.',
+          true
+        );
+      } catch (e) {
+        logger.error('Nepavyko išsiųsti klaidos pranešimo:', e);
+      }
+    }
+  }
+}
+
+module.exports = SubscriptionHandler;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

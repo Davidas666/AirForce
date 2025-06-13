@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Bot/handlers/weatherHandler.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/Davidas666/AirForce" target="_blank" class="menu-item" id="github_repo" >GitHub Repo</a></h2><h3>Classes</h3><ul><li><a href="MessageService.html">MessageService</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MessageService.html#answerCallback">answerCallback</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#editMessage">editMessage</a></li><li data-type='method' style='display: none;'><a href="MessageService.html#send">send</a></li></ul></li><li><a href="SubscriptionHandler.html">SubscriptionHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#createSubscriptionKeyboard">createSubscriptionKeyboard</a></li><li data-type='method' style='display: none;'><a href="SubscriptionHandler.html#formatFrequency">formatFrequency</a></li></ul></li><li><a href="WeatherHandler.html">WeatherHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleCallbackQuery">handleCallbackQuery</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherCityStep">handleWeatherCityStep</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#handleWeatherForecast">handleWeatherForecast</a></li><li data-type='method' style='display: none;'><a href="WeatherHandler.html#showWeatherForecast">showWeatherForecast</a></li></ul></li><li><a href="module-handlers_menuHandler-MenuHandler.html">handlers/menuHandler~MenuHandler</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-handlers_menuHandler-MenuHandler.html#showMainMenu">showMainMenu</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method' style='display: none;'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li><li><a href="module-handlers_menuHandler.html">handlers/menuHandler</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Bot/handlers/weatherHandler.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { fetchMultiDayForecast, fetchHourlyForecast } = require('../helpers/fetchMultiDayForecast');
+const logger = require('../utils/logger');
+const { ForecastFormatterFactory } = require('../src/formatters');
+
+/**
+ * Handles weather-related user interactions for the AirForce Telegram bot.
+ */
+class WeatherHandler {
+  /**
+   * Starts the weather forecast flow by asking the user for a city name.
+   * @param {number} chatId - Telegram chat ID of the user
+   * @param {Object} userStates - Object containing all users' states
+   * @returns {Promise&lt;void>}
+   */
+  async handleWeatherForecast(chatId, userStates) {
+    try {
+      const msgId = await this.messageService.send(
+        chatId,
+        'Enter the city name for which you want to see the weather forecast:'
+      );
+      this.stateManager.addMessage(userStates, chatId, msgId);
+      this.stateManager.setState(userStates, chatId, {
+        step: 'weather_city',
+        previousMessageId: msgId
+      });
+    } catch (error) {
+      logger.error('Error starting weather forecast flow:', error);
+      await this.messageService.send(
+        chatId,
+        'An error occurred while starting the weather forecast flow. Please try again.'
+      );
+    }
+  }
+
+  /**
+   * Creates a new WeatherHandler instance.
+   * @param {Object} messageService - Service for sending messages to Telegram
+   * @param {Object} stateManager - State manager utility
+   * @param {Object} menuHandler - Menu handler utility
+   */
+  constructor(messageService, stateManager, menuHandler) {
+    this.messageService = messageService;
+    this.stateManager = stateManager;
+    this.menuHandler = menuHandler;
+    this.forecastApiBase = process.env.FORECAST_API_URL || 'http://localhost:3001/api';
+  }
+
+  /**
+   * Handles the step where the user selects the forecast type for a given city.
+   * @param {number} chatId - Telegram chat ID of the user
+   * @param {Object} userStates - Object containing all users' states
+   * @param {string} city - City for which the forecast is requested
+   * @returns {Promise&lt;void>}
+   */
+  async handleWeatherCityStep(chatId, userStates, city) {
+    try {
+      const messageId = await this.messageService.send(
+        chatId,
+        `Select the desired weather forecast type for the city *${city}*:`,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: 'Today\'s weather', callback_data: `weather_today_${city}` }],
+              [{ text: '3-day forecast', callback_data: `weather_3days_${city}` }],
+              [{ text: 'Back to menu', callback_data: 'back_to_menu' }]
+            ]
+          }
+        }
+      );
+
+      this.stateManager.setState(userStates, chatId, {
+        step: 'weather_city_selected',
+        city: city,
+        previousMessageId: messageId
+      });
+    } catch (error) {
+      logger.error(`Error handling city selection for ${city}:`, error);
+      await this.messageService.send(
+        chatId,
+        'An error occurred while handling your selection. Please try again.'
+      );
+    }
+  }
+
+  /**
+   * Handles the callback query when the user selects a forecast type from the inline menu.
+   * @param {Object} bot - Telegram bot instance
+   * @param {number} chatId - Telegram chat ID of the user
+   * @param {number} messageId - Telegram message ID
+   * @param {Object|string} data - Callback data from Telegram
+   * @param {Object} userStates - Object containing all users' states
+   * @returns {Promise&lt;void>}
+   */
+  async handleCallbackQuery(bot, chatId, messageId, data, userStates) {
+    try {
+      const callbackData = data.data || data;
+      if (callbackData.startsWith('weather_today_')) {
+        const city = callbackData.replace('weather_today_', '');
+        await this.showWeatherForecast(chatId, userStates, city, 1);
+        return;
+      } else if (callbackData.startsWith('weather_3days_')) {
+        const city = callbackData.replace('weather_3days_', '');
+        await this.showWeatherForecast(chatId, userStates, city, 3);
+        return;
+      }
+    } catch (error) {
+      logger.error('Error handling weather forecast callback:', error);
+      await this.messageService.send(
+        chatId,
+        'An error occurred while handling your request. Please try again.'
+      );
+    }
+  }
+
+  /**
+   * Shows the weather forecast for a specific city and time range.
+   * @param {number} chatId - Telegram chat ID of the user
+   * @param {Object} userStates - Object containing all users' states
+   * @param {string} city - City for which the forecast is requested
+   * @param {number} [days=1] - Number of days for the forecast (1 for today, 3 for 3-day forecast)
+   * @returns {Promise&lt;void>}
+   */
+  async showWeatherForecast(chatId, userStates, city, days = 1) {
+    try {
+      const weatherData = await fetchMultiDayForecast(city);
+
+      const forecastType = days === 1 ? 'thrice_daily' : 'weekly';
+
+      const formatter = ForecastFormatterFactory.create(forecastType, weatherData, { 
+        locale: 'lt-LT', 
+        timezone: 'Europe/Vilnius' 
+      });
+
+      const message = await formatter.format();
+      const messages = Array.isArray(message) ? message : [message];
+
+      for (const msg of messages) {
+        await this.messageService.send(chatId, msg, { parse_mode: 'HTML' });
+        await new Promise(r => setTimeout(r, 500));
+      }
+    } catch (error) {
+      logger.error(`Klaida rodant prognozę miestui ${city}:`, error);
+      await this.messageService.send(chatId, `Nepavyko gauti orų prognozės miestui ${city}.`, { parse_mode: 'HTML' });
+    }
+  }
+}
+
+module.exports = WeatherHandler;</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
