@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('✅ Loaded API key:', process.env.OPENWEATHERMAP_API_KEY);
 
 const express = require('express');
 const { Pool } = require('pg');
