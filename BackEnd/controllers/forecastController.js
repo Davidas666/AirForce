@@ -1,5 +1,10 @@
 const logger = require('../utils/logger');
 
+/**
+ * @module controllers/forecastController
+ * @description Handles weather forecast related operations including current, daily, and hourly forecasts.
+ */
+
 const {
   fetchForecastByCity,
   fetchMultiDayForecastByCity,
@@ -8,7 +13,18 @@ const {
   fetchHourlyForecastByCityCnt
 } = require('../models/forecastModel');
 
-// Controller for handling weather forecast requests
+/**
+ * @function getForecastByCity
+ * @description Get current weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with current weather data or error message
+ * @example
+ * // GET /api/forecast/Vilnius
+ * // Returns: { coord: { lon: 25.2798, lat: 54.6892 }, weather: [...], main: {...} }
+ */
 exports.getForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -28,7 +44,20 @@ exports.getForecastByCity = async (req, res) => {
   }
 };
 
-// Controller for handling daily weather forecast requests
+/**
+ * @function getDailyForecastByCity
+ * @description Get daily weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} req.query - Query parameters
+ * @param {number} [req.query.cnt=7] - Number of days to forecast (1-16)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with daily forecast data or error message
+ * @example
+ * // GET /api/forecast/daily/Vilnius?cnt=5
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
 exports.getDailyForecastByCity = async (req, res) => {
   const city = req.params.city;
   const cnt = req.query.cnt || 7;
@@ -49,7 +78,18 @@ exports.getDailyForecastByCity = async (req, res) => {
   }
 };
 
-// Controller for handling multi-day weather forecast requests
+/**
+ * @function getMultiDayForecastByCity
+ * @description Get multi-day weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with multi-day forecast data or error message
+ * @example
+ * // GET /api/forecast/multi/Vilnius
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
 exports.getMultiDayForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -72,7 +112,18 @@ exports.getMultiDayForecastByCity = async (req, res) => {
 }
 };
 
-// Controller for handling hourly weather forecast requests
+/**
+ * @function getHourlyForecastByCity
+ * @description Get hourly weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with hourly forecast data or error message
+ * @example
+ * // GET /api/forecast/hourly/Vilnius
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
 exports.getHourlyForecastByCity = async (req, res) => {
   const city = req.params.city;
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -96,7 +147,20 @@ exports.getHourlyForecastByCity = async (req, res) => {
 
 };
 
-// Controller for handling limited hourly weather forecast requests
+/**
+ * @function getHourlyForecastByCityCnt
+ * @description Get limited hourly weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} req.query - Query parameters
+ * @param {number} [req.query.cnt=24] - Number of hours to forecast (1-48)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with limited hourly forecast data or error message
+ * @example
+ * // GET /api/forecast/hourly/Vilnius/cnt?cnt=12
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
 exports.getHourlyForecastByCityCnt = async (req, res) => {
   const city = req.params.city;
   const cnt = req.query.cnt || 7;

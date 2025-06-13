@@ -1,13 +1,19 @@
-// Menu handler for AirForce bot
+/**
+ * @file menuHandler.js
+ * @module handlers/menuHandler
+ * @description Atsakingas už AirForce boto meniu valdymą ir rodymą vartotojui.
+ */
 const { Markup } = require('telegraf');
 
 /**
- * Meniu valdymo klasė, atsakinga už visų meniu rodymą ir valdymą
+ * Meniu valdymo klasė, atsakinga už visų meniu rodymą ir valdymą.
+ * @class
  */
 class MenuHandler {
   /**
-   * @param {Object} messageService - Paslauga žinučių siuntimui
-   * @param {Object} stateManager - Būsenos valdymo servisas
+   * Sukuria naują MenuHandler egzempliorių.
+   * @param {Object} messageService - Paslauga žinučių siuntimui Telegram'e
+   * @param {Object} stateManager - Vartotojo būsenų valdymo servisas
    */
   constructor(messageService, stateManager) {
     this.messageService = messageService;
@@ -20,10 +26,12 @@ class MenuHandler {
   }
 
   /**
-   * Rodo pagrindinį meniu
-   * @param {number} chatId - Vartotojo chat ID
-   * @param {Object} userStates - Vartotojų būsenų objektas
-   * @param {string} [message='Pasirinkite veiksmą:'] - Pranešimo tekstas
+   * Parodo pagrindinį boto meniu vartotojui.
+   * @param {number} chatId - Vartotojo Telegram chat ID
+   * @param {Object} userStates - Objektas, kuriame saugomos vartotojų būsenos
+   * @param {string} [message='Pasirinkite veiksmą:'] - Pranešimo tekstas (neprivalomas)
+   * @throws Klaida, jei nepavyksta parodyti meniu
+   * @returns {Promise<void>}
    */
   async showMainMenu(chatId, userStates, message = 'Pasirinkite veiksmą:') {
     this.stateManager.resetState(userStates, chatId);
@@ -41,7 +49,7 @@ class MenuHandler {
       );
       this.stateManager.addMessage(userStates, chatId, messageId);
     } catch (error) {
-      console.error('Klaida rodant pagrindinį meniu:', error);
+      // Klaida bus išmesta į iškvietėją
       throw error;
     }
   }

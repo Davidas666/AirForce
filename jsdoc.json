@@ -1,0 +1,9 @@
+{
+  "source": {
+    "include": ["./Bot", "./Backend"],
+    "exclude": ["node_modules"]
+  },
+  "opts": {
+    "destination": "./docs"
+  }
+}

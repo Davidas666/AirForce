@@ -1,3 +1,13 @@
+/**
+ * @file bot.js
+ * @description Main entry point for the AirForce Telegram bot. Initializes services, handlers, models, logging, and the Telegram bot instance.
+ *
+ * Components:
+ * - Loads environment variables and dependencies
+ * - Sets up logging with winston
+ * - Initializes bot services, handlers, and models
+ * - Starts the Telegram bot with polling
+ */
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 const winston = require('winston');
@@ -42,6 +52,12 @@ scheduler.start(bot);
 
 logger.info('Botas sėkmingai inicijuotas');
 
+/**
+ * Deletes all messages for a user in the chat, except for the specified number to keep.
+ * @param {number} chatId - Telegram chat ID of the user
+ * @param {number} [keepMessages=0] - Number of most recent messages to keep (default is 0)
+ * @returns {Promise<void>}
+ */
 async function clearChat(chatId, keepMessages = 0) {
   const user = stateManager.getOrCreateUserState(userStates, chatId);
   

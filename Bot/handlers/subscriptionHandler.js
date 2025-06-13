@@ -4,12 +4,16 @@ const logger = require('../utils/logger');
 /**
  * Prenumeratų valdymo klasė, atsakinga už prenumeratų kūrimą, rodymą ir šalinimą
  */
+/**
+ * Handles user subscription logic for the AirForce Telegram bot.
+ */
 class SubscriptionHandler {
   /**
-   * @param {Object} messageService - Paslauga žinučių siuntimui
-   * @param {Object} subscriptionModel - Prenumeratų modelis
-   * @param {Object} stateManager - Būsenos valdymo servisas
-   * @param {Object} menuHandler - Meniu valdymo servisas
+   * Creates a new SubscriptionHandler instance.
+   * @param {Object} messageService - Service for sending messages to Telegram
+   * @param {Object} subscriptionModel - Model for managing subscriptions
+   * @param {Object} stateManager - State manager utility
+   * @param {Object} menuHandler - Menu handler utility
    */
   constructor(messageService, subscriptionModel, stateManager, menuHandler) {
     this.messageService = messageService;
@@ -19,18 +23,23 @@ class SubscriptionHandler {
     this.validFrequencies = ['1 kartą per dieną', '1 kartą per savaitę', '3 kartus per dieną'];
   }
 
+  /**
+   * Formats the subscription frequency as a readable string.
+   * @param {Object} sub - Subscription object
+   * @returns {string} Frequency description
+   */
   formatFrequency(sub) {
     const freq = [];
-    if (sub.morning_forecast) freq.push('1x/dieną');
-    if (sub.weekly_forecast) freq.push('1x/savaitę');
-    if (sub.daily_thrice_forecast) freq.push('3x/dieną');
-    return freq.length ? freq.join(', ') : 'be dažnio';
+    if (sub.morning_forecast) freq.push('1x/day');
+    if (sub.weekly_forecast) freq.push('1x/week');
+    if (sub.daily_thrice_forecast) freq.push('3x/day');
+    return freq.length ? freq.join(', ') : 'no frequency';
   }
 
   /**
-   * Sukuria mygtukų klaviatūrą su prenumeratų sąrašu
-   * @param {Array} subscriptions - Prenumeratų masyvas
-   * @returns {Object} Inline klaviatūros objektas
+   * Creates an inline keyboard with the list of subscriptions.
+   * @param {Array<Object>} subscriptions - Array of subscription objects
+   * @returns {Object} Inline keyboard object
    */
   createSubscriptionKeyboard(subscriptions) {
     const buttons = subscriptions.map(sub => ({

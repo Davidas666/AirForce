@@ -1,7 +1,11 @@
 const fetch = require('node-fetch');
 const logger = require('../utils/logger');
 
-// Keletui dienų (weekly forecast)
+/**
+ * Fetches a multi-day (weekly) weather forecast for the specified city.
+ * @param {string} city - The name of the city
+ * @returns {Promise<Object>} Weather forecast data object
+ */
 const fetchMultiDayForecast = async (city) => {
   const url = `http://localhost:3001/api/forecast/multi/${encodeURIComponent(city)}`;
   logger.info(`Fetching multi-day forecast from: ${url}`);
@@ -22,7 +26,12 @@ const fetchMultiDayForecast = async (city) => {
   }
 };
 
-// Tik valandinė (morning ir thrice)
+/**
+ * Fetches an hourly weather forecast for the specified city.
+ * @param {string} city - The name of the city
+ * @param {number} [cnt=8] - Number of forecast intervals to fetch (default is 8)
+ * @returns {Promise<Object>} Weather forecast data object
+ */
 const fetchHourlyForecast = async (city, cnt = 8) => {
   const url = `http://localhost:3001/api/forecast/hourly/${encodeURIComponent(city)}?cnt=${cnt}`;
   logger.info(`Fetching hourly forecast from: ${url}`);

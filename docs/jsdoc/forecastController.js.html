@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>forecastController.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">forecastController.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const logger = require('../utils/logger');
+
+/**
+ * @module controllers/forecastController
+ * @description Handles weather forecast related operations including current, daily, and hourly forecasts.
+ */
+
+const {
+  fetchForecastByCity,
+  fetchMultiDayForecastByCity,
+  fetchHourlyForecastByCity,
+  fetchDailyForecastByCity,
+  fetchHourlyForecastByCityCnt
+} = require('../models/forecastModel');
+
+/**
+ * @function getForecastByCity
+ * @description Get current weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with current weather data or error message
+ * @example
+ * // GET /api/forecast/Vilnius
+ * // Returns: { coord: { lon: 25.2798, lat: 54.6892 }, weather: [...], main: {...} }
+ */
+exports.getForecastByCity = async (req, res) => {
+  const city = req.params.city;
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+  logger.info(`Forecast requested for city: ${city}`);
+  try {
+    const data = await fetchForecastByCity(city, apiKey);
+    logger.info(`Forecast response sent for city: ${city}`);
+    res.json(data);
+  } catch (error) {
+    if (error.response &amp;&amp; error.response.status === 404) {
+      logger.warn(`City not found: ${city}`);
+      res.status(404).json({ error: 'City not found' });
+    } else {
+      logger.error('Error in getForecastByCity: %o', error);
+      res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+    }
+  }
+};
+
+/**
+ * @function getDailyForecastByCity
+ * @description Get daily weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} req.query - Query parameters
+ * @param {number} [req.query.cnt=7] - Number of days to forecast (1-16)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with daily forecast data or error message
+ * @example
+ * // GET /api/forecast/daily/Vilnius?cnt=5
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
+exports.getDailyForecastByCity = async (req, res) => {
+  const city = req.params.city;
+  const cnt = req.query.cnt || 7;
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+  logger.info(`Daily forecast requested for city: ${city}, count: ${cnt}`);
+  try {
+    const data = await fetchDailyForecastByCity(city, cnt, apiKey);
+    logger.info(`Daily forecast response sent for city: ${city}`);
+    res.json(data);
+  } catch (error) {
+    if (error.response &amp;&amp; error.response.status === 404) {
+      logger.warn(`City not found: ${city}`);
+      res.status(404).json({ error: 'City not found' });
+    } else {
+      logger.error('Error in getDailyForecastByCity: %o', error);
+      res.status(500).json({ error: 'Failed to get daily forecast', details: error.message });
+    }
+  }
+};
+
+/**
+ * @function getMultiDayForecastByCity
+ * @description Get multi-day weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with multi-day forecast data or error message
+ * @example
+ * // GET /api/forecast/multi/Vilnius
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
+exports.getMultiDayForecastByCity = async (req, res) => {
+  const city = req.params.city;
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+  logger.info(`Multi-day forecast requested for city: ${city}`);
+  try {
+    const data = await fetchMultiDayForecastByCity(city, apiKey);
+    logger.info(`Multi-day forecast response sent for city: ${city}`);
+    res.json(data);
+  } catch (error) {
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
+  }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+};
+
+/**
+ * @function getHourlyForecastByCity
+ * @description Get hourly weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with hourly forecast data or error message
+ * @example
+ * // GET /api/forecast/hourly/Vilnius
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
+exports.getHourlyForecastByCity = async (req, res) => {
+  const city = req.params.city;
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+  logger.info(`Hourly forecast requested for city: ${city}`);
+  try {
+    const data = await fetchHourlyForecastByCity(city, apiKey);
+    logger.info(`Hourly forecast response sent for city: ${city}`);
+    res.json(data);
+  } catch (error) {
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
+  }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+
+};
+
+/**
+ * @function getHourlyForecastByCityCnt
+ * @description Get limited hourly weather forecast for a city
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Route parameters
+ * @param {string} req.params.city - City name
+ * @param {Object} req.query - Query parameters
+ * @param {number} [req.query.cnt=24] - Number of hours to forecast (1-48)
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with limited hourly forecast data or error message
+ * @example
+ * // GET /api/forecast/hourly/Vilnius/cnt?cnt=12
+ * // Returns: { city: { name: 'Vilnius', country: 'LT' }, list: [...] }
+ */
+exports.getHourlyForecastByCityCnt = async (req, res) => {
+  const city = req.params.city;
+  const cnt = req.query.cnt || 7;
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+  logger.info(`Hourly forecast (limited) requested for city: ${city}, count: ${cnt}`);
+  try {
+    const data = await fetchHourlyForecastByCityCnt(city, cnt, apiKey);
+    logger.info(`Hourly forecast (limited) response sent for city: ${city}`);
+    res.json(data);
+  } catch (error) {
+  const status = error?.response?.status;
+  const message = error?.response?.data?.message;
+
+  if (status === 404 || message === 'city not found') {
+    logger.warn(`City not found: ${city}`);
+    return res.status(404).json({ error: 'City not found' });
+  }
+
+  logger.error('Error in getForecastByCity: %o', error);
+  res.status(500).json({ error: 'Failed to get forecast', details: error.message });
+}
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

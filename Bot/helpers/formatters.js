@@ -1,9 +1,14 @@
+/**
+ * Formats a multi-day weather forecast into a readable string for Telegram messages.
+ * @param {Object} data - Weather forecast data object
+ * @param {string} city - City name
+ * @returns {string} Formatted weather forecast message
+ */
 function formatMultiDayForecast(data, city) {
   if (!data || !data.list || data.list.length === 0) {
     return `Atsiprašome, nepavyko gauti kelių dienų orų prognozės miestui ${city}.`;
   }
 
-  // Grupės prognozes pagal dieną
   const forecastsByDay = data.list.reduce((acc, forecast) => {
     const date = forecast.dt_txt.split(' ')[0];
     if (!acc[date]) {
@@ -15,10 +20,8 @@ function formatMultiDayForecast(data, city) {
 
   let text = `Orų prognozė kelioms dienoms (*${city}*):\n\n`;
 
-  // Imame prognozę kiekvienai dienai (pvz., vidurdienio)
   for (const date in forecastsByDay) {
     const dayForecasts = forecastsByDay[date];
-    // Randame prognozę artimiausią 12:00
     const midDayForecast = dayForecasts.find(f => f.dt_txt.includes('12:00:00')) || dayForecasts[0];
 
     const forecastDate = new Date(midDayForecast.dt * 1000);

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>favoriteCitiesController.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-controllers_cityController.html">controllers/cityController</a><ul class='methods'><li data-type='method'><a href="module-controllers_cityController.html#~getCitySuggestions">getCitySuggestions</a></li></ul></li><li><a href="module-controllers_favoriteCitiesController.html">controllers/favoriteCitiesController</a><ul class='methods'><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~addFavoriteCity">addFavoriteCity</a></li><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~deleteFavoriteCity">deleteFavoriteCity</a></li><li data-type='method'><a href="module-controllers_favoriteCitiesController.html#~getFavoriteCities">getFavoriteCities</a></li></ul></li><li><a href="module-controllers_forecastController.html">controllers/forecastController</a><ul class='methods'><li data-type='method'><a href="module-controllers_forecastController.html#~getDailyForecastByCity">getDailyForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getForecastByCity">getForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getHourlyForecastByCity">getHourlyForecastByCity</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getHourlyForecastByCityCnt">getHourlyForecastByCityCnt</a></li><li data-type='method'><a href="module-controllers_forecastController.html#~getMultiDayForecastByCity">getMultiDayForecastByCity</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">favoriteCitiesController.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const model = require('../models/favoriteCitiesModel');
+
+/**
+ * @module controllers/favoriteCitiesController
+ * @description Handles operations related to user's favorite cities.
+ */
+
+/**
+ * @function getFavoriteCities
+ * @description Get all favorite cities for a user
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.userId - Telegram user ID
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with array of favorite cities or error message
+ * @example
+ * // GET /api/favorites?userId=12345
+ * // Returns: [{ id: 1, user_id: 12345, city: 'Vilnius', created_at: '2023-01-01T00:00:00.000Z' }]
+ */
+exports.getFavoriteCities = async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) return res.status(400).json({ error: "userId required" });
+  try {
+    const cities = await model.getFavoriteCities(userId);
+    res.json(cities);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get favorite cities" });
+  }
+};
+
+/**
+ * @function addFavoriteCity
+ * @description Add a city to user's favorite cities
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.userId - Telegram user ID
+ * @param {string} req.body.city - City name to add
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with updated list of favorite cities or error message
+ * @example
+ * // POST /api/favorites
+ * // Request body: { userId: '12345', city: 'Vilnius' }
+ * // Returns: [{ id: 1, user_id: 12345, city: 'Vilnius', created_at: '2023-01-01T00:00:00.000Z' }]
+ */
+exports.addFavoriteCity = async (req, res) => {
+  const { userId, city } = req.body;
+  if (!userId || !city) return res.status(400).json({ error: "userId and city required" });
+  try {
+    const cities = await model.addFavoriteCity(userId, city);
+    res.json(cities);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add favorite city" });
+  }
+};
+
+/**
+ * @function deleteFavoriteCity
+ * @description Remove a city from user's favorite cities
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.userId - Telegram user ID
+ * @param {string} req.body.city - City name to remove
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON response with updated list of favorite cities or error message
+ * @example
+ * // DELETE /api/favorites
+ * // Request body: { userId: '12345', city: 'Vilnius' }
+ * // Returns: []
+ */
+exports.deleteFavoriteCity = async (req, res) => {
+  const { userId, city } = req.body;
+  if (!userId || !city) return res.status(400).json({ error: "userId and city required" });
+  try {
+    const cities = await model.deleteFavoriteCity(userId, city);
+    res.json(cities);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete favorite city" });
+  }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
